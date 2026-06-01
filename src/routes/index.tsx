@@ -912,7 +912,7 @@ function ProductDetail({
           <img
             src={product.img}
             alt={product.name}
-            className="h-72 w-full object-cover"
+            className="block h-auto w-full"
             width={512}
             height={640}
           />
