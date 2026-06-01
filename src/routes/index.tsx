@@ -15,9 +15,10 @@ import {
   ChevronRight,
   MapPin,
   Sun,
-  Briefcase,
-  Sparkles,
-  Zap,
+  Wind,
+  UtensilsCrossed,
+  Luggage,
+  Dumbbell,
   ShieldCheck,
   Home,
   User,
@@ -633,9 +634,10 @@ function Discover({
         <ShopTileRow>
           {[
             { label: "Hot day", Icon: Sun },
-            { label: "Easy to pack", Icon: Briefcase },
-            { label: "Dressy but comfy", Icon: Sparkles },
-            { label: "Arrives this week", Icon: Zap },
+            { label: "No-iron", Icon: Wind },
+            { label: "Dinner plans", Icon: UtensilsCrossed },
+            { label: "Pack light", Icon: Luggage },
+            { label: "Sporty", Icon: Dumbbell },
           ].map((n) => (
             <ShopTileButton key={n.label} label={n.label} wrapLabel onClick={onCategory}>
               <div className="flex h-full w-full items-center justify-center">
