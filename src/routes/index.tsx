@@ -23,6 +23,7 @@ import {
   Home,
   User,
   TrendingUp,
+  Trash2,
 } from "lucide-react";
 import hero from "@/assets/hero-vacation.jpg";
 import catDresses from "@/assets/cat-dresses.jpg";
@@ -164,10 +165,10 @@ function Prototype() {
   const [screen, setScreen] = useState<Screen>("discover");
   const [activeTab, setActiveTab] = useState<Tab>("home");
   const [activeProduct, setActiveProduct] = useState<Product>(PRODUCTS[1]);
-  const [bagCount, setBagCount] = useState(0);
   const [bagItems, setBagItems] = useState<{ p: Product; size: string }[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [showAdded, setShowAdded] = useState(false);
+  const [showCartPopup, setShowCartPopup] = useState(false);
   const [size, setSize] = useState("M");
   const [showCaseStudy, setShowCaseStudy] = useState(true);
   const mainRef = useRef<HTMLElement>(null);
@@ -184,9 +185,14 @@ function Prototype() {
 
   const addToBag = () => {
     setBagItems((b) => [...b, { p: activeProduct, size }]);
-    setBagCount((c) => c + 1);
     setShowAdded(true);
   };
+
+  const removeFromBag = (index: number) => {
+    setBagItems((items) => items.filter((_, i) => i !== index));
+  };
+
+  const bagCount = bagItems.length;
 
   const goToTab = (tab: Tab) => {
     setActiveTab(tab);
@@ -219,9 +225,7 @@ function Prototype() {
               goToTab("home");
             }
           }}
-          onBag={() => {
-            goToTab("cart");
-          }}
+          onBag={() => setShowCartPopup(true)}
           onSearch={() => goToTab("search")}
         />
 
@@ -239,7 +243,13 @@ function Prototype() {
           {screen === "product" && (
             <ProductDetail product={activeProduct} size={size} setSize={setSize} onAdd={addToBag} />
           )}
-          {screen === "checkout" && <Checkout items={bagItems} bottomPad={showBottomNav} />}
+          {screen === "checkout" && (
+            <Checkout
+              items={bagItems}
+              bottomPad={showBottomNav}
+              onRemoveItem={removeFromBag}
+            />
+          )}
           {screen === "search" && <SearchView bottomPad={showBottomNav} onBrowse={goToBrowse} />}
           {screen === "profile" && <ProfileView bottomPad={showBottomNav} />}
         </main>
@@ -248,6 +258,17 @@ function Prototype() {
           <BottomNav activeTab={activeTab} bagCount={bagCount} onTabChange={goToTab} />
         )}
 
+        {showCartPopup && (
+          <CartSheet
+            items={bagItems}
+            onClose={() => setShowCartPopup(false)}
+            onRemoveItem={removeFromBag}
+            onCheckout={() => {
+              setShowCartPopup(false);
+              goToTab("cart");
+            }}
+          />
+        )}
         {showFilters && <FilterSheet onClose={() => setShowFilters(false)} />}
         {showAdded && (
           <AddedSheet
@@ -1028,6 +1049,111 @@ function ProductDetail({
   );
 }
 
+function BagItemRow({
+  item,
+  onRemove,
+}: {
+  item: { p: Product; size: string };
+  onRemove?: () => void;
+}) {
+  return (
+    <div className="flex gap-3 rounded-2xl border border-border p-3">
+      <div className="h-20 w-16 shrink-0 overflow-hidden rounded-xl bg-secondary">
+        <img src={item.p.img} alt="" className="h-full w-full object-cover" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-semibold">{item.p.name}</p>
+        <p className="mt-0.5 text-xs text-muted-foreground">Size {item.size}</p>
+        <div className="mt-2 flex items-center justify-between gap-2">
+          <span className="text-sm font-bold">${item.p.price.toFixed(2)}</span>
+          {onRemove ? (
+            <button
+              type="button"
+              onClick={onRemove}
+              className="flex items-center gap-1 text-xs font-semibold text-muted-foreground transition hover:text-foreground"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              Remove
+            </button>
+          ) : (
+            <span className="text-xs text-muted-foreground">Qty 1</span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CartSheet({
+  items,
+  onClose,
+  onRemoveItem,
+  onCheckout,
+}: {
+  items: { p: Product; size: string }[];
+  onClose: () => void;
+  onRemoveItem: (index: number) => void;
+  onCheckout: () => void;
+}) {
+  const subtotal = items.reduce((sum, item) => sum + item.p.price, 0);
+  const shipping = subtotal >= 25 ? 0 : 4.99;
+
+  return (
+    <Sheet onClose={onClose} title="Your bag">
+      {items.length === 0 ? (
+        <div className="py-6 text-center">
+          <ShoppingBag className="mx-auto h-10 w-10 text-muted-foreground/50" />
+          <p className="mt-3 text-sm font-semibold">Your bag is empty</p>
+          <p className="mt-1 text-xs text-muted-foreground">Add something you love—we'll keep it here.</p>
+          <button
+            onClick={onClose}
+            className="mt-5 h-11 rounded-full bg-foreground px-6 text-sm font-semibold text-primary-foreground"
+          >
+            Start shopping
+          </button>
+        </div>
+      ) : (
+        <>
+          <p className="mb-3 text-xs text-muted-foreground">
+            {items.length} item{items.length !== 1 ? "s" : ""} · Final prices shown
+          </p>
+          <div className="space-y-2.5">
+            {items.map((item, idx) => (
+              <BagItemRow key={idx} item={item} onRemove={() => onRemoveItem(idx)} />
+            ))}
+          </div>
+
+          <div className="mt-4 rounded-2xl bg-secondary p-4 text-sm">
+            <Row label="Subtotal" value={`$${subtotal.toFixed(2)}`} />
+            <div className="mt-2">
+              <Row
+                label="Shipping"
+                value={shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}
+                accent={shipping === 0}
+              />
+            </div>
+          </div>
+
+          <div className="mt-4 flex gap-2">
+            <button
+              onClick={onClose}
+              className="h-12 flex-1 rounded-full border border-border text-sm font-semibold"
+            >
+              Keep shopping
+            </button>
+            <button
+              onClick={onCheckout}
+              className="h-12 flex-[1.4] rounded-full bg-foreground text-sm font-semibold text-primary-foreground"
+            >
+              Checkout
+            </button>
+          </div>
+        </>
+      )}
+    </Sheet>
+  );
+}
+
 function AddedSheet({
   product,
   size,
@@ -1126,12 +1252,13 @@ function AddedSheet({
 function Checkout({
   items,
   bottomPad,
+  onRemoveItem,
 }: {
   items: { p: Product; size: string }[];
   bottomPad: boolean;
+  onRemoveItem: (index: number) => void;
 }) {
-  const list = items.length ? items : [{ p: PRODUCTS[1], size: "M" }];
-  const subtotal = list.reduce((s, i) => s + i.p.price, 0);
+  const subtotal = items.reduce((s, i) => s + i.p.price, 0);
   const shipping = subtotal >= 25 ? 0 : 4.99;
   const tax = +(subtotal * 0.08).toFixed(2);
   const total = subtotal + shipping + tax;
@@ -1143,69 +1270,70 @@ function Checkout({
       <div className="px-5 pt-2">
         <h2 className="text-sm font-bold">Bag summary</h2>
         <p className="mt-0.5 text-xs text-muted-foreground">
-          {list.length} item{list.length !== 1 ? "s" : ""} · Prices include all discounts
+          {items.length === 0
+            ? "Nothing in your bag yet"
+            : `${items.length} item${items.length !== 1 ? "s" : ""} · Prices include all discounts`}
         </p>
-        <div className="mt-3 space-y-2.5">
-          {list.map((i, idx) => (
-            <div key={idx} className="flex gap-3 rounded-2xl border border-border p-3">
-              <div className="h-20 w-16 shrink-0 overflow-hidden rounded-xl bg-secondary">
-                <img src={i.p.img} alt="" className="h-full w-full object-cover" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold">{i.p.name}</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">Size {i.size}</p>
-                <div className="mt-2 flex items-center justify-between">
-                  <span className="text-sm font-bold">${i.p.price.toFixed(2)}</span>
-                  <span className="text-xs text-muted-foreground">Qty 1</span>
-                </div>
-              </div>
+        {items.length === 0 ? (
+          <div className="mt-6 rounded-2xl border border-dashed border-border py-10 text-center">
+            <ShoppingBag className="mx-auto h-8 w-8 text-muted-foreground/50" />
+            <p className="mt-2 text-sm font-medium">Your bag is empty</p>
+          </div>
+        ) : (
+          <div className="mt-3 space-y-2.5">
+            {items.map((item, idx) => (
+              <BagItemRow key={idx} item={item} onRemove={() => onRemoveItem(idx)} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {items.length > 0 && (
+        <>
+          <div className="mt-4 px-5">
+            <div className="space-y-2.5 rounded-2xl bg-secondary p-4 text-sm">
+              <Row label="Subtotal" value={`$${subtotal.toFixed(2)}`} />
+              <Row
+                label="Shipping"
+                value={shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}
+                accent={shipping === 0}
+              />
+              <Row label="Estimated tax" value={`$${tax.toFixed(2)}`} />
+              <div className="my-1 h-px bg-border" />
+              <Row label="Order total" value={`$${total.toFixed(2)}`} bold />
             </div>
-          ))}
-        </div>
-      </div>
+            <p className="mt-2 text-[11px] text-muted-foreground">
+              Tax is an estimate. We'll confirm the final amount before you pay.
+            </p>
+          </div>
 
-      <div className="mt-4 px-5">
-        <div className="space-y-2.5 rounded-2xl bg-secondary p-4 text-sm">
-          <Row label="Subtotal" value={`$${subtotal.toFixed(2)}`} />
-          <Row
-            label="Shipping"
-            value={shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}
-            accent={shipping === 0}
-          />
-          <Row label="Estimated tax" value={`$${tax.toFixed(2)}`} />
-          <div className="my-1 h-px bg-border" />
-          <Row label="Order total" value={`$${total.toFixed(2)}`} bold />
-        </div>
-        <p className="mt-2 text-[11px] text-muted-foreground">
-          Tax is an estimate. We'll confirm the final amount before you pay.
-        </p>
-      </div>
+          <div className="mt-4 px-5">
+            <h3 className="flex items-center gap-1.5 text-sm font-bold">
+              <MapPin className="h-4 w-4" /> Delivery contact
+            </h3>
+            <p className="mt-1 text-xs text-muted-foreground">
+              We'll text tracking updates only—no marketing unless you opt in later.
+            </p>
+            <div className="mt-3 space-y-2.5">
+              <Field
+                label="Mobile number"
+                placeholder="(555) 123-4567"
+                help="Used for delivery updates and nothing else."
+              />
+            </div>
+          </div>
 
-      <div className="mt-4 px-5">
-        <h3 className="flex items-center gap-1.5 text-sm font-bold">
-          <MapPin className="h-4 w-4" /> Delivery contact
-        </h3>
-        <p className="mt-1 text-xs text-muted-foreground">
-          We'll text tracking updates only—no marketing unless you opt in later.
-        </p>
-        <div className="mt-3 space-y-2.5">
-          <Field
-            label="Mobile number"
-            placeholder="(555) 123-4567"
-            help="Used for delivery updates and nothing else."
-          />
-        </div>
-      </div>
-
-      <div className="mt-4 px-5">
-        <button className="h-14 w-full rounded-full bg-foreground text-sm font-bold text-primary-foreground transition active:scale-[0.99]">
-          Continue to payment
-        </button>
-        <p className="mt-2.5 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
-          <ShieldCheck className="h-3.5 w-3.5" />
-          Secure checkout · 30-day free returns
-        </p>
-      </div>
+          <div className="mt-4 px-5">
+            <button className="h-14 w-full rounded-full bg-foreground text-sm font-bold text-primary-foreground transition active:scale-[0.99]">
+              Continue to payment
+            </button>
+            <p className="mt-2.5 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              Secure checkout · 30-day free returns
+            </p>
+          </div>
+        </>
+      )}
     </div>
   );
 }
