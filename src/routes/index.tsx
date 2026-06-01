@@ -336,15 +336,13 @@ function ShopTileButton({
   children: React.ReactNode;
 }) {
   return (
-    <button onClick={onClick} className="group flex shrink-0 flex-col items-center p-0">
-      <div className="aspect-square w-[72px] overflow-hidden rounded-2xl bg-secondary ring-1 ring-border/50">
+    <button onClick={onClick} className="group w-[72px] shrink-0 p-0 text-left">
+      <div className="aspect-square w-full overflow-hidden rounded-2xl bg-secondary ring-1 ring-border/50">
         {children}
       </div>
-      <p className="mt-2 whitespace-nowrap text-center text-xs font-medium leading-tight">{label}</p>
+      <p className="mt-2 text-center text-xs font-medium leading-tight">{label}</p>
       {sublabel && (
-        <p className="mt-0.5 whitespace-nowrap text-center text-[11px] leading-tight text-muted-foreground">
-          {sublabel}
-        </p>
+        <p className="mt-0.5 text-center text-[11px] leading-tight text-muted-foreground">{sublabel}</p>
       )}
     </button>
   );
