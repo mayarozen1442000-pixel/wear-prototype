@@ -669,11 +669,7 @@ function Discover({
       </section>
 
       <section className="mt-5 px-5">
-        <SectionHeader
-          title="Good finds under $25"
-          subtitle="Low prices—with the details you need before you tap."
-          onAction={onCategory}
-        />
+        <SectionHeader title="Good finds under $25" onAction={onCategory} />
         <div className="mt-3 grid grid-cols-2 gap-3">
           {PRODUCTS.slice(0, 4).map((p) => (
             <ProductCard key={p.id} p={p} onClick={() => onProduct(p)} />
