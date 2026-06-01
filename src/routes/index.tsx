@@ -15,8 +15,8 @@ import {
   ChevronRight,
   MapPin,
   Sun,
-  Wind,
-  UtensilsCrossed,
+  Shirt,
+  Sparkles,
   Luggage,
   Dumbbell,
   ShieldCheck,
@@ -634,8 +634,8 @@ function Discover({
         <ShopTileRow>
           {[
             { label: "Hot day", Icon: Sun },
-            { label: "No-iron", Icon: Wind },
-            { label: "Dinner plans", Icon: UtensilsCrossed },
+            { label: "No-iron", Icon: Shirt },
+            { label: "Dinner plans", Icon: Sparkles },
             { label: "Pack light", Icon: Luggage },
             { label: "Sporty", Icon: Dumbbell },
           ].map((n) => (
