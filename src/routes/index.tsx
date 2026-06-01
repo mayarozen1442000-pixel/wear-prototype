@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Search,
   ShoppingBag,
@@ -19,6 +19,9 @@ import {
   Sparkles,
   Zap,
   ShieldCheck,
+  Home,
+  User,
+  TrendingUp,
 } from "lucide-react";
 import hero from "@/assets/hero-vacation.jpg";
 import catDresses from "@/assets/cat-dresses.jpg";
@@ -45,7 +48,16 @@ export const Route = createFileRoute("/")({
   component: Prototype,
 });
 
-type Screen = "discover" | "browse" | "product" | "checkout";
+type Screen = "discover" | "browse" | "product" | "checkout" | "search" | "profile";
+type Tab = "home" | "search" | "trending" | "cart" | "profile";
+
+const TAB_TO_SCREEN: Record<Tab, Screen> = {
+  home: "discover",
+  search: "search",
+  trending: "browse",
+  cart: "checkout",
+  profile: "profile",
+};
 
 type Product = {
   id: string;
@@ -146,6 +158,7 @@ const PRODUCTS: Product[] = [
 
 function Prototype() {
   const [screen, setScreen] = useState<Screen>("discover");
+  const [activeTab, setActiveTab] = useState<Tab>("home");
   const [activeProduct, setActiveProduct] = useState<Product>(PRODUCTS[1]);
   const [bagCount, setBagCount] = useState(0);
   const [bagItems, setBagItems] = useState<{ p: Product; size: string }[]>([]);
@@ -153,9 +166,10 @@ function Prototype() {
   const [showAdded, setShowAdded] = useState(false);
   const [size, setSize] = useState("M");
   const [showCaseStudy, setShowCaseStudy] = useState(true);
+  const mainRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    mainRef.current?.scrollTo(0, 0);
   }, [screen]);
 
   const goProduct = (p: Product) => {
@@ -170,7 +184,18 @@ function Prototype() {
     setShowAdded(true);
   };
 
+  const goToTab = (tab: Tab) => {
+    setActiveTab(tab);
+    setScreen(TAB_TO_SCREEN[tab]);
+  };
+
+  const goToBrowse = () => {
+    setActiveTab("trending");
+    setScreen("browse");
+  };
+
   const bagSubtotal = bagItems.reduce((sum, item) => sum + item.p.price, 0);
+  const showBottomNav = screen !== "product";
 
   return (
     <div className="min-h-screen bg-secondary flex flex-col items-center px-4 py-4 md:py-8">
@@ -178,28 +203,46 @@ function Prototype() {
         <CaseStudyBanner onDismiss={() => setShowCaseStudy(false)} />
       )}
 
-      <div className="w-full max-w-[430px] min-h-[min(100dvh,860px)] bg-background relative overflow-hidden rounded-[2rem] border border-border/80 shadow-[var(--shadow-soft)]">
+      <div className="flex h-[min(100dvh,860px)] max-h-[100dvh] w-full max-w-[430px] flex-col overflow-hidden rounded-[2rem] border border-border/80 bg-background shadow-[var(--shadow-soft)]">
         <TopBar
           screen={screen}
           bagCount={bagCount}
-          onBack={() =>
-            setScreen(
-              screen === "product" ? "browse" : screen === "browse" ? "discover" : "discover",
-            )
-          }
-          onBag={() => bagCount > 0 && setScreen("checkout")}
+          onBack={() => {
+            if (screen === "product") {
+              setScreen("browse");
+              setActiveTab("trending");
+            } else if (screen === "browse") {
+              goToTab("home");
+            }
+          }}
+          onBag={() => {
+            goToTab("cart");
+          }}
+          onSearch={() => goToTab("search")}
         />
 
-        {screen === "discover" && (
-          <Discover onCategory={() => setScreen("browse")} onProduct={goProduct} />
+        <main ref={mainRef} className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain">
+          {screen === "discover" && (
+            <Discover onCategory={goToBrowse} onProduct={goProduct} bottomPad={showBottomNav} />
+          )}
+          {screen === "browse" && (
+            <Browse
+              onProduct={goProduct}
+              onOpenFilters={() => setShowFilters(true)}
+              bottomPad={showBottomNav}
+            />
+          )}
+          {screen === "product" && (
+            <ProductDetail product={activeProduct} size={size} setSize={setSize} onAdd={addToBag} />
+          )}
+          {screen === "checkout" && <Checkout items={bagItems} bottomPad={showBottomNav} />}
+          {screen === "search" && <SearchView bottomPad={showBottomNav} onBrowse={goToBrowse} />}
+          {screen === "profile" && <ProfileView bottomPad={showBottomNav} />}
+        </main>
+
+        {showBottomNav && (
+          <BottomNav activeTab={activeTab} bagCount={bagCount} onTabChange={goToTab} />
         )}
-        {screen === "browse" && (
-          <Browse onProduct={goProduct} onOpenFilters={() => setShowFilters(true)} />
-        )}
-        {screen === "product" && (
-          <ProductDetail product={activeProduct} size={size} setSize={setSize} onAdd={addToBag} />
-        )}
-        {screen === "checkout" && <Checkout items={bagItems} />}
 
         {showFilters && <FilterSheet onClose={() => setShowFilters(false)} />}
         {showAdded && (
@@ -210,7 +253,7 @@ function Prototype() {
             onClose={() => setShowAdded(false)}
             onViewBag={() => {
               setShowAdded(false);
-              setScreen("checkout");
+              goToTab("cart");
             }}
           />
         )}
@@ -257,22 +300,26 @@ function TopBar({
   bagCount,
   onBack,
   onBag,
+  onSearch,
 }: {
   screen: Screen;
   bagCount: number;
   onBack: () => void;
   onBag: () => void;
+  onSearch: () => void;
 }) {
-  const showBack = screen !== "discover";
+  const showBack = screen === "browse" || screen === "product";
   const titles: Record<Screen, string> = {
     discover: "",
     browse: "Dresses",
     product: "",
     checkout: "Your bag",
+    search: "Search",
+    profile: "Profile",
   };
 
   return (
-    <div className="sticky top-0 z-30 border-b border-border/60 bg-background/95 backdrop-blur-md">
+    <div className="z-30 shrink-0 border-b border-border/60 bg-background/95 backdrop-blur-md">
       <div className="flex h-14 items-center justify-between px-5">
         <div className="flex min-w-0 items-center gap-3">
           {showBack ? (
@@ -294,7 +341,11 @@ function TopBar({
         </div>
         <div className="flex items-center gap-0.5">
           {screen === "discover" && (
-            <button aria-label="Search" className="rounded-full p-2 hover:bg-secondary transition-colors">
+            <button
+              onClick={onSearch}
+              aria-label="Search"
+              className="rounded-full p-2 hover:bg-secondary transition-colors"
+            >
               <Search className="h-5 w-5" />
             </button>
           )}
@@ -311,6 +362,149 @@ function TopBar({
             )}
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function BottomNav({
+  activeTab,
+  bagCount,
+  onTabChange,
+}: {
+  activeTab: Tab;
+  bagCount: number;
+  onTabChange: (tab: Tab) => void;
+}) {
+  const items: { tab: Tab; label: string; icon: typeof Home }[] = [
+    { tab: "home", label: "Home", icon: Home },
+    { tab: "search", label: "Search", icon: Search },
+    { tab: "trending", label: "Trending", icon: TrendingUp },
+    { tab: "cart", label: "Cart", icon: ShoppingBag },
+    { tab: "profile", label: "Profile", icon: User },
+  ];
+
+  return (
+    <nav
+      aria-label="Main navigation"
+      className="z-30 shrink-0 border-t border-border/60 bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md"
+    >
+      <div className="flex h-16 items-stretch justify-around px-1">
+        {items.map(({ tab, label, icon: Icon }) => {
+          const active = activeTab === tab;
+          return (
+            <button
+              key={tab}
+              onClick={() => onTabChange(tab)}
+              aria-current={active ? "page" : undefined}
+              className={`flex flex-1 flex-col items-center justify-center gap-1 rounded-xl transition-colors ${
+                active ? "text-foreground" : "text-muted-foreground hover:text-foreground/80"
+              }`}
+            >
+              <span className="relative">
+                <Icon className="h-5 w-5" strokeWidth={active ? 2.25 : 1.75} />
+                {tab === "cart" && bagCount > 0 && (
+                  <span className="absolute -right-2 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-foreground px-1 text-[9px] font-bold text-primary-foreground">
+                    {bagCount}
+                  </span>
+                )}
+              </span>
+              <span className={`text-[10px] leading-none ${active ? "font-bold" : "font-medium"}`}>
+                {label}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </nav>
+  );
+}
+
+function SearchView({ bottomPad, onBrowse }: { bottomPad: boolean; onBrowse: () => void }) {
+  const recent = ["Linen mini dress", "Vacation cover-up", "Gold hoops under $15"];
+  const trending = ["Resort edit", "Under $25 dresses", "Customer photo picks"];
+
+  return (
+    <div className={`px-5 pt-4 ${bottomPad ? "pb-6" : "pb-10"}`}>
+      <div className="flex h-11 items-center gap-2.5 rounded-full border border-border/60 bg-secondary/80 px-4">
+        <Search className="h-4 w-4 text-muted-foreground" />
+        <input
+          type="search"
+          placeholder="Search dresses, shoes, accessories…"
+          className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+        />
+      </div>
+      <p className="mt-2 text-xs text-muted-foreground">
+        Try “midi dress under $25” or “arrives this week.”
+      </p>
+
+      <section className="mt-6">
+        <h2 className="text-sm font-bold">Recent searches</h2>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {recent.map((term) => (
+            <button
+              key={term}
+              onClick={onBrowse}
+              className="rounded-full border border-border bg-card px-3.5 py-2 text-xs font-medium hover:bg-secondary"
+            >
+              {term}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-6">
+        <h2 className="text-sm font-bold">Trending now</h2>
+        <div className="mt-2 space-y-2">
+          {trending.map((term) => (
+            <button
+              key={term}
+              onClick={onBrowse}
+              className="flex w-full items-center justify-between rounded-2xl border border-border px-4 py-3 text-left text-sm font-medium hover:bg-secondary/60"
+            >
+              {term}
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </button>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function ProfileView({ bottomPad }: { bottomPad: boolean }) {
+  const links = [
+    { label: "Orders & tracking", detail: "See delivery updates in one place" },
+    { label: "Saved items", detail: "12 pieces waiting for you" },
+    { label: "Size profile", detail: "M · Updated from recent orders" },
+    { label: "Returns & help", detail: "Free returns within 30 days" },
+  ];
+
+  return (
+    <div className={`px-5 pt-4 ${bottomPad ? "pb-6" : "pb-10"}`}>
+      <div className="flex items-center gap-3 rounded-2xl border border-border bg-secondary/50 p-4">
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-secondary text-lg font-bold">
+          M
+        </div>
+        <div>
+          <p className="text-base font-bold">Hi, Maya</p>
+          <p className="text-xs text-muted-foreground">Member since 2024 · Free returns on every order</p>
+        </div>
+      </div>
+
+      <div className="mt-5 space-y-2">
+        {links.map((link) => (
+          <button
+            key={link.label}
+            className="flex w-full items-center justify-between rounded-2xl border border-border px-4 py-3.5 text-left hover:bg-secondary/60"
+          >
+            <div>
+              <p className="text-sm font-semibold">{link.label}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">{link.detail}</p>
+            </div>
+            <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+          </button>
+        ))}
       </div>
     </div>
   );
@@ -361,9 +555,11 @@ function ShopTileButton({
 function Discover({
   onCategory,
   onProduct,
+  bottomPad,
 }: {
   onCategory: () => void;
   onProduct: (p: Product) => void;
+  bottomPad: boolean;
 }) {
   const chips = [
     "In my size (M)",
@@ -374,7 +570,7 @@ function Discover({
   ];
 
   return (
-    <div className="pb-10">
+    <div className={bottomPad ? "pb-4" : "pb-10"}>
       <div className="px-5 pt-3">
         <div className="flex h-11 items-center gap-2.5 rounded-full border border-border bg-secondary px-4">
           <Search className="h-4 w-4 text-muted-foreground" />
@@ -562,15 +758,17 @@ function ProductCard({ p, onClick }: { p: Product; onClick: () => void }) {
 function Browse({
   onProduct,
   onOpenFilters,
+  bottomPad,
 }: {
   onProduct: (p: Product) => void;
   onOpenFilters: () => void;
+  bottomPad: boolean;
 }) {
   const [active, setActive] = useState("All");
   const cats = ["All", "Mini", "Midi", "Maxi", "Beach", "Casual"];
 
   return (
-    <div className="pb-10">
+    <div className={bottomPad ? "pb-4" : "pb-10"}>
       <div className="flex gap-2 overflow-x-auto px-5 pb-2 pt-3 scrollbar-none">
         {cats.map((c) => (
           <button
@@ -587,7 +785,7 @@ function Browse({
         ))}
       </div>
 
-      <div className="sticky top-14 z-20 flex items-center justify-between border-b border-border/60 bg-background/95 px-5 py-2.5 backdrop-blur-md">
+      <div className="sticky top-0 z-20 flex items-center justify-between border-b border-border/60 bg-background/95 px-5 py-2.5 backdrop-blur-md">
         <p className="text-xs text-muted-foreground">
           <span className="font-medium text-foreground">42 dresses</span> · Size M · Final prices
         </p>
@@ -709,24 +907,25 @@ function ProductDetail({
   const sizes = ["XS", "S", "M", "L", "XL"];
 
   return (
-    <div className="pb-32">
-      <div className="relative bg-secondary">
-        <img
-          src={product.img}
-          alt={product.name}
-          className="h-72 w-full object-cover"
-          width={512}
-          height={640}
-        />
-        <button
-          aria-label={`Save ${product.name}`}
-          className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-background/92 shadow-sm"
-        >
-          <Heart className="h-4 w-4" />
-        </button>
-      </div>
+    <div className="flex min-h-full flex-col">
+      <div className="flex-1">
+        <div className="relative bg-secondary">
+          <img
+            src={product.img}
+            alt={product.name}
+            className="h-72 w-full object-cover"
+            width={512}
+            height={640}
+          />
+          <button
+            aria-label={`Save ${product.name}`}
+            className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-background/92 shadow-sm"
+          >
+            <Heart className="h-4 w-4" />
+          </button>
+        </div>
 
-      <div className="px-5 pt-4">
+        <div className="px-5 pt-4 pb-4">
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
           {product.fabric}
         </p>
@@ -810,9 +1009,10 @@ function ProductDetail({
             Read all reviews
           </button>
         </div>
+        </div>
       </div>
 
-      <div className="fixed bottom-0 left-1/2 z-20 w-full max-w-[430px] -translate-x-1/2 bg-gradient-to-t from-background via-background to-background/75 px-5 pb-5 pt-4">
+      <div className="shrink-0 border-t border-border/60 bg-background px-5 pb-4 pt-3">
         <button
           onClick={onAdd}
           className="flex h-14 w-full items-center justify-center gap-2 rounded-full bg-foreground text-sm font-bold text-primary-foreground transition active:scale-[0.99]"
@@ -922,7 +1122,13 @@ function AddedSheet({
   );
 }
 
-function Checkout({ items }: { items: { p: Product; size: string }[] }) {
+function Checkout({
+  items,
+  bottomPad,
+}: {
+  items: { p: Product; size: string }[];
+  bottomPad: boolean;
+}) {
   const list = items.length ? items : [{ p: PRODUCTS[1], size: "M" }];
   const subtotal = list.reduce((s, i) => s + i.p.price, 0);
   const shipping = subtotal >= 25 ? 0 : 4.99;
@@ -930,7 +1136,7 @@ function Checkout({ items }: { items: { p: Product; size: string }[] }) {
   const total = subtotal + shipping + tax;
 
   return (
-    <div className="pb-10">
+    <div className={bottomPad ? "pb-4" : "pb-10"}>
       <CheckoutSteps step={1} />
 
       <div className="px-5 pt-2">
