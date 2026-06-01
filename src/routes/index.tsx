@@ -316,6 +316,38 @@ function TopBar({
   );
 }
 
+function ShopTileRow({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mt-2 overflow-x-auto px-5 pb-1 scrollbar-none">
+      <div className="flex w-max items-start gap-3">{children}</div>
+    </div>
+  );
+}
+
+function ShopTileButton({
+  label,
+  sublabel,
+  onClick,
+  children,
+}: {
+  label: string;
+  sublabel?: string;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button onClick={onClick} className="group w-[72px] shrink-0 p-0 text-left">
+      <div className="aspect-square w-full overflow-hidden rounded-2xl bg-secondary ring-1 ring-border/50">
+        {children}
+      </div>
+      <p className="mt-2 text-center text-xs font-medium leading-tight">{label}</p>
+      {sublabel && (
+        <p className="mt-0.5 text-center text-[11px] leading-tight text-muted-foreground">{sublabel}</p>
+      )}
+    </button>
+  );
+}
+
 function Discover({
   onCategory,
   onProduct,
@@ -389,33 +421,27 @@ function Discover({
         <div className="px-5">
           <SectionHeader title="Shop by need" onAction={onCategory} />
         </div>
-        <div className="mt-2 flex items-start gap-3 overflow-x-auto px-5 pb-1 scrollbar-none">
+        <ShopTileRow>
           {[
-            { label: "Hot day", sub: "Light fabrics", Icon: Sun },
-            { label: "Easy to pack", sub: "Wrinkle-friendly", Icon: Briefcase },
-            { label: "Dressy but comfy", sub: "Dinner-ready", Icon: Sparkles },
-            { label: "Arrives this week", sub: "Ships fast", Icon: Zap },
+            { label: "Hot day", Icon: Sun },
+            { label: "Easy to pack", Icon: Briefcase },
+            { label: "Dressy but comfy", Icon: Sparkles },
+            { label: "Arrives this week", Icon: Zap },
           ].map((n) => (
-            <button
-              key={n.label}
-              onClick={onCategory}
-              className="group w-[72px] shrink-0"
-            >
-              <div className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-2xl bg-secondary ring-1 ring-border/50">
-                <n.Icon className="h-6 w-6 text-foreground/75" strokeWidth={1.5} />
+            <ShopTileButton key={n.label} label={n.label} onClick={onCategory}>
+              <div className="flex h-full w-full items-center justify-center">
+                <n.Icon className="h-8 w-8 text-foreground/75" strokeWidth={1.5} />
               </div>
-              <p className="mt-2 text-center text-xs font-medium leading-tight">{n.label}</p>
-              <p className="mt-0.5 text-center text-[11px] leading-tight text-muted-foreground">{n.sub}</p>
-            </button>
+            </ShopTileButton>
           ))}
-        </div>
+        </ShopTileRow>
       </section>
 
       <section className="mt-5">
         <div className="px-5">
           <SectionHeader title="Shop by category" onAction={onCategory} />
         </div>
-        <div className="mt-2 flex items-start gap-3 overflow-x-auto px-5 pb-1 scrollbar-none">
+        <ShopTileRow>
           {[
             { label: "Dresses", img: catDresses },
             { label: "Shoes", img: catShoes },
@@ -424,19 +450,16 @@ function Discover({
             { label: "Bags", img: catAccessories },
             { label: "Sandals", img: catShoes },
           ].map((c) => (
-            <button key={c.label} onClick={onCategory} className="group w-[72px] shrink-0">
-              <div className="aspect-square w-full overflow-hidden rounded-2xl bg-secondary ring-1 ring-border/50">
-                <img
-                  src={c.img}
-                  alt={c.label}
-                  loading="lazy"
-                  className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                />
-              </div>
-              <p className="mt-2 text-center text-xs font-medium leading-tight">{c.label}</p>
-            </button>
+            <ShopTileButton key={c.label} label={c.label} onClick={onCategory}>
+              <img
+                src={c.img}
+                alt={c.label}
+                loading="lazy"
+                className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+              />
+            </ShopTileButton>
           ))}
-        </div>
+        </ShopTileRow>
       </section>
 
       <section className="mt-5 px-5">
