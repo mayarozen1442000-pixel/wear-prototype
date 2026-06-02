@@ -61,12 +61,19 @@ const TAB_TO_SCREEN: Record<Tab, Screen> = {
   profile: "profile",
 };
 
+type ProductImage = {
+  src: string;
+  alt: string;
+  position?: string;
+};
+
 type Product = {
   id: string;
   name: string;
   price: number;
   wasPrice?: number;
   img: string;
+  images?: ProductImage[];
   rating: number;
   reviews: number;
   cue: string;
@@ -75,6 +82,131 @@ type Product = {
   fitNote?: string;
   reviewSummary?: string;
 };
+
+function gallery(name: string, views: { src: string; label: string; position?: string }[]): ProductImage[] {
+  return views.map(({ src, label, position }) => ({
+    src,
+    alt: `${name} — ${label}`,
+    position,
+  }));
+}
+
+const PRODUCT_GALLERIES: Record<string, ProductImage[]> = {
+  p1: gallery("Cream wrap midi", [
+    { src: p1, label: "Front view", position: "object-[center_18%]" },
+    { src: p2, label: "Side view", position: "object-[center_22%]" },
+    { src: p3, label: "Back view", position: "object-[center_30%]" },
+    { src: p4, label: "Fabric detail", position: "object-center" },
+  ]),
+  p2: gallery("Terracotta linen mini", [
+    { src: p2, label: "Front view", position: "object-[center_20%]" },
+    { src: p1, label: "Side view", position: "object-[center_15%]" },
+    { src: p5, label: "Styled look", position: "object-[center_25%]" },
+    { src: p6, label: "Fabric detail", position: "object-center" },
+  ]),
+  p3: gallery("Pink floral maxi", [
+    { src: p3, label: "Front view", position: "object-[center_12%]" },
+    { src: p1, label: "Side view", position: "object-[center_18%]" },
+    { src: p2, label: "Back view", position: "object-[center_22%]" },
+    { src: p4, label: "Print detail", position: "object-center" },
+  ]),
+  p4: gallery("Sage knit cover-up", [
+    { src: p4, label: "Front view", position: "object-[center_20%]" },
+    { src: p3, label: "Layered look", position: "object-[center_15%]" },
+    { src: p1, label: "Side view", position: "object-[center_18%]" },
+    { src: p6, label: "Knit detail", position: "object-center" },
+  ]),
+  p5: gallery("Black slip dress", [
+    { src: p5, label: "Front view", position: "object-[center_22%]" },
+    { src: p6, label: "Side view", position: "object-[center_20%]" },
+    { src: p2, label: "Back view", position: "object-[center_18%]" },
+    { src: p1, label: "Fabric detail", position: "object-center" },
+  ]),
+  p6: gallery("Ivory shirt dress", [
+    { src: p6, label: "Front view", position: "object-[center_18%]" },
+    { src: p5, label: "Side view", position: "object-[center_22%]" },
+    { src: p4, label: "Back view", position: "object-[center_20%]" },
+    { src: p3, label: "Collar detail", position: "object-center" },
+  ]),
+  s1: gallery("Woven slide sandal", [
+    { src: catShoes, label: "Front view", position: "object-[center_55%]" },
+    { src: hero, label: "Styled look", position: "object-[center_40%]" },
+    { src: p4, label: "Side angle", position: "object-[center_30%]" },
+    { src: catAccessories, label: "Weave detail", position: "object-center" },
+  ]),
+  s2: gallery("Espadrille wedge", [
+    { src: p4, label: "Front view", position: "object-[center_25%]" },
+    { src: catShoes, label: "Side view", position: "object-[center_50%]" },
+    { src: hero, label: "Styled look", position: "object-[center_35%]" },
+    { src: p5, label: "Heel detail", position: "object-center" },
+  ]),
+  s3: gallery("Strappy flat sandal", [
+    { src: p5, label: "Front view", position: "object-[center_28%]" },
+    { src: catShoes, label: "Side view", position: "object-[center_52%]" },
+    { src: hero, label: "On foot", position: "object-[center_38%]" },
+    { src: p2, label: "Strap detail", position: "object-center" },
+  ]),
+  s4: gallery("Platform slide", [
+    { src: hero, label: "Front view", position: "object-[center_32%]" },
+    { src: catShoes, label: "Side view", position: "object-[center_48%]" },
+    { src: p4, label: "Styled look", position: "object-[center_22%]" },
+    { src: p1, label: "Sole detail", position: "object-center" },
+  ]),
+  a1: gallery("Gold hoop set", [
+    { src: catAccessories, label: "Front view", position: "object-[center_45%]" },
+    { src: p2, label: "Styled look", position: "object-[center_20%]" },
+    { src: p6, label: "Worn look", position: "object-[center_18%]" },
+    { src: catShoes, label: "Close-up", position: "object-center" },
+  ]),
+  a2: gallery("Straw sun hat", [
+    { src: hero, label: "Front view", position: "object-[center_28%]" },
+    { src: catShoes, label: "Side view", position: "object-[center_42%]" },
+    { src: catAccessories, label: "Styled look", position: "object-[center_50%]" },
+    { src: p3, label: "Brim detail", position: "object-center" },
+  ]),
+  a3: gallery("Woven crossbody bag", [
+    { src: catShoes, label: "Front view", position: "object-[center_45%]" },
+    { src: catAccessories, label: "Side view", position: "object-[center_50%]" },
+    { src: hero, label: "Styled look", position: "object-[center_35%]" },
+    { src: p4, label: "Weave detail", position: "object-center" },
+  ]),
+  a4: gallery("Layered chain necklace", [
+    { src: p2, label: "Front view", position: "object-[center_22%]" },
+    { src: catAccessories, label: "Styled look", position: "object-[center_48%]" },
+    { src: p6, label: "Layered look", position: "object-[center_18%]" },
+    { src: p1, label: "Chain detail", position: "object-center" },
+  ]),
+  t1: gallery("Ribbed tank top", [
+    { src: p1, label: "Front view", position: "object-[center_20%]" },
+    { src: p6, label: "Side view", position: "object-[center_18%]" },
+    { src: p3, label: "Back view", position: "object-[center_15%]" },
+    { src: p4, label: "Rib detail", position: "object-center" },
+  ]),
+  t2: gallery("Linen button-down", [
+    { src: p6, label: "Front view", position: "object-[center_18%]" },
+    { src: p1, label: "Side view", position: "object-[center_20%]" },
+    { src: p5, label: "Back view", position: "object-[center_22%]" },
+    { src: p2, label: "Fabric detail", position: "object-center" },
+  ]),
+  t3: gallery("Crop knit tee", [
+    { src: p3, label: "Front view", position: "object-[center_16%]" },
+    { src: p2, label: "Side view", position: "object-[center_20%]" },
+    { src: p1, label: "Back view", position: "object-[center_18%]" },
+    { src: p5, label: "Knit detail", position: "object-center" },
+  ]),
+  t4: gallery("Off-shoulder blouse", [
+    { src: p2, label: "Front view", position: "object-[center_20%]" },
+    { src: p3, label: "Side view", position: "object-[center_15%]" },
+    { src: p6, label: "Back view", position: "object-[center_18%]" },
+    { src: p4, label: "Shoulder detail", position: "object-center" },
+  ]),
+};
+
+function getProductImages(product: Product): ProductImage[] {
+  if (product.images?.length) return product.images;
+  if (PRODUCT_GALLERIES[product.id]) return PRODUCT_GALLERIES[product.id];
+  return [{ src: product.img, alt: `${product.name} — front view`, position: "object-[center_20%]" }];
+}
 
 const PRODUCTS: Product[] = [
   {
@@ -1503,24 +1635,77 @@ function ProductDetail({
   onAdd: () => void;
 }) {
   const sizes = ["XS", "S", "M", "L", "XL"];
+  const images = getProductImages(product);
+  const [activeImage, setActiveImage] = useState(0);
+
+  useEffect(() => {
+    setActiveImage(0);
+  }, [product.id]);
+
+  const currentImage = images[activeImage] ?? images[0];
 
   return (
     <div className="flex min-h-full flex-col">
       <div className="flex-1">
         <div className="relative bg-secondary">
-          <img
-            src={product.img}
-            alt={product.name}
-            className="mx-auto block h-auto max-h-56 w-full object-contain"
-            width={512}
-            height={640}
-          />
-          <button
-            aria-label={`Save ${product.name}`}
-            className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-background/92 shadow-sm"
-          >
-            <Heart className="h-4 w-4" />
-          </button>
+          <div className="relative aspect-[4/5] w-full overflow-hidden">
+            <img
+              key={`${product.id}-${activeImage}`}
+              src={currentImage.src}
+              alt={currentImage.alt}
+              className={`h-full w-full object-cover ${currentImage.position ?? "object-[center_20%]"}`}
+              width={512}
+              height={640}
+            />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/20 to-transparent" />
+            <button
+              type="button"
+              aria-label={`Save ${product.name}`}
+              className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-background/92 shadow-sm ring-1 ring-border/40"
+            >
+              <Heart className="h-4 w-4" />
+            </button>
+            {images.length > 1 && (
+              <div className="absolute bottom-3 left-0 right-0 flex items-center justify-center gap-1.5">
+                {images.map((_, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    aria-label={`View image ${index + 1} of ${images.length}`}
+                    aria-current={index === activeImage}
+                    onClick={() => setActiveImage(index)}
+                    className={`rounded-full transition-all ${
+                      index === activeImage
+                        ? "h-1.5 w-5 bg-background"
+                        : "h-1.5 w-1.5 bg-background/45 hover:bg-background/70"
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+          {images.length > 1 && (
+            <div className="flex gap-2 overflow-x-auto border-t border-border/40 px-4 py-2 scrollbar-none">
+              {images.map((image, index) => (
+                <button
+                  key={`${product.id}-thumb-${index}`}
+                  type="button"
+                  aria-label={image.alt}
+                  aria-current={index === activeImage}
+                  onClick={() => setActiveImage(index)}
+                  className={`h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-background ring-2 transition ${
+                    index === activeImage ? "ring-foreground" : "ring-transparent opacity-70 hover:opacity-100"
+                  }`}
+                >
+                  <img
+                    src={image.src}
+                    alt=""
+                    className={`h-full w-full object-cover ${image.position ?? "object-[center_20%]"}`}
+                  />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="px-5 pt-4 pb-4">
