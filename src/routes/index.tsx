@@ -1819,7 +1819,7 @@ function Discover({
       </section>
 
       <section className="mt-3 px-5">
-        <SectionHeader title="Good finds under $25" onAction={() => onOpenBrowse("under25")} />
+        <SectionHeader title="You might like" onAction={() => onOpenBrowse("under25")} />
         <div className="mt-2 grid grid-cols-2 gap-2.5">
           {PRODUCTS.slice(0, 4).map((p) => (
             <ProductCard key={p.id} p={p} onClick={() => onProduct(p)} />
