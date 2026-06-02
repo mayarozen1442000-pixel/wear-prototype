@@ -1572,19 +1572,16 @@ function ProductDetail({
         </div>
       </div>
 
-      <div className="shrink-0 border-t border-border/60 bg-background px-5 pb-4 pt-3">
+      <div className="shrink-0 border-t border-border/60 bg-background px-5 pb-2 pt-3">
         <button
           onClick={onAdd}
           className="flex h-14 w-full items-center justify-center gap-2 rounded-full bg-foreground text-sm font-bold text-primary-foreground transition active:scale-[0.99]"
         >
           Add to bag · ${product.price.toFixed(2)}
         </button>
-        <p className="mt-2 text-center text-[11px] text-muted-foreground">
-          Size {size} selected · Free returns if the fit isn't right
-        </p>
       </div>
 
-      <div className="px-5 pb-6 pt-4">
+      <div className="px-5 pb-6 pt-2">
         <div className="rounded-2xl border border-border p-4">
           <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
             What shoppers say
