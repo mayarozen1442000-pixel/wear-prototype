@@ -19,7 +19,7 @@ import {
   Sparkles,
   Luggage,
   Dumbbell,
-  Waves,
+  Activity,
   ShieldCheck,
   Home,
   User,
@@ -757,13 +757,13 @@ const BROWSE: Record<string, BrowseContext> = {
     "Stretchy, easy layers and flats built for long days out.",
     ["All", "Active", "Knit", "Sandals"],
   ),
-  beachy: makeBrowseContext(
-    "Beachy",
-    [PRODUCTS[2], PRODUCTS[3], SHOE_PRODUCTS[0], SHOE_PRODUCTS[2], ACCESSORY_PRODUCTS[1], ACCESSORY_PRODUCTS[0]],
+  gym: makeBrowseContext(
+    "Gym",
+    [TOP_PRODUCTS[0], TOP_PRODUCTS[2], PRODUCTS[3], SHOE_PRODUCTS[0], SHOE_PRODUCTS[2], TOP_PRODUCTS[1]],
     "items",
-    "Resort-ready · Final prices",
-    "Cover-ups, sandals, and sun-ready layers for sand and boardwalk days.",
-    ["All", "Cover-ups", "Dresses", "Sandals", "Accessories"],
+    "Move-ready · Final prices",
+    "Stretch-friendly tops, layers, and flats built for workouts and warm-ups.",
+    ["All", "Tops", "Active", "Layers", "Sandals"],
   ),
   linenMini: makeBrowseContext("Linen mini dress", [PRODUCTS[1]], "dress", "1 result · Final price"),
   vacationCoverUp: makeBrowseContext("Vacation cover-up", [PRODUCTS[3]], "item", "1 result · Final price"),
@@ -787,7 +787,7 @@ const DEFAULT_BROWSE = BROWSE.dresses;
 
 const SHOP_BY_NEED_ITEMS: { label: string; key: keyof typeof BROWSE; Icon: typeof Sun }[] = [
   { label: "Hot day", key: "hotDay", Icon: Sun },
-  { label: "Beachy", key: "beachy", Icon: Waves },
+  { label: "Gym", key: "gym", Icon: Activity },
   { label: "No-iron", key: "noIron", Icon: Shirt },
   { label: "Night out", key: "dinnerPlans", Icon: Sparkles },
   { label: "Pack light", key: "packLight", Icon: Luggage },
@@ -1513,7 +1513,7 @@ function Discover({
         <div className="px-5">
           <SectionHeader title="Shop by need" onAction={onOpenNeedsIndex} />
         </div>
-        <ShopTileRow gap="wide">
+        <ShopTileRow compact>
           {SHOP_BY_NEED_ITEMS.map((n) => (
             <NeedShopTile
               key={n.label}
@@ -1623,7 +1623,7 @@ function SectionHeader({
       {onAction && (
         <button
           onClick={onAction}
-          className="flex shrink-0 items-center gap-0.5 text-xs font-semibold text-foreground underline-offset-2 hover:underline"
+          className="flex shrink-0 items-center gap-0.5 text-xs font-medium text-foreground underline-offset-2 hover:underline"
         >
           See all <ChevronRight className="h-3.5 w-3.5" />
         </button>
