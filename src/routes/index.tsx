@@ -19,6 +19,7 @@ import {
   Sparkles,
   Luggage,
   Dumbbell,
+  Waves,
   ShieldCheck,
   Home,
   User,
@@ -756,6 +757,14 @@ const BROWSE: Record<string, BrowseContext> = {
     "Stretchy, easy layers and flats built for long days out.",
     ["All", "Active", "Knit", "Sandals"],
   ),
+  beachy: makeBrowseContext(
+    "Beachy",
+    [PRODUCTS[2], PRODUCTS[3], SHOE_PRODUCTS[0], SHOE_PRODUCTS[2], ACCESSORY_PRODUCTS[1], ACCESSORY_PRODUCTS[0]],
+    "items",
+    "Resort-ready · Final prices",
+    "Cover-ups, sandals, and sun-ready layers for sand and boardwalk days.",
+    ["All", "Cover-ups", "Dresses", "Sandals", "Accessories"],
+  ),
   linenMini: makeBrowseContext("Linen mini dress", [PRODUCTS[1]], "dress", "1 result · Final price"),
   vacationCoverUp: makeBrowseContext("Vacation cover-up", [PRODUCTS[3]], "item", "1 result · Final price"),
   goldHoops: makeBrowseContext("Gold hoops under $15", [ACCESSORY_PRODUCTS[0]], "item", "1 result · Final price"),
@@ -778,6 +787,7 @@ const DEFAULT_BROWSE = BROWSE.dresses;
 
 const SHOP_BY_NEED_ITEMS: { label: string; key: keyof typeof BROWSE; Icon: typeof Sun }[] = [
   { label: "Hot day", key: "hotDay", Icon: Sun },
+  { label: "Beachy", key: "beachy", Icon: Waves },
   { label: "No-iron", key: "noIron", Icon: Shirt },
   { label: "Night out", key: "dinnerPlans", Icon: Sparkles },
   { label: "Pack light", key: "packLight", Icon: Luggage },
