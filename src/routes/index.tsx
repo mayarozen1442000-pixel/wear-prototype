@@ -724,7 +724,7 @@ const BROWSE: Record<string, BrowseContext> = {
     ["All", "Linen", "Knit", "Cotton"],
   ),
   dinnerPlans: makeBrowseContext(
-    "Dinner plans",
+    "Night out",
     [PRODUCTS[4], PRODUCTS[5], PRODUCTS[0], TOP_PRODUCTS[3]],
     "items",
     "Dressy but comfy · Final prices",
@@ -1338,16 +1338,16 @@ function NeedShopTile({
   onClick: () => void;
 }) {
   return (
-    <button onClick={onClick} className="group w-[88px] shrink-0">
-      <div className="mx-auto flex h-[88px] w-[88px] flex-col items-center justify-center gap-1.5 rounded-full border border-border/60 bg-card px-2 transition duration-200 group-hover:border-foreground/20 group-hover:bg-secondary/40 group-active:border-foreground/30 group-active:bg-secondary/70">
+    <button onClick={onClick} className="group w-[58px] shrink-0">
+      <div className="mx-auto flex h-[52px] w-[52px] items-center justify-center rounded-full border border-border/60 bg-card transition duration-200 group-hover:border-foreground/20 group-hover:bg-secondary/40 group-active:border-foreground/30 group-active:bg-secondary/70">
         <Icon
           className="h-4 w-4 shrink-0 text-foreground/75 transition duration-200 group-hover:text-foreground"
           strokeWidth={1.5}
         />
-        <span className="text-center text-[10px] font-semibold leading-none text-foreground whitespace-nowrap">
-          {label}
-        </span>
       </div>
+      <p className="mt-1.5 w-full truncate text-center text-[11px] font-semibold leading-none text-foreground whitespace-nowrap">
+        {label}
+      </p>
     </button>
   );
 }
@@ -1389,7 +1389,7 @@ function Discover({
   const needs: { label: string; key: keyof typeof BROWSE; Icon: typeof Sun }[] = [
     { label: "Hot day", key: "hotDay", Icon: Sun },
     { label: "No-iron", key: "noIron", Icon: Shirt },
-    { label: "Dinner plans", key: "dinnerPlans", Icon: Sparkles },
+    { label: "Night out", key: "dinnerPlans", Icon: Sparkles },
     { label: "Pack light", key: "packLight", Icon: Luggage },
     { label: "Sporty", key: "sporty", Icon: Dumbbell },
   ];
