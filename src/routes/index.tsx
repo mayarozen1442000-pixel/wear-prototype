@@ -170,7 +170,6 @@ function Prototype() {
   const [showAdded, setShowAdded] = useState(false);
   const [showCartPopup, setShowCartPopup] = useState(false);
   const [size, setSize] = useState("M");
-  const [showCaseStudy, setShowCaseStudy] = useState(true);
   const mainRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -209,10 +208,6 @@ function Prototype() {
 
   return (
     <div className="min-h-screen bg-secondary flex flex-col items-center px-4 py-4 md:py-8">
-      {showCaseStudy && (
-        <CaseStudyBanner onDismiss={() => setShowCaseStudy(false)} />
-      )}
-
       <div className="flex h-[min(100dvh,860px)] max-h-[100dvh] w-full max-w-[430px] flex-col overflow-hidden rounded-[2rem] border border-border/80 bg-background shadow-[var(--shadow-soft)]">
         <TopBar
           screen={screen}
@@ -282,39 +277,6 @@ function Prototype() {
             }}
           />
         )}
-      </div>
-
-      <p className="mt-4 max-w-md text-center text-xs text-muted-foreground leading-relaxed">
-        Portfolio prototype · Tap through Discover → Browse → Product → Checkout to see the UX writing
-        system in context.
-      </p>
-    </div>
-  );
-}
-
-function CaseStudyBanner({ onDismiss }: { onDismiss: () => void }) {
-  return (
-    <div className="mb-3 w-full max-w-2xl rounded-2xl border border-border bg-card px-4 py-3.5 shadow-[var(--shadow-card)]">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground">
-            UX writing case study
-          </p>
-          <h1 className="mt-1 text-base font-semibold tracking-tight text-foreground">
-            WEAR. — a calmer take on fast-fashion mobile shopping
-          </h1>
-          <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
-            This concept redesign replaces coupon chaos and vague product pages with clear pricing,
-            honest fit notes, and filters written in plain language.
-          </p>
-        </div>
-        <button
-          onClick={onDismiss}
-          aria-label="Dismiss case study intro"
-          className="shrink-0 rounded-full p-1.5 text-muted-foreground hover:bg-secondary"
-        >
-          <X className="h-4 w-4" />
-        </button>
       </div>
     </div>
   );
