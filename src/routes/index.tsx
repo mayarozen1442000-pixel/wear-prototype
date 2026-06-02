@@ -161,6 +161,308 @@ const PRODUCTS: Product[] = [
   },
 ];
 
+type BrowseContext = {
+  title: string;
+  resultNoun: string;
+  meta: string;
+  sortHint: string;
+  subfilters: string[];
+  products: Product[];
+};
+
+const SHOE_PRODUCTS: Product[] = [
+  {
+    id: "s1",
+    name: "Woven slide sandal",
+    price: 14.9,
+    wasPrice: 19.99,
+    img: catShoes,
+    rating: 4.5,
+    reviews: 612,
+    cue: "Runs true to size · Ships today",
+  },
+  {
+    id: "s2",
+    name: "Espadrille wedge",
+    price: 21.5,
+    wasPrice: 28.0,
+    img: catShoes,
+    rating: 4.7,
+    reviews: 388,
+    cue: "Vacation favorite",
+    tag: "Top rated",
+  },
+  {
+    id: "s3",
+    name: "Strappy flat sandal",
+    price: 16.4,
+    img: catShoes,
+    rating: 4.4,
+    reviews: 291,
+    cue: "Lightweight · Easy to pack",
+  },
+  {
+    id: "s4",
+    name: "Platform slide",
+    price: 19.9,
+    img: catShoes,
+    rating: 4.6,
+    reviews: 445,
+    cue: "Best under $20",
+    tag: "Top rated",
+  },
+];
+
+const ACCESSORY_PRODUCTS: Product[] = [
+  {
+    id: "a1",
+    name: "Gold hoop set",
+    price: 9.5,
+    img: catAccessories,
+    rating: 4.8,
+    reviews: 1102,
+    cue: "Hypoallergenic · Top gift pick",
+    tag: "Top rated",
+  },
+  {
+    id: "a2",
+    name: "Straw sun hat",
+    price: 12.9,
+    img: catAccessories,
+    rating: 4.5,
+    reviews: 534,
+    cue: "Adjustable band · Packable",
+  },
+  {
+    id: "a3",
+    name: "Woven crossbody bag",
+    price: 18.0,
+    wasPrice: 24.99,
+    img: catAccessories,
+    rating: 4.6,
+    reviews: 267,
+    cue: "Fits phone + essentials",
+    tag: "Top rated",
+  },
+  {
+    id: "a4",
+    name: "Layered chain necklace",
+    price: 11.5,
+    img: catAccessories,
+    rating: 4.4,
+    reviews: 189,
+    cue: "Tarnish-resistant finish",
+  },
+];
+
+const TOP_PRODUCTS: Product[] = [
+  {
+    id: "t1",
+    name: "Ribbed tank top",
+    price: 11.9,
+    img: catDresses,
+    rating: 4.5,
+    reviews: 720,
+    cue: "Soft stretch · Size M in stock",
+  },
+  {
+    id: "t2",
+    name: "Linen button-down",
+    price: 17.5,
+    wasPrice: 23.99,
+    img: catDresses,
+    rating: 4.6,
+    reviews: 403,
+    cue: "Breathable · No-iron friendly",
+    tag: "Top rated",
+  },
+  {
+    id: "t3",
+    name: "Crop knit tee",
+    price: 13.4,
+    img: catDresses,
+    rating: 4.3,
+    reviews: 256,
+    cue: "Easy layer piece",
+  },
+  {
+    id: "t4",
+    name: "Off-shoulder blouse",
+    price: 19.0,
+    img: catDresses,
+    rating: 4.7,
+    reviews: 318,
+    cue: "Dinner-ready style",
+    tag: "Top rated",
+  },
+];
+
+const ALL_CATALOG = [...PRODUCTS, ...SHOE_PRODUCTS, ...ACCESSORY_PRODUCTS, ...TOP_PRODUCTS];
+
+function makeBrowseContext(
+  title: string,
+  products: Product[],
+  resultNoun: string,
+  meta = "Size M · Final prices",
+  sortHint = "Sorted by relevance. Every price includes active discounts—no codes to hunt.",
+  subfilters = ["All", "Mini", "Midi", "Maxi", "Beach", "Casual"],
+): BrowseContext {
+  return { title, products, resultNoun, meta, sortHint, subfilters };
+}
+
+const BROWSE: Record<string, BrowseContext> = {
+  summerEdit: makeBrowseContext(
+    "Summer edit",
+    PRODUCTS.filter((p) => p.price <= 35),
+    "dresses",
+    "Under $35 · Size M · Final prices",
+    "Curated vacation picks—lightweight styles with delivery dates upfront.",
+  ),
+  dresses: makeBrowseContext("Dresses", PRODUCTS, "dresses"),
+  shoes: makeBrowseContext(
+    "Shoes",
+    SHOE_PRODUCTS,
+    "shoes",
+    "Size M · Final prices",
+    "Sorted by popularity. Every price includes active discounts.",
+    ["All", "Sandals", "Flats", "Heels", "Slides"],
+  ),
+  sandals: makeBrowseContext(
+    "Sandals",
+    SHOE_PRODUCTS,
+    "sandals",
+    "Size M · Final prices",
+    "Light, packable styles for warm days and getaways.",
+    ["All", "Flat", "Wedge", "Slide"],
+  ),
+  accessories: makeBrowseContext(
+    "Accessories",
+    ACCESSORY_PRODUCTS,
+    "accessories",
+    "Final prices",
+    "Small add-ons that complete the look—most under $20.",
+    ["All", "Jewelry", "Bags", "Hats"],
+  ),
+  bags: makeBrowseContext(
+    "Bags",
+    ACCESSORY_PRODUCTS.filter((p) => p.name.toLowerCase().includes("bag")),
+    "bags",
+    "Final prices",
+    "Room for essentials without the bulk.",
+    ["All", "Crossbody", "Tote", "Mini"],
+  ),
+  tops: makeBrowseContext(
+    "Tops",
+    TOP_PRODUCTS,
+    "tops",
+    "Size M · Final prices",
+    "Layer-friendly pieces for heat, travel, and nights out.",
+    ["All", "Tank", "Blouse", "Knit", "Linen"],
+  ),
+  under25: makeBrowseContext(
+    "Under $25",
+    ALL_CATALOG.filter((p) => p.price <= 25),
+    "items",
+    "Final prices · Best value first",
+    "Low prices with the details you need before you tap.",
+    ["All", "Dresses", "Tops", "Shoes", "Accessories"],
+  ),
+  trending: makeBrowseContext(
+    "Trending now",
+    [...PRODUCTS, ...SHOE_PRODUCTS.slice(0, 2), ...ACCESSORY_PRODUCTS.slice(0, 1)],
+    "items",
+    "Updated today · Final prices",
+    "What shoppers are saving and buying most this week.",
+    ["All", "Dresses", "Shoes", "Accessories"],
+  ),
+  inMySize: makeBrowseContext(
+    "In my size (M)",
+    ALL_CATALOG,
+    "items",
+    "Size M · In stock now",
+    "Showing styles available in your size—no sold-out surprises.",
+  ),
+  arrivesThisWeek: makeBrowseContext(
+    "Arrives this week",
+    ALL_CATALOG.filter((p) => p.cue.includes("Arrives") || p.cue.includes("Ships")),
+    "items",
+    "Delivery by Jul 19 · Final prices",
+    "Need it soon? These ship fast with tracked delivery.",
+  ),
+  fourStarUp: makeBrowseContext(
+    "4★ and up",
+    ALL_CATALOG.filter((p) => p.rating >= 4.5),
+    "items",
+    "Highly rated · Final prices",
+    "Shoppers love these—sorted by rating and review count.",
+  ),
+  customerPhotos: makeBrowseContext(
+    "Customer photos",
+    ALL_CATALOG.filter((p) => p.reviews >= 400),
+    "items",
+    "Real shopper photos · Final prices",
+    "See how these look on real people before you buy.",
+  ),
+  hotDay: makeBrowseContext(
+    "Hot day",
+    [PRODUCTS[1], PRODUCTS[2], PRODUCTS[3], TOP_PRODUCTS[0], TOP_PRODUCTS[1]],
+    "items",
+    "Light fabrics · Final prices",
+    "Breathable picks for heat—linen, viscose, and open knits.",
+    ["All", "Dresses", "Tops", "Cover-ups"],
+  ),
+  noIron: makeBrowseContext(
+    "No-iron",
+    [PRODUCTS[1], PRODUCTS[5], TOP_PRODUCTS[1], PRODUCTS[3]],
+    "items",
+    "Easy-care fabrics · Final prices",
+    "Wrinkle-resistant styles that look polished straight from the bag.",
+    ["All", "Linen", "Knit", "Cotton"],
+  ),
+  dinnerPlans: makeBrowseContext(
+    "Dinner plans",
+    [PRODUCTS[4], PRODUCTS[5], PRODUCTS[0], TOP_PRODUCTS[3]],
+    "items",
+    "Dressy but comfy · Final prices",
+    "Elevated looks that still feel easy to wear all evening.",
+    ["All", "Midi", "Slip", "Shirt dress"],
+  ),
+  packLight: makeBrowseContext(
+    "Pack light",
+    [PRODUCTS[3], PRODUCTS[4], PRODUCTS[1], SHOE_PRODUCTS[2], ACCESSORY_PRODUCTS[1]],
+    "items",
+    "Wrinkle-friendly · Final prices",
+    "Pieces that pack flat and still look great on arrival.",
+    ["All", "Dresses", "Shoes", "Layers"],
+  ),
+  sporty: makeBrowseContext(
+    "Sporty",
+    [PRODUCTS[3], TOP_PRODUCTS[0], TOP_PRODUCTS[2], SHOE_PRODUCTS[0], SHOE_PRODUCTS[2]],
+    "items",
+    "Move-ready · Final prices",
+    "Stretchy, easy layers and flats built for long days out.",
+    ["All", "Active", "Knit", "Sandals"],
+  ),
+  linenMini: makeBrowseContext("Linen mini dress", [PRODUCTS[1]], "dress", "1 result · Final price"),
+  vacationCoverUp: makeBrowseContext("Vacation cover-up", [PRODUCTS[3]], "item", "1 result · Final price"),
+  goldHoops: makeBrowseContext("Gold hoops under $15", [ACCESSORY_PRODUCTS[0]], "item", "1 result · Final price"),
+  resortEdit: makeBrowseContext(
+    "Resort edit",
+    PRODUCTS.filter((p) => p.price <= 35),
+    "dresses",
+    "Under $35 · Final prices",
+  ),
+  photoPicks: makeBrowseContext(
+    "Customer photo picks",
+    ALL_CATALOG.filter((p) => p.tag === "Top rated"),
+    "items",
+    "Top rated · Final prices",
+    "Best-reviewed styles with the most customer photos.",
+  ),
+};
+
+const DEFAULT_BROWSE = BROWSE.dresses;
+
 function Prototype() {
   const [screen, setScreen] = useState<Screen>("discover");
   const [activeTab, setActiveTab] = useState<Tab>("home");
@@ -170,6 +472,7 @@ function Prototype() {
   const [showAdded, setShowAdded] = useState(false);
   const [showCartPopup, setShowCartPopup] = useState(false);
   const [size, setSize] = useState("M");
+  const [browseContext, setBrowseContext] = useState<BrowseContext>(DEFAULT_BROWSE);
   const mainRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -195,10 +498,14 @@ function Prototype() {
 
   const goToTab = (tab: Tab) => {
     setActiveTab(tab);
+    if (tab === "trending") {
+      setBrowseContext(BROWSE.trending);
+    }
     setScreen(TAB_TO_SCREEN[tab]);
   };
 
-  const goToBrowse = () => {
+  const openBrowse = (key: keyof typeof BROWSE) => {
+    setBrowseContext(BROWSE[key]);
     setActiveTab("trending");
     setScreen("browse");
   };
@@ -211,6 +518,7 @@ function Prototype() {
       <div className="flex h-[min(100dvh,860px)] max-h-[100dvh] w-full max-w-[430px] flex-col overflow-hidden rounded-[2rem] border border-border/80 bg-background shadow-[var(--shadow-soft)]">
         <TopBar
           screen={screen}
+          browseTitle={browseContext.title}
           bagCount={bagCount}
           onBack={() => {
             if (screen === "product") {
@@ -226,10 +534,16 @@ function Prototype() {
 
         <main ref={mainRef} className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain">
           {screen === "discover" && (
-            <Discover onCategory={goToBrowse} onProduct={goProduct} bottomPad={showBottomNav} />
+            <Discover
+              onOpenBrowse={openBrowse}
+              onOpenSearch={() => goToTab("search")}
+              onProduct={goProduct}
+              bottomPad={showBottomNav}
+            />
           )}
           {screen === "browse" && (
             <Browse
+              context={browseContext}
               onProduct={goProduct}
               onOpenFilters={() => setShowFilters(true)}
               bottomPad={showBottomNav}
@@ -245,7 +559,9 @@ function Prototype() {
               onRemoveItem={removeFromBag}
             />
           )}
-          {screen === "search" && <SearchView bottomPad={showBottomNav} onBrowse={goToBrowse} />}
+          {screen === "search" && (
+            <SearchView bottomPad={showBottomNav} onOpenBrowse={openBrowse} />
+          )}
           {screen === "profile" && <ProfileView bottomPad={showBottomNav} />}
         </main>
 
@@ -284,12 +600,14 @@ function Prototype() {
 
 function TopBar({
   screen,
+  browseTitle,
   bagCount,
   onBack,
   onBag,
   onSearch,
 }: {
   screen: Screen;
+  browseTitle: string;
   bagCount: number;
   onBack: () => void;
   onBag: () => void;
@@ -298,7 +616,7 @@ function TopBar({
   const showBack = screen === "browse" || screen === "product";
   const titles: Record<Screen, string> = {
     discover: "",
-    browse: "Dresses",
+    browse: browseTitle,
     product: "",
     checkout: "Your bag",
     search: "Search",
@@ -407,9 +725,23 @@ function BottomNav({
   );
 }
 
-function SearchView({ bottomPad, onBrowse }: { bottomPad: boolean; onBrowse: () => void }) {
-  const recent = ["Linen mini dress", "Vacation cover-up", "Gold hoops under $15"];
-  const trending = ["Resort edit", "Under $25 dresses", "Customer photo picks"];
+function SearchView({
+  bottomPad,
+  onOpenBrowse,
+}: {
+  bottomPad: boolean;
+  onOpenBrowse: (key: keyof typeof BROWSE) => void;
+}) {
+  const recent: { label: string; key: keyof typeof BROWSE }[] = [
+    { label: "Linen mini dress", key: "linenMini" },
+    { label: "Vacation cover-up", key: "vacationCoverUp" },
+    { label: "Gold hoops under $15", key: "goldHoops" },
+  ];
+  const trending: { label: string; key: keyof typeof BROWSE }[] = [
+    { label: "Resort edit", key: "resortEdit" },
+    { label: "Under $25 dresses", key: "under25" },
+    { label: "Customer photo picks", key: "photoPicks" },
+  ];
 
   return (
     <div className={`px-5 pt-4 ${bottomPad ? "pb-6" : "pb-10"}`}>
@@ -430,11 +762,11 @@ function SearchView({ bottomPad, onBrowse }: { bottomPad: boolean; onBrowse: () 
         <div className="mt-2 flex flex-wrap gap-2">
           {recent.map((term) => (
             <button
-              key={term}
-              onClick={onBrowse}
+              key={term.label}
+              onClick={() => onOpenBrowse(term.key)}
               className="rounded-full border border-border bg-card px-3.5 py-2 text-xs font-medium hover:bg-secondary"
             >
-              {term}
+              {term.label}
             </button>
           ))}
         </div>
@@ -445,11 +777,11 @@ function SearchView({ bottomPad, onBrowse }: { bottomPad: boolean; onBrowse: () 
         <div className="mt-2 space-y-2">
           {trending.map((term) => (
             <button
-              key={term}
-              onClick={onBrowse}
+              key={term.label}
+              onClick={() => onOpenBrowse(term.key)}
               className="flex w-full items-center justify-between rounded-2xl border border-border px-4 py-3 text-left text-sm font-medium hover:bg-secondary/60"
             >
-              {term}
+              {term.label}
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </button>
           ))}
@@ -540,34 +872,56 @@ function ShopTileButton({
 }
 
 function Discover({
-  onCategory,
+  onOpenBrowse,
+  onOpenSearch,
   onProduct,
   bottomPad,
 }: {
-  onCategory: () => void;
+  onOpenBrowse: (key: keyof typeof BROWSE) => void;
+  onOpenSearch: () => void;
   onProduct: (p: Product) => void;
   bottomPad: boolean;
 }) {
-  const chips = [
-    "In my size (M)",
-    "Under $25",
-    "Arrives this week",
-    "4★ and up",
-    "Has customer photos",
+  const chips: { label: string; key: keyof typeof BROWSE }[] = [
+    { label: "In my size (M)", key: "inMySize" },
+    { label: "Under $25", key: "under25" },
+    { label: "Arrives this week", key: "arrivesThisWeek" },
+    { label: "4★ and up", key: "fourStarUp" },
+    { label: "Has customer photos", key: "customerPhotos" },
+  ];
+
+  const needs: { label: string; key: keyof typeof BROWSE; Icon: typeof Sun }[] = [
+    { label: "Hot day", key: "hotDay", Icon: Sun },
+    { label: "No-iron", key: "noIron", Icon: Shirt },
+    { label: "Dinner plans", key: "dinnerPlans", Icon: Sparkles },
+    { label: "Pack light", key: "packLight", Icon: Luggage },
+    { label: "Sporty", key: "sporty", Icon: Dumbbell },
+  ];
+
+  const categories: { label: string; key: keyof typeof BROWSE; img: string }[] = [
+    { label: "Dresses", key: "dresses", img: catDresses },
+    { label: "Shoes", key: "shoes", img: catShoes },
+    { label: "Accessories", key: "accessories", img: catAccessories },
+    { label: "Tops", key: "tops", img: catDresses },
+    { label: "Bags", key: "bags", img: catAccessories },
+    { label: "Sandals", key: "sandals", img: catShoes },
   ];
 
   return (
     <div className={bottomPad ? "pb-4" : "pb-10"}>
       <div className="px-5 pt-3">
-        <div className="flex h-11 items-center gap-2.5 rounded-full border border-border bg-secondary px-4">
+        <button
+          onClick={onOpenSearch}
+          className="flex h-11 w-full items-center gap-2.5 rounded-full border border-border bg-secondary px-4 text-left"
+        >
           <Search className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm text-muted-foreground">Search dresses, cover-ups, sandals…</span>
-        </div>
+        </button>
       </div>
 
       <div className="mt-3 px-5">
         <button
-          onClick={onCategory}
+          onClick={() => onOpenBrowse("summerEdit")}
           className="group relative block w-full overflow-hidden rounded-3xl text-left"
         >
           <img
@@ -600,11 +954,11 @@ function Discover({
         <div className="mt-2 flex gap-2 overflow-x-auto px-5 pb-1 scrollbar-none">
           {chips.map((c) => (
             <button
-              key={c}
-              onClick={onCategory}
+              key={c.label}
+              onClick={() => onOpenBrowse(c.key)}
               className="h-9 shrink-0 rounded-full border border-border bg-card px-4 text-sm font-medium transition hover:border-foreground/30 hover:bg-secondary"
             >
-              {c}
+              {c.label}
             </button>
           ))}
         </div>
@@ -612,17 +966,16 @@ function Discover({
 
       <section className="mt-5">
         <div className="px-5">
-          <SectionHeader title="Shop by need" onAction={onCategory} />
+          <SectionHeader title="Shop by need" onAction={() => onOpenBrowse("hotDay")} />
         </div>
         <ShopTileRow>
-          {[
-            { label: "Hot day", Icon: Sun },
-            { label: "No-iron", Icon: Shirt },
-            { label: "Dinner plans", Icon: Sparkles },
-            { label: "Pack light", Icon: Luggage },
-            { label: "Sporty", Icon: Dumbbell },
-          ].map((n) => (
-            <ShopTileButton key={n.label} label={n.label} wrapLabel onClick={onCategory}>
+          {needs.map((n) => (
+            <ShopTileButton
+              key={n.label}
+              label={n.label}
+              wrapLabel
+              onClick={() => onOpenBrowse(n.key)}
+            >
               <div className="flex h-full w-full items-center justify-center">
                 <n.Icon className="h-8 w-8 text-foreground/75" strokeWidth={1.5} />
               </div>
@@ -633,18 +986,11 @@ function Discover({
 
       <section className="mt-5">
         <div className="px-5">
-          <SectionHeader title="Shop by category" onAction={onCategory} />
+          <SectionHeader title="Shop by category" onAction={() => onOpenBrowse("dresses")} />
         </div>
         <ShopTileRow>
-          {[
-            { label: "Dresses", img: catDresses },
-            { label: "Shoes", img: catShoes },
-            { label: "Accessories", img: catAccessories },
-            { label: "Tops", img: catDresses },
-            { label: "Bags", img: catAccessories },
-            { label: "Sandals", img: catShoes },
-          ].map((c) => (
-            <ShopTileButton key={c.label} label={c.label} onClick={onCategory}>
+          {categories.map((c) => (
+            <ShopTileButton key={c.label} label={c.label} onClick={() => onOpenBrowse(c.key)}>
               <img
                 src={c.img}
                 alt={c.label}
@@ -657,7 +1003,7 @@ function Discover({
       </section>
 
       <section className="mt-5 px-5">
-        <SectionHeader title="Good finds under $25" onAction={onCategory} />
+        <SectionHeader title="Good finds under $25" onAction={() => onOpenBrowse("under25")} />
         <div className="mt-3 grid grid-cols-2 gap-3">
           {PRODUCTS.slice(0, 4).map((p) => (
             <ProductCard key={p.id} p={p} onClick={() => onProduct(p)} />
@@ -740,21 +1086,28 @@ function ProductCard({ p, onClick }: { p: Product; onClick: () => void }) {
 }
 
 function Browse({
+  context,
   onProduct,
   onOpenFilters,
   bottomPad,
 }: {
+  context: BrowseContext;
   onProduct: (p: Product) => void;
   onOpenFilters: () => void;
   bottomPad: boolean;
 }) {
-  const [active, setActive] = useState("All");
-  const cats = ["All", "Mini", "Midi", "Maxi", "Beach", "Casual"];
+  const [active, setActive] = useState(context.subfilters[0]);
+
+  useEffect(() => {
+    setActive(context.subfilters[0]);
+  }, [context.title]);
+
+  const count = context.products.length;
 
   return (
     <div className={bottomPad ? "pb-4" : "pb-10"}>
       <div className="flex gap-2 overflow-x-auto px-5 pb-2 pt-3 scrollbar-none">
-        {cats.map((c) => (
+        {context.subfilters.map((c) => (
           <button
             key={c}
             onClick={() => setActive(c)}
@@ -771,7 +1124,11 @@ function Browse({
 
       <div className="sticky top-0 z-20 flex items-center justify-between border-b border-border/60 bg-background/95 px-5 py-2.5 backdrop-blur-md">
         <p className="text-xs text-muted-foreground">
-          <span className="font-medium text-foreground">42 dresses</span> · Size M · Final prices
+          <span className="font-medium text-foreground">
+            {count} {context.resultNoun}
+          </span>
+          {" · "}
+          {context.meta}
         </p>
         <div className="flex gap-1.5">
           <ControlBtn icon={<ArrowUpDown className="h-3.5 w-3.5" />} label="Sort" />
@@ -783,17 +1140,22 @@ function Browse({
         </div>
       </div>
 
-      <p className="px-5 pt-3 text-xs text-muted-foreground">
-        Sorted by relevance. Every price includes active discounts—no codes to hunt.
-      </p>
+      <p className="px-5 pt-3 text-xs text-muted-foreground">{context.sortHint}</p>
 
-      <div className="mt-3 grid grid-cols-2 gap-3 px-5">
-        {PRODUCTS.map((p) => (
-          <div key={p.id} className="relative">
-            <ProductCard p={p} onClick={() => onProduct(p)} />
-          </div>
-        ))}
-      </div>
+      {count === 0 ? (
+        <div className="mx-5 mt-6 rounded-2xl border border-dashed border-border py-12 text-center">
+          <p className="text-sm font-medium">No matches yet</p>
+          <p className="mt-1 text-xs text-muted-foreground">Try adjusting your filters.</p>
+        </div>
+      ) : (
+        <div className="mt-3 grid grid-cols-2 gap-3 px-5">
+          {context.products.map((p) => (
+            <div key={p.id} className="relative">
+              <ProductCard p={p} onClick={() => onProduct(p)} />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -910,10 +1272,12 @@ function ProductDetail({
         </div>
 
         <div className="px-5 pt-4 pb-4">
-        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          {product.fabric}
-        </p>
-        <h1 className="mt-1 text-xl font-bold tracking-tight">{product.name}</h1>
+        {product.fabric && (
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            {product.fabric}
+          </p>
+        )}
+        <h1 className={`${product.fabric ? "mt-1" : ""} text-xl font-bold tracking-tight`}>{product.name}</h1>
 
         <div className="mt-3 flex items-end gap-2">
           <span className="text-2xl font-bold text-foreground">${product.price.toFixed(2)}</span>
