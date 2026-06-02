@@ -237,7 +237,7 @@ const SHOE_PRODUCTS: Product[] = [
     name: "Espadrille wedge",
     price: 21.5,
     wasPrice: 28.0,
-    img: catShoes,
+    img: p4,
     rating: 4.7,
     reviews: 388,
     cue: "Vacation favorite",
@@ -247,7 +247,7 @@ const SHOE_PRODUCTS: Product[] = [
     id: "s3",
     name: "Strappy flat sandal",
     price: 16.4,
-    img: catShoes,
+    img: p5,
     rating: 4.4,
     reviews: 291,
     cue: "Lightweight · Easy to pack",
@@ -256,7 +256,7 @@ const SHOE_PRODUCTS: Product[] = [
     id: "s4",
     name: "Platform slide",
     price: 19.9,
-    img: catShoes,
+    img: hero,
     rating: 4.6,
     reviews: 445,
     cue: "Best under $20",
@@ -279,7 +279,7 @@ const ACCESSORY_PRODUCTS: Product[] = [
     id: "a2",
     name: "Straw sun hat",
     price: 12.9,
-    img: catAccessories,
+    img: hero,
     rating: 4.5,
     reviews: 534,
     cue: "Adjustable band · Packable",
@@ -289,7 +289,7 @@ const ACCESSORY_PRODUCTS: Product[] = [
     name: "Woven crossbody bag",
     price: 18.0,
     wasPrice: 24.99,
-    img: catAccessories,
+    img: catShoes,
     rating: 4.6,
     reviews: 267,
     cue: "Fits phone + essentials",
@@ -299,7 +299,7 @@ const ACCESSORY_PRODUCTS: Product[] = [
     id: "a4",
     name: "Layered chain necklace",
     price: 11.5,
-    img: catAccessories,
+    img: p2,
     rating: 4.4,
     reviews: 189,
     cue: "Tarnish-resistant finish",
@@ -311,7 +311,7 @@ const TOP_PRODUCTS: Product[] = [
     id: "t1",
     name: "Ribbed tank top",
     price: 11.9,
-    img: catDresses,
+    img: p1,
     rating: 4.5,
     reviews: 720,
     cue: "Soft stretch · Size M in stock",
@@ -321,7 +321,7 @@ const TOP_PRODUCTS: Product[] = [
     name: "Linen button-down",
     price: 17.5,
     wasPrice: 23.99,
-    img: catDresses,
+    img: p6,
     rating: 4.6,
     reviews: 403,
     cue: "Breathable · No-iron friendly",
@@ -331,7 +331,7 @@ const TOP_PRODUCTS: Product[] = [
     id: "t3",
     name: "Crop knit tee",
     price: 13.4,
-    img: catDresses,
+    img: p3,
     rating: 4.3,
     reviews: 256,
     cue: "Easy layer piece",
@@ -340,7 +340,7 @@ const TOP_PRODUCTS: Product[] = [
     id: "t4",
     name: "Off-shoulder blouse",
     price: 19.0,
-    img: catDresses,
+    img: p2,
     rating: 4.7,
     reviews: 318,
     cue: "Dinner-ready style",
@@ -658,6 +658,7 @@ function Prototype() {
           )}
           {screen === "search" && (
             <SearchView
+              active={activeTab === "search"}
               bottomPad={showBottomNav}
               onOpenBrowse={openBrowse}
               onProduct={goProduct}
@@ -860,14 +861,17 @@ function BottomNav({
 }
 
 function SearchView({
+  active,
   bottomPad,
   onOpenBrowse,
   onProduct,
 }: {
+  active: boolean;
   bottomPad: boolean;
   onOpenBrowse: (key: keyof typeof BROWSE) => void;
   onProduct: (p: Product) => void;
 }) {
+  const inputRef = useRef<HTMLInputElement>(null);
   const justForYou = [PRODUCTS[1], PRODUCTS[4], PRODUCTS[0], ACCESSORY_PRODUCTS[0]];
   const recent: { label: string; key: keyof typeof BROWSE }[] = [
     { label: "Linen mini dress", key: "linenMini" },
@@ -880,12 +884,23 @@ function SearchView({
     { label: "Customer photo picks", key: "photoPicks" },
   ];
 
+  useEffect(() => {
+    if (!active) return;
+    const id = window.setTimeout(() => {
+      inputRef.current?.focus({ preventScroll: true });
+    }, 0);
+    return () => window.clearTimeout(id);
+  }, [active]);
+
   return (
     <div className={`px-5 pt-4 ${bottomPad ? "pb-6" : "pb-10"}`}>
-      <div className="flex h-11 items-center gap-2.5 rounded-full border border-border/60 bg-secondary/80 px-4">
-        <Search className="h-4 w-4 text-muted-foreground" />
+      <div className="flex h-11 items-center gap-2.5 rounded-full border border-border/60 bg-secondary/80 px-4 ring-2 ring-transparent transition focus-within:border-foreground/25 focus-within:ring-foreground/10">
+        <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
         <input
+          ref={inputRef}
           type="search"
+          enterKeyHint="search"
+          autoComplete="off"
           placeholder="Search dresses, shoes, accessories…"
           className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
         />
@@ -975,52 +990,57 @@ function ProfileView({ bottomPad }: { bottomPad: boolean }) {
   );
 }
 
-function ShopTileRow({ children }: { children: React.ReactNode }) {
+function ShopTileRow({ children, compact }: { children: React.ReactNode; compact?: boolean }) {
   return (
-    <div className="mt-2 overflow-x-auto px-5 pb-2 scrollbar-none">
-      <div className="flex w-max items-start gap-3">{children}</div>
+    <div className={`${compact ? "mt-1.5" : "mt-2"} overflow-x-auto px-5 pb-2 scrollbar-none`}>
+      <div className={`flex w-max items-start ${compact ? "gap-2" : "gap-3"}`}>{children}</div>
     </div>
   );
 }
 
-function ShopTileButton({
+function NeedShopTile({
   label,
-  sublabel,
-  wrapLabel,
-  highlightOnHover,
+  Icon,
   onClick,
-  children,
 }: {
   label: string;
-  sublabel?: string;
-  wrapLabel?: boolean;
-  highlightOnHover?: boolean;
+  Icon: typeof Sun;
   onClick: () => void;
-  children: React.ReactNode;
 }) {
   return (
-    <button onClick={onClick} className="group w-[72px] shrink-0 p-0">
-      <div
-        className={`aspect-square w-full rounded-2xl ring-1 transition-all duration-200 ${
-          highlightOnHover
-            ? "bg-secondary ring-border/50 group-hover:bg-muted group-hover:ring-foreground/20 group-hover:shadow-[var(--shadow-card)]"
-            : "overflow-hidden bg-secondary ring-border/50"
-        }`}
-      >
-        {children}
+    <button onClick={onClick} className="group w-[76px] shrink-0 text-left">
+      <div className="flex aspect-[4/5] w-full flex-col items-center justify-center gap-2 rounded-2xl border border-border/70 bg-secondary/50 px-2 py-3 shadow-[var(--shadow-card)] ring-1 ring-border/20 transition duration-200 group-hover:border-foreground/25 group-hover:bg-secondary">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-background/95 ring-1 ring-border/40">
+          <Icon
+            className="h-5 w-5 text-foreground/75 transition duration-200 group-hover:text-foreground"
+            strokeWidth={1.5}
+          />
+        </div>
+        <span className="w-full text-center text-xs font-semibold leading-tight text-foreground">
+          {label}
+        </span>
       </div>
-      <p
-        className={`mt-2 w-full text-center text-xs font-medium transition-colors duration-200 ${
-          wrapLabel ? "leading-snug break-words" : "leading-tight"
-        } ${highlightOnHover ? "text-muted-foreground group-hover:text-foreground" : ""}`}
-      >
+    </button>
+  );
+}
+
+function CategoryShopTile({
+  label,
+  img,
+  onClick,
+}: {
+  label: string;
+  img: string;
+  onClick: () => void;
+}) {
+  return (
+    <button onClick={onClick} className="group w-[58px] shrink-0 text-left">
+      <div className="mx-auto h-[52px] w-[52px] overflow-hidden rounded-full bg-secondary ring-1 ring-border/60 transition duration-200 group-hover:ring-foreground/30">
+        <img src={img} alt={label} loading="lazy" className="h-full w-full object-cover" />
+      </div>
+      <p className="mt-1.5 w-full truncate text-center text-[11px] font-medium text-muted-foreground transition-colors group-hover:text-foreground">
         {label}
       </p>
-      {sublabel && (
-        <p className="mt-0.5 w-full break-words text-center text-[11px] leading-snug text-muted-foreground">
-          {sublabel}
-        </p>
-      )}
     </button>
   );
 }
@@ -1073,7 +1093,7 @@ function Discover({
         </button>
       </div>
 
-      <div className="mt-2 px-5">
+      <div className="mt-2 px-5 pb-4">
         <button
           onClick={() => onOpenBrowse("summerEdit")}
           className="group relative block w-full overflow-hidden rounded-2xl text-left"
@@ -1100,61 +1120,51 @@ function Discover({
         </button>
       </div>
 
-      <div className="mt-3">
-        <div className="px-5">
-          <SectionHeader title="Quick filters" />
+      <div className="border-t border-border/35 px-5 pt-4">
+        <SectionHeader title="Quick filters" tone="subtle" />
+        <div className="-mx-5 mt-1.5 overflow-x-auto px-5 pb-1 scrollbar-none">
+          <div className="flex w-max gap-2">
+            {chips.map((c) => (
+              <button
+                key={c.label}
+                onClick={() => onOpenBrowse(c.key)}
+                className="h-8 shrink-0 rounded-full border border-border/70 bg-background px-3.5 text-xs font-medium text-foreground/85 transition hover:border-foreground/20 hover:bg-secondary/80"
+              >
+                {c.label}
+              </button>
+            ))}
+          </div>
         </div>
-        <ShopTileRow>
-          {chips.map((c) => (
-            <button
-              key={c.label}
-              onClick={() => onOpenBrowse(c.key)}
-              className="h-9 shrink-0 rounded-full border border-border bg-card px-4 text-sm font-medium transition hover:border-foreground/30 hover:bg-secondary"
-            >
-              {c.label}
-            </button>
-          ))}
-        </ShopTileRow>
       </div>
 
-      <section className="mt-3">
+      <section className="mt-5">
         <div className="px-5">
-          <SectionHeader title="Shop by need" onAction={() => onOpenBrowse("hotDay")} />
+          <SectionHeader title="Shop by need" tone="emphasis" onAction={() => onOpenBrowse("hotDay")} />
         </div>
         <ShopTileRow>
           {needs.map((n) => (
-            <ShopTileButton
+            <NeedShopTile
               key={n.label}
               label={n.label}
-              wrapLabel
-              highlightOnHover
+              Icon={n.Icon}
               onClick={() => onOpenBrowse(n.key)}
-            >
-              <div className="flex h-full w-full items-center justify-center">
-                <n.Icon
-                  className="h-7 w-7 text-foreground/70 transition-all duration-200 group-hover:text-foreground group-hover:scale-105"
-                  strokeWidth={1.5}
-                />
-              </div>
-            </ShopTileButton>
+            />
           ))}
         </ShopTileRow>
       </section>
 
-      <section className="mt-3">
+      <section className="mt-4">
         <div className="px-5">
-          <SectionHeader title="Shop by category" onAction={() => onOpenBrowse("dresses")} />
+          <SectionHeader title="Shop by category" tone="subtle" onAction={() => onOpenBrowse("dresses")} />
         </div>
-        <ShopTileRow>
+        <ShopTileRow compact>
           {categories.map((c) => (
-            <ShopTileButton key={c.label} label={c.label} onClick={() => onOpenBrowse(c.key)}>
-              <img
-                src={c.img}
-                alt={c.label}
-                loading="lazy"
-                className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-              />
-            </ShopTileButton>
+            <CategoryShopTile
+              key={c.label}
+              label={c.label}
+              img={c.img}
+              onClick={() => onOpenBrowse(c.key)}
+            />
           ))}
         </ShopTileRow>
       </section>
@@ -1174,22 +1184,35 @@ function Discover({
 function SectionHeader({
   title,
   subtitle,
+  tone = "default",
   onAction,
 }: {
   title: string;
   subtitle?: string;
+  tone?: "default" | "subtle" | "emphasis";
   onAction?: () => void;
 }) {
+  const titleClass =
+    tone === "subtle"
+      ? "text-sm font-semibold text-muted-foreground"
+      : tone === "emphasis"
+        ? "text-lg font-bold tracking-tight"
+        : "text-lg font-bold tracking-tight";
+
   return (
     <div className="flex items-end justify-between gap-3">
       <div>
-        <h3 className="text-lg font-bold tracking-tight">{title}</h3>
+        <h3 className={titleClass}>{title}</h3>
         {subtitle && <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{subtitle}</p>}
       </div>
       {onAction && (
         <button
           onClick={onAction}
-          className="flex shrink-0 items-center gap-0.5 text-xs font-semibold text-foreground underline-offset-2 hover:underline"
+          className={`flex shrink-0 items-center gap-0.5 underline-offset-2 hover:underline ${
+            tone === "subtle"
+              ? "text-[11px] font-medium text-muted-foreground"
+              : "text-xs font-semibold text-foreground"
+          }`}
         >
           See all <ChevronRight className="h-3.5 w-3.5" />
         </button>
@@ -1202,7 +1225,7 @@ function ProductCard({ p, onClick }: { p: Product; onClick: () => void }) {
   return (
     <div className="group relative text-left">
       <div className="relative aspect-square overflow-hidden rounded-xl bg-secondary">
-        <button onClick={onClick} className="block h-full w-full text-left">
+        <button type="button" onClick={onClick} className="block h-full w-full text-left">
           <img
             src={p.img}
             alt={p.name}
@@ -1218,9 +1241,14 @@ function ProductCard({ p, onClick }: { p: Product; onClick: () => void }) {
         <button
           type="button"
           aria-label={`Save ${p.name}`}
-          className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-background/90 shadow-sm"
+          aria-pressed={false}
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+          }}
+          className="absolute right-2.5 top-2.5 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-background/92 shadow-sm ring-1 ring-border/40 transition active:scale-95"
         >
-          <Heart className="h-3.5 w-3.5" />
+          <Heart className="h-4 w-4" />
         </button>
       </div>
       <button onClick={onClick} className="mt-2.5 block w-full px-0.5 text-left">
@@ -1572,7 +1600,7 @@ function ProductDetail({
         </div>
       </div>
 
-      <div className="shrink-0 border-t border-border/60 bg-background px-5 pb-2 pt-3">
+      <div className="shrink-0 border-t border-border/60 bg-background px-5 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))]">
         <button
           onClick={onAdd}
           className="flex h-14 w-full items-center justify-center gap-2 rounded-full bg-foreground text-sm font-bold text-primary-foreground transition active:scale-[0.99]"
@@ -1581,7 +1609,7 @@ function ProductDetail({
         </button>
       </div>
 
-      <div className="px-5 pb-6 pt-2">
+      <div className="px-5 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] pt-2">
         <div className="rounded-2xl border border-border p-4">
           <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
             What shoppers say
