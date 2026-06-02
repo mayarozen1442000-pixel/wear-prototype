@@ -50,7 +50,16 @@ export const Route = createFileRoute("/")({
   component: Prototype,
 });
 
-type Screen = "discover" | "browse" | "product" | "checkout" | "search" | "profile" | "filters";
+type Screen =
+  | "discover"
+  | "browse"
+  | "product"
+  | "checkout"
+  | "search"
+  | "profile"
+  | "filters"
+  | "needs"
+  | "categories";
 type Tab = "home" | "search" | "trending" | "cart" | "profile";
 
 const TAB_TO_SCREEN: Record<Tab, Screen> = {
@@ -767,6 +776,23 @@ const BROWSE: Record<string, BrowseContext> = {
 
 const DEFAULT_BROWSE = BROWSE.dresses;
 
+const SHOP_BY_NEED_ITEMS: { label: string; key: keyof typeof BROWSE; Icon: typeof Sun }[] = [
+  { label: "Hot day", key: "hotDay", Icon: Sun },
+  { label: "No-iron", key: "noIron", Icon: Shirt },
+  { label: "Night out", key: "dinnerPlans", Icon: Sparkles },
+  { label: "Pack light", key: "packLight", Icon: Luggage },
+  { label: "Sporty", key: "sporty", Icon: Dumbbell },
+];
+
+const SHOP_BY_CATEGORY_ITEMS: { label: string; key: keyof typeof BROWSE; img: string }[] = [
+  { label: "Dresses", key: "dresses", img: catDresses },
+  { label: "Shoes", key: "shoes", img: catShoes },
+  { label: "Accessories", key: "accessories", img: catAccessories },
+  { label: "Tops", key: "tops", img: catDresses },
+  { label: "Bags", key: "bags", img: catAccessories },
+  { label: "Sandals", key: "sandals", img: catShoes },
+];
+
 function Prototype() {
   const [screen, setScreen] = useState<Screen>("discover");
   const [activeTab, setActiveTab] = useState<Tab>("home");
@@ -831,6 +857,16 @@ function Prototype() {
     setShowSort(false);
     setActiveTab("trending");
     setScreen("browse");
+  };
+
+  const openNeedsIndex = () => {
+    setActiveTab("home");
+    setScreen("needs");
+  };
+
+  const openCategoriesIndex = () => {
+    setActiveTab("home");
+    setScreen("categories");
   };
 
   const openFilters = (category: FilterCategoryId, preselectOptionId?: string) => {
@@ -907,6 +943,8 @@ function Prototype() {
               goToTab("home");
             } else if (screen === "filters") {
               goToTab("home");
+            } else if (screen === "needs" || screen === "categories") {
+              goToTab("home");
             }
           }}
           onSearch={() => goToTab("search")}
@@ -927,10 +965,18 @@ function Prototype() {
             <Discover
               onOpenBrowse={openBrowse}
               onOpenFilters={openFilters}
+              onOpenNeedsIndex={openNeedsIndex}
+              onOpenCategoriesIndex={openCategoriesIndex}
               onOpenSearch={() => goToTab("search")}
               onProduct={goProduct}
               bottomPad={showBottomNav}
             />
+          )}
+          {screen === "needs" && (
+            <NeedsIndexView bottomPad={showBottomNav} onOpenBrowse={openBrowse} />
+          )}
+          {screen === "categories" && (
+            <CategoriesIndexView bottomPad={showBottomNav} onOpenBrowse={openBrowse} />
           )}
           {screen === "browse" && (
             <Browse
@@ -1040,7 +1086,12 @@ function TopBar({
   onSearch: () => void;
   onGoHome: () => void;
 }) {
-  const showBack = screen === "browse" || screen === "product" || screen === "filters";
+  const showBack =
+    screen === "browse" ||
+    screen === "product" ||
+    screen === "filters" ||
+    screen === "needs" ||
+    screen === "categories";
   const titles: Record<Screen, string> = {
     discover: "",
     browse: browseTitle,
@@ -1049,6 +1100,8 @@ function TopBar({
     search: "Search",
     profile: "Profile",
     filters: "Filters",
+    needs: "Shop by need",
+    categories: "Shop by category",
   };
 
   return (
@@ -1376,33 +1429,20 @@ function CategoryShopTile({
 function Discover({
   onOpenBrowse,
   onOpenFilters,
+  onOpenNeedsIndex,
+  onOpenCategoriesIndex,
   onOpenSearch,
   onProduct,
   bottomPad,
 }: {
   onOpenBrowse: (key: keyof typeof BROWSE) => void;
   onOpenFilters: (category: FilterCategoryId, preselectOptionId?: string) => void;
+  onOpenNeedsIndex: () => void;
+  onOpenCategoriesIndex: () => void;
   onOpenSearch: () => void;
   onProduct: (p: Product) => void;
   bottomPad: boolean;
 }) {
-  const needs: { label: string; key: keyof typeof BROWSE; Icon: typeof Sun }[] = [
-    { label: "Hot day", key: "hotDay", Icon: Sun },
-    { label: "No-iron", key: "noIron", Icon: Shirt },
-    { label: "Night out", key: "dinnerPlans", Icon: Sparkles },
-    { label: "Pack light", key: "packLight", Icon: Luggage },
-    { label: "Sporty", key: "sporty", Icon: Dumbbell },
-  ];
-
-  const categories: { label: string; key: keyof typeof BROWSE; img: string }[] = [
-    { label: "Dresses", key: "dresses", img: catDresses },
-    { label: "Shoes", key: "shoes", img: catShoes },
-    { label: "Accessories", key: "accessories", img: catAccessories },
-    { label: "Tops", key: "tops", img: catDresses },
-    { label: "Bags", key: "bags", img: catAccessories },
-    { label: "Sandals", key: "sandals", img: catShoes },
-  ];
-
   return (
     <div className={bottomPad ? "pb-4" : "pb-10"}>
       <div className="px-5 pt-3">
@@ -1461,10 +1501,10 @@ function Discover({
 
       <section className="mt-5">
         <div className="px-5">
-          <SectionHeader title="Shop by need" onAction={() => onOpenBrowse("hotDay")} />
+          <SectionHeader title="Shop by need" onAction={onOpenNeedsIndex} />
         </div>
         <ShopTileRow gap="wide">
-          {needs.map((n) => (
+          {SHOP_BY_NEED_ITEMS.map((n) => (
             <NeedShopTile
               key={n.label}
               label={n.label}
@@ -1477,10 +1517,10 @@ function Discover({
 
       <section className="mt-4">
         <div className="px-5">
-          <SectionHeader title="Shop by category" onAction={() => onOpenBrowse("dresses")} />
+          <SectionHeader title="Shop by category" onAction={onOpenCategoriesIndex} />
         </div>
         <ShopTileRow compact>
-          {categories.map((c) => (
+          {SHOP_BY_CATEGORY_ITEMS.map((c) => (
             <CategoryShopTile
               key={c.label}
               label={c.label}
@@ -1499,6 +1539,58 @@ function Discover({
           ))}
         </div>
       </section>
+    </div>
+  );
+}
+
+function NeedsIndexView({
+  bottomPad,
+  onOpenBrowse,
+}: {
+  bottomPad: boolean;
+  onOpenBrowse: (key: keyof typeof BROWSE) => void;
+}) {
+  return (
+    <div className={`px-5 pt-4 ${bottomPad ? "pb-6" : "pb-10"}`}>
+      <p className="text-sm leading-relaxed text-muted-foreground">
+        Shop by what you're doing—not just what category it's in.
+      </p>
+      <div className="mt-6 grid grid-cols-3 justify-items-center gap-x-3 gap-y-6">
+        {SHOP_BY_NEED_ITEMS.map((item) => (
+          <NeedShopTile
+            key={item.key}
+            label={item.label}
+            Icon={item.Icon}
+            onClick={() => onOpenBrowse(item.key)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CategoriesIndexView({
+  bottomPad,
+  onOpenBrowse,
+}: {
+  bottomPad: boolean;
+  onOpenBrowse: (key: keyof typeof BROWSE) => void;
+}) {
+  return (
+    <div className={`px-5 pt-4 ${bottomPad ? "pb-6" : "pb-10"}`}>
+      <p className="text-sm leading-relaxed text-muted-foreground">
+        Browse every category in one place.
+      </p>
+      <div className="mt-6 grid grid-cols-3 justify-items-center gap-x-3 gap-y-6">
+        {SHOP_BY_CATEGORY_ITEMS.map((item) => (
+          <CategoryShopTile
+            key={item.key}
+            label={item.label}
+            img={item.img}
+            onClick={() => onOpenBrowse(item.key)}
+          />
+        ))}
+      </div>
     </div>
   );
 }
