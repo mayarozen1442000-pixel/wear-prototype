@@ -1122,10 +1122,22 @@ function ProfileView({ bottomPad }: { bottomPad: boolean }) {
   );
 }
 
-function ShopTileRow({ children, compact }: { children: React.ReactNode; compact?: boolean }) {
+function ShopTileRow({
+  children,
+  compact,
+  align,
+}: {
+  children: React.ReactNode;
+  compact?: boolean;
+  align?: "start" | "stretch";
+}) {
   return (
     <div className={`${compact ? "mt-1.5" : "mt-2"} overflow-x-auto px-5 pb-2 scrollbar-none`}>
-      <div className={`flex w-max items-start ${compact ? "gap-2" : "gap-3"}`}>{children}</div>
+      <div
+        className={`flex w-max ${align === "stretch" ? "items-stretch" : "items-start"} ${compact ? "gap-2" : "gap-3"}`}
+      >
+        {children}
+      </div>
     </div>
   );
 }
@@ -1141,14 +1153,14 @@ function NeedShopTile({
 }) {
   return (
     <button onClick={onClick} className="group w-[76px] shrink-0 text-left">
-      <div className="flex aspect-[4/5] w-full flex-col items-center justify-center gap-2 rounded-2xl border border-border/70 bg-secondary/50 px-2 py-3 shadow-[var(--shadow-card)] ring-1 ring-border/20 transition duration-200 group-hover:border-foreground/25 group-hover:bg-secondary">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-background/95 ring-1 ring-border/40">
+      <div className="flex h-[100px] w-full flex-col items-center rounded-2xl border border-border/70 bg-secondary/50 px-2 pb-2.5 pt-3 shadow-[var(--shadow-card)] ring-1 ring-border/20 transition duration-200 group-hover:border-foreground/25 group-hover:bg-secondary">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-background/95 ring-1 ring-border/40">
           <Icon
             className="h-5 w-5 text-foreground/75 transition duration-200 group-hover:text-foreground"
             strokeWidth={1.5}
           />
         </div>
-        <span className="w-full text-center text-xs font-semibold leading-tight text-foreground">
+        <span className="mt-2 flex min-h-[2.5rem] w-full items-center justify-center text-center text-xs font-semibold leading-snug text-foreground">
           {label}
         </span>
       </div>
@@ -1215,7 +1227,7 @@ function Discover({
 
   return (
     <div className={bottomPad ? "pb-4" : "pb-10"}>
-      <div className="px-5 pt-2">
+      <div className="px-5 pt-3">
         <button
           onClick={onOpenSearch}
           className="flex h-10 w-full items-center gap-2.5 rounded-full border border-border bg-secondary px-4 text-left"
@@ -1225,7 +1237,7 @@ function Discover({
         </button>
       </div>
 
-      <div className="mt-2 px-5 pb-4">
+      <div className="px-5 py-3.5">
         <button
           onClick={() => onOpenBrowse("summerEdit")}
           className="group relative block w-full overflow-hidden rounded-2xl text-left"
@@ -1252,8 +1264,8 @@ function Discover({
         </button>
       </div>
 
-      <div className="border-t border-border/35 px-5 pt-4">
-        <SectionHeader title="Quick filters" tone="subtle" />
+      <div className="border-t border-border/35 px-5 pt-3.5">
+        <SectionHeader title="Quick filters" tone="secondary" />
         <div className="-mx-5 mt-1.5 overflow-x-auto px-5 pb-1 scrollbar-none">
           <div className="flex w-max gap-2">
             {chips.map((c) => (
@@ -1271,9 +1283,9 @@ function Discover({
 
       <section className="mt-5">
         <div className="px-5">
-          <SectionHeader title="Shop by need" tone="emphasis" onAction={() => onOpenBrowse("hotDay")} />
+          <SectionHeader title="Shop by need" onAction={() => onOpenBrowse("hotDay")} />
         </div>
-        <ShopTileRow>
+        <ShopTileRow align="stretch">
           {needs.map((n) => (
             <NeedShopTile
               key={n.label}
@@ -1287,7 +1299,7 @@ function Discover({
 
       <section className="mt-4">
         <div className="px-5">
-          <SectionHeader title="Shop by category" tone="subtle" onAction={() => onOpenBrowse("dresses")} />
+          <SectionHeader title="Shop by category" tone="secondary" onAction={() => onOpenBrowse("dresses")} />
         </div>
         <ShopTileRow compact>
           {categories.map((c) => (
@@ -1316,20 +1328,18 @@ function Discover({
 function SectionHeader({
   title,
   subtitle,
-  tone = "default",
+  tone = "primary",
   onAction,
 }: {
   title: string;
   subtitle?: string;
-  tone?: "default" | "subtle" | "emphasis";
+  tone?: "primary" | "secondary";
   onAction?: () => void;
 }) {
   const titleClass =
-    tone === "subtle"
-      ? "text-sm font-semibold text-muted-foreground"
-      : tone === "emphasis"
-        ? "text-lg font-bold tracking-tight"
-        : "text-lg font-bold tracking-tight";
+    tone === "secondary"
+      ? "text-base font-semibold tracking-tight text-muted-foreground"
+      : "text-base font-bold tracking-tight text-foreground";
 
   return (
     <div className="flex items-end justify-between gap-3">
@@ -1340,11 +1350,7 @@ function SectionHeader({
       {onAction && (
         <button
           onClick={onAction}
-          className={`flex shrink-0 items-center gap-0.5 underline-offset-2 hover:underline ${
-            tone === "subtle"
-              ? "text-[11px] font-medium text-muted-foreground"
-              : "text-xs font-semibold text-foreground"
-          }`}
+          className="flex shrink-0 items-center gap-0.5 text-xs font-semibold text-foreground/80 underline-offset-2 hover:text-foreground hover:underline"
         >
           See all <ChevronRight className="h-3.5 w-3.5" />
         </button>
