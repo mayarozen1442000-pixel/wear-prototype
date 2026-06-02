@@ -50,7 +50,7 @@ export const Route = createFileRoute("/")({
   component: Prototype,
 });
 
-type Screen = "discover" | "browse" | "product" | "checkout" | "search" | "profile";
+type Screen = "discover" | "browse" | "product" | "checkout" | "search" | "profile" | "filters";
 type Tab = "home" | "search" | "trending" | "cart" | "profile";
 
 const TAB_TO_SCREEN: Record<Tab, Screen> = {
@@ -482,6 +482,127 @@ const TOP_PRODUCTS: Product[] = [
 
 const ALL_CATALOG = [...PRODUCTS, ...SHOE_PRODUCTS, ...ACCESSORY_PRODUCTS, ...TOP_PRODUCTS];
 
+type FilterCategoryId = "size" | "price" | "delivery" | "rating" | "returns" | "confidence";
+
+type FilterOptionDef = {
+  id: string;
+  category: FilterCategoryId;
+  label: string;
+  match: (product: Product) => boolean;
+};
+
+const FILTER_CATEGORIES: { id: FilterCategoryId; label: string }[] = [
+  { id: "size", label: "Size" },
+  { id: "price", label: "Price" },
+  { id: "delivery", label: "Delivery" },
+  { id: "rating", label: "Rating" },
+  { id: "returns", label: "Returns" },
+  { id: "confidence", label: "Confidence" },
+];
+
+const FILTER_OPTIONS: FilterOptionDef[] = [
+  { id: "size-m", category: "size", label: "In my size (M)", match: () => true },
+  { id: "size-s", category: "size", label: "Also in S", match: () => true },
+  { id: "price-under-25", category: "price", label: "Under $25", match: (p) => p.price <= 25 },
+  { id: "price-under-20", category: "price", label: "Under $20", match: (p) => p.price <= 20 },
+  { id: "price-under-15", category: "price", label: "Under $15", match: (p) => p.price <= 15 },
+  {
+    id: "delivery-week",
+    category: "delivery",
+    label: "Arrives this week",
+    match: (p) => p.cue.includes("Arrives") || p.cue.includes("Ships"),
+  },
+  {
+    id: "delivery-fast",
+    category: "delivery",
+    label: "Ships today",
+    match: (p) => p.cue.includes("Ships today") || p.cue.includes("Arrives by"),
+  },
+  { id: "rating-4", category: "rating", label: "4★ and up", match: (p) => p.rating >= 4.5 },
+  { id: "rating-top", category: "rating", label: "Top rated (4.6+)", match: (p) => p.rating >= 4.6 },
+  {
+    id: "returns-free",
+    category: "returns",
+    label: "Free returns",
+    match: (p) => p.cue.toLowerCase().includes("return") || p.reviews > 200,
+  },
+  {
+    id: "returns-easy",
+    category: "returns",
+    label: "Easy to return",
+    match: (p) => p.cue.toLowerCase().includes("return") || p.price <= 30,
+  },
+  {
+    id: "photos",
+    category: "confidence",
+    label: "Has customer photos",
+    match: (p) => p.reviews >= 400,
+  },
+  {
+    id: "not-sheer",
+    category: "confidence",
+    label: "Not see-through",
+    match: (p) => !p.reviewSummary?.toLowerCase().includes("sheer"),
+  },
+  {
+    id: "no-iron",
+    category: "confidence",
+    label: "Easy care / no-iron",
+    match: (p) =>
+      p.fabric?.toLowerCase().includes("linen") ||
+      p.fabric?.toLowerCase().includes("knit") ||
+      p.cue.toLowerCase().includes("no-iron") ||
+      p.name.toLowerCase().includes("linen"),
+  },
+  {
+    id: "pack-light",
+    category: "confidence",
+    label: "Pack light",
+    match: (p) =>
+      p.cue.toLowerCase().includes("pack") || p.cue.toLowerCase().includes("layer") || p.price <= 22,
+  },
+  {
+    id: "vacation",
+    category: "confidence",
+    label: "Vacation-friendly",
+    match: (p) => p.price <= 35 || p.cue.toLowerCase().includes("vacation"),
+  },
+];
+
+const QUICK_FILTER_PRESETS: { label: string; category: FilterCategoryId; optionId: string }[] = [
+  { label: "In my size (M)", category: "size", optionId: "size-m" },
+  { label: "Under $25", category: "price", optionId: "price-under-25" },
+  { label: "Arrives this week", category: "delivery", optionId: "delivery-week" },
+  { label: "4★ and up", category: "rating", optionId: "rating-4" },
+  { label: "Has customer photos", category: "confidence", optionId: "photos" },
+];
+
+function applyProductFilters(products: Product[], filterIds: string[]): Product[] {
+  if (filterIds.length === 0) return products;
+  const options = FILTER_OPTIONS.filter((option) => filterIds.includes(option.id));
+  return products.filter((product) => options.every((option) => option.match(product)));
+}
+
+function buildFilteredBrowseContext(filterIds: string[]): BrowseContext {
+  const products = applyProductFilters(ALL_CATALOG, filterIds);
+  const labels = FILTER_OPTIONS.filter((option) => filterIds.includes(option.id)).map(
+    (option) => option.label,
+  );
+
+  return {
+    title: labels.length === 1 ? labels[0] : "Filtered results",
+    products,
+    resultNoun: "items",
+    meta: `${filterIds.length} active filter${filterIds.length === 1 ? "" : "s"} · Final prices`,
+    sortHint: "Showing styles that match everything you selected.",
+    subfilters: ["All", "Dresses", "Tops", "Shoes", "Accessories"],
+  };
+}
+
+function filterOptionLabel(id: string): string {
+  return FILTER_OPTIONS.find((option) => option.id === id)?.label ?? id;
+}
+
 function makeBrowseContext(
   title: string,
   products: Product[],
@@ -651,13 +772,15 @@ function Prototype() {
   const [activeTab, setActiveTab] = useState<Tab>("home");
   const [activeProduct, setActiveProduct] = useState<Product>(PRODUCTS[1]);
   const [bagItems, setBagItems] = useState<{ p: Product; size: string }[]>([]);
-  const [showFilters, setShowFilters] = useState(false);
   const [showAdded, setShowAdded] = useState(false);
   const [showCartPopup, setShowCartPopup] = useState(false);
   const [size, setSize] = useState("M");
   const [browseContext, setBrowseContext] = useState<BrowseContext>(DEFAULT_BROWSE);
   const [browseSort, setBrowseSort] = useState<SortOption>("relevance");
   const [showSort, setShowSort] = useState(false);
+  const [activeFilterIds, setActiveFilterIds] = useState<string[]>([]);
+  const [pendingFilterIds, setPendingFilterIds] = useState<string[]>([]);
+  const [filterCategory, setFilterCategory] = useState<FilterCategoryId>("price");
   const mainRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -695,12 +818,14 @@ function Prototype() {
   const goToTab = (tab: Tab) => {
     setActiveTab(tab);
     if (tab === "trending") {
+      setActiveFilterIds([]);
       setBrowseContext(BROWSE.trending);
     }
     setScreen(TAB_TO_SCREEN[tab]);
   };
 
   const openBrowse = (key: keyof typeof BROWSE) => {
+    setActiveFilterIds([]);
     setBrowseContext(BROWSE[key]);
     setBrowseSort("relevance");
     setShowSort(false);
@@ -708,9 +833,45 @@ function Prototype() {
     setScreen("browse");
   };
 
+  const openFilters = (category: FilterCategoryId, preselectOptionId?: string) => {
+    setFilterCategory(category);
+    setPendingFilterIds(() => {
+      const base = [...activeFilterIds];
+      if (preselectOptionId && !base.includes(preselectOptionId)) {
+        base.push(preselectOptionId);
+      }
+      return base;
+    });
+    setScreen("filters");
+  };
+
+  const applyFilters = () => {
+    setActiveFilterIds(pendingFilterIds);
+    if (pendingFilterIds.length === 0) {
+      setBrowseContext(BROWSE.trending);
+    } else {
+      setBrowseContext(buildFilteredBrowseContext(pendingFilterIds));
+    }
+    setBrowseSort("relevance");
+    setShowSort(false);
+    setActiveTab("trending");
+    setScreen("browse");
+  };
+
+  const updateActiveFilters = (filterIds: string[]) => {
+    setActiveFilterIds(filterIds);
+    setPendingFilterIds(filterIds);
+    if (filterIds.length === 0) {
+      setBrowseContext(BROWSE.trending);
+      return;
+    }
+    setBrowseContext(buildFilteredBrowseContext(filterIds));
+  };
+
   const bagSubtotal = bagItems.reduce((sum, item) => sum + item.p.price, 0);
   const showBottomNav = screen !== "product";
-  const overlayOpen = showSort || showFilters || showAdded;
+  const overlayOpen = showSort || showAdded;
+  const pendingResultCount = applyProductFilters(ALL_CATALOG, pendingFilterIds).length;
 
   useEffect(() => {
     const el = mainRef.current;
@@ -744,6 +905,8 @@ function Prototype() {
               setActiveTab("trending");
             } else if (screen === "browse") {
               goToTab("home");
+            } else if (screen === "filters") {
+              goToTab("home");
             }
           }}
           onSearch={() => goToTab("search")}
@@ -763,6 +926,7 @@ function Prototype() {
           {screen === "discover" && (
             <Discover
               onOpenBrowse={openBrowse}
+              onOpenFilters={openFilters}
               onOpenSearch={() => goToTab("search")}
               onProduct={goProduct}
               bottomPad={showBottomNav}
@@ -772,10 +936,29 @@ function Prototype() {
             <Browse
               context={browseContext}
               sort={browseSort}
+              activeFilterIds={activeFilterIds}
               onProduct={goProduct}
-              onOpenFilters={() => setShowFilters(true)}
+              onOpenFilters={() => openFilters(filterCategory)}
+              onRemoveFilter={(id) => updateActiveFilters(activeFilterIds.filter((f) => f !== id))}
               onOpenSort={() => setShowSort(true)}
               bottomPad={showBottomNav}
+            />
+          )}
+          {screen === "filters" && (
+            <FilterPage
+              category={filterCategory}
+              pendingFilterIds={pendingFilterIds}
+              resultCount={pendingResultCount}
+              bottomPad={showBottomNav}
+              onCategoryChange={setFilterCategory}
+              onToggleFilter={(id) =>
+                setPendingFilterIds((current) =>
+                  current.includes(id) ? current.filter((f) => f !== id) : [...current, id],
+                )
+              }
+              onRemoveFilter={(id) => setPendingFilterIds((current) => current.filter((f) => f !== id))}
+              onClearAll={() => setPendingFilterIds([])}
+              onApply={applyFilters}
             />
           )}
           {screen === "product" && (
@@ -803,7 +986,6 @@ function Prototype() {
           <BottomNav activeTab={activeTab} bagCount={bagCount} onTabChange={goToTab} />
         )}
 
-        {showFilters && <FilterSheet onClose={() => setShowFilters(false)} />}
         {showSort && (
           <SortSheet
             sort={browseSort}
@@ -858,7 +1040,7 @@ function TopBar({
   onSearch: () => void;
   onGoHome: () => void;
 }) {
-  const showBack = screen === "browse" || screen === "product";
+  const showBack = screen === "browse" || screen === "product" || screen === "filters";
   const titles: Record<Screen, string> = {
     discover: "",
     browse: browseTitle,
@@ -866,6 +1048,7 @@ function TopBar({
     checkout: "Your bag",
     search: "Search",
     profile: "Profile",
+    filters: "Filters",
   };
 
   return (
@@ -1073,7 +1256,7 @@ function SearchView({
       </section>
 
       <section className="mt-6">
-        <SectionHeader title="Just for you" onAction={() => onOpenBrowse("trending")} />
+        <SectionHeader title="Just for you" variant="lead" onAction={() => onOpenBrowse("trending")} />
         <div className="mt-3 grid grid-cols-2 gap-3">
           {justForYou.map((p) => (
             <ProductCard key={p.id} p={p} onClick={() => onProduct(p)} />
@@ -1126,15 +1309,18 @@ function ShopTileRow({
   children,
   compact,
   align,
+  gap,
 }: {
   children: React.ReactNode;
   compact?: boolean;
   align?: "start" | "stretch";
+  gap?: "normal" | "wide";
 }) {
+  const gapClass = gap === "wide" ? "gap-2.5" : compact ? "gap-2" : "gap-3";
   return (
     <div className={`${compact ? "mt-1.5" : "mt-2"} overflow-x-auto px-5 pb-2 scrollbar-none`}>
       <div
-        className={`flex w-max ${align === "stretch" ? "items-stretch" : "items-start"} ${compact ? "gap-2" : "gap-3"}`}
+        className={`flex w-max ${align === "stretch" ? "items-stretch" : "items-start"} ${gapClass}`}
       >
         {children}
       </div>
@@ -1152,15 +1338,15 @@ function NeedShopTile({
   onClick: () => void;
 }) {
   return (
-    <button onClick={onClick} className="group w-[76px] shrink-0 text-left">
-      <div className="flex h-[100px] w-full flex-col items-center rounded-2xl border border-border/70 bg-secondary/50 px-2 pb-2.5 pt-3 shadow-[var(--shadow-card)] ring-1 ring-border/20 transition duration-200 group-hover:border-foreground/25 group-hover:bg-secondary">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-background/95 ring-1 ring-border/40">
+    <button onClick={onClick} className="group w-[84px] shrink-0 text-left">
+      <div className="flex h-[78px] w-full flex-col items-center justify-between rounded-xl border border-border/60 bg-card px-2.5 py-2.5 transition duration-200 group-hover:border-foreground/20 group-hover:bg-secondary/40 group-active:border-foreground/30 group-active:bg-secondary/70">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-secondary/90">
           <Icon
-            className="h-5 w-5 text-foreground/75 transition duration-200 group-hover:text-foreground"
+            className="h-4 w-4 text-foreground/75 transition duration-200 group-hover:text-foreground"
             strokeWidth={1.5}
           />
         </div>
-        <span className="mt-2 flex min-h-[2.5rem] w-full items-center justify-center text-center text-xs font-semibold leading-snug text-foreground">
+        <span className="flex h-8 w-full items-center justify-center text-center text-[11px] font-semibold leading-tight text-foreground line-clamp-2">
           {label}
         </span>
       </div>
@@ -1191,23 +1377,17 @@ function CategoryShopTile({
 
 function Discover({
   onOpenBrowse,
+  onOpenFilters,
   onOpenSearch,
   onProduct,
   bottomPad,
 }: {
   onOpenBrowse: (key: keyof typeof BROWSE) => void;
+  onOpenFilters: (category: FilterCategoryId, preselectOptionId?: string) => void;
   onOpenSearch: () => void;
   onProduct: (p: Product) => void;
   bottomPad: boolean;
 }) {
-  const chips: { label: string; key: keyof typeof BROWSE }[] = [
-    { label: "In my size (M)", key: "inMySize" },
-    { label: "Under $25", key: "under25" },
-    { label: "Arrives this week", key: "arrivesThisWeek" },
-    { label: "4★ and up", key: "fourStarUp" },
-    { label: "Has customer photos", key: "customerPhotos" },
-  ];
-
   const needs: { label: string; key: keyof typeof BROWSE; Icon: typeof Sun }[] = [
     { label: "Hot day", key: "hotDay", Icon: Sun },
     { label: "No-iron", key: "noIron", Icon: Shirt },
@@ -1265,16 +1445,16 @@ function Discover({
       </div>
 
       <div className="border-t border-border/35 px-5 pt-3.5">
-        <SectionHeader title="Quick filters" tone="secondary" />
+        <SectionHeader title="Quick filters" variant="standard" />
         <div className="-mx-5 mt-1.5 overflow-x-auto px-5 pb-1 scrollbar-none">
           <div className="flex w-max gap-2">
-            {chips.map((c) => (
+            {QUICK_FILTER_PRESETS.map((chip) => (
               <button
-                key={c.label}
-                onClick={() => onOpenBrowse(c.key)}
-                className="h-8 shrink-0 rounded-full border border-border/70 bg-background px-3.5 text-xs font-medium text-foreground/85 transition hover:border-foreground/20 hover:bg-secondary/80"
+                key={chip.optionId}
+                onClick={() => onOpenFilters(chip.category, chip.optionId)}
+                className="h-8 shrink-0 rounded-full border border-border/70 bg-background px-3.5 text-xs font-medium text-foreground transition hover:border-foreground/20 hover:bg-secondary/80"
               >
-                {c.label}
+                {chip.label}
               </button>
             ))}
           </div>
@@ -1283,9 +1463,9 @@ function Discover({
 
       <section className="mt-5">
         <div className="px-5">
-          <SectionHeader title="Shop by need" onAction={() => onOpenBrowse("hotDay")} />
+          <SectionHeader title="Shop by need" variant="lead" onAction={() => onOpenBrowse("hotDay")} />
         </div>
-        <ShopTileRow align="stretch">
+        <ShopTileRow align="stretch" gap="wide">
           {needs.map((n) => (
             <NeedShopTile
               key={n.label}
@@ -1299,7 +1479,7 @@ function Discover({
 
       <section className="mt-4">
         <div className="px-5">
-          <SectionHeader title="Shop by category" tone="secondary" onAction={() => onOpenBrowse("dresses")} />
+          <SectionHeader title="Shop by category" variant="standard" onAction={() => onOpenBrowse("dresses")} />
         </div>
         <ShopTileRow compact>
           {categories.map((c) => (
@@ -1314,7 +1494,7 @@ function Discover({
       </section>
 
       <section className="mt-3 px-5">
-        <SectionHeader title="Good finds under $25" onAction={() => onOpenBrowse("under25")} />
+        <SectionHeader title="Good finds under $25" variant="lead" onAction={() => onOpenBrowse("under25")} />
         <div className="mt-2 grid grid-cols-2 gap-2.5">
           {PRODUCTS.slice(0, 4).map((p) => (
             <ProductCard key={p.id} p={p} onClick={() => onProduct(p)} />
@@ -1328,18 +1508,18 @@ function Discover({
 function SectionHeader({
   title,
   subtitle,
-  tone = "primary",
+  variant = "standard",
   onAction,
 }: {
   title: string;
   subtitle?: string;
-  tone?: "primary" | "secondary";
+  variant?: "lead" | "standard";
   onAction?: () => void;
 }) {
   const titleClass =
-    tone === "secondary"
-      ? "text-base font-semibold tracking-tight text-muted-foreground"
-      : "text-base font-bold tracking-tight text-foreground";
+    variant === "lead"
+      ? "text-base font-bold tracking-tight text-foreground"
+      : "text-sm font-semibold tracking-tight text-foreground";
 
   return (
     <div className="flex items-end justify-between gap-3">
@@ -1350,7 +1530,7 @@ function SectionHeader({
       {onAction && (
         <button
           onClick={onAction}
-          className="flex shrink-0 items-center gap-0.5 text-xs font-semibold text-foreground/80 underline-offset-2 hover:text-foreground hover:underline"
+          className="flex shrink-0 items-center gap-0.5 text-xs font-semibold text-foreground underline-offset-2 hover:underline"
         >
           See all <ChevronRight className="h-3.5 w-3.5" />
         </button>
@@ -1413,15 +1593,19 @@ function ProductCard({ p, onClick }: { p: Product; onClick: () => void }) {
 function Browse({
   context,
   sort,
+  activeFilterIds,
   onProduct,
   onOpenFilters,
+  onRemoveFilter,
   onOpenSort,
   bottomPad,
 }: {
   context: BrowseContext;
   sort: SortOption;
+  activeFilterIds: string[];
   onProduct: (p: Product) => void;
   onOpenFilters: () => void;
+  onRemoveFilter: (id: string) => void;
   onOpenSort: () => void;
   bottomPad: boolean;
 }) {
@@ -1459,6 +1643,22 @@ function Browse({
         ))}
       </div>
 
+      {activeFilterIds.length > 0 && (
+        <div className="flex gap-2 overflow-x-auto px-5 pb-2 pt-1 scrollbar-none">
+          {activeFilterIds.map((id) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => onRemoveFilter(id)}
+              className="inline-flex h-8 shrink-0 items-center gap-1 rounded-full border border-foreground/20 bg-secondary px-3 text-xs font-semibold text-foreground"
+            >
+              {filterOptionLabel(id)}
+              <X className="h-3 w-3 opacity-60" />
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="sticky top-0 z-20 flex items-center justify-between border-b border-border/60 bg-background/95 px-5 py-2.5 backdrop-blur-md">
         <p className="text-xs text-muted-foreground">
           <span className="font-medium text-foreground">
@@ -1476,7 +1676,8 @@ function Browse({
           />
           <ControlBtn
             icon={<SlidersHorizontal className="h-3.5 w-3.5" />}
-            label="Refine"
+            label={activeFilterIds.length ? `Refine (${activeFilterIds.length})` : "Refine"}
+            active={activeFilterIds.length > 0}
             onClick={onOpenFilters}
           />
         </div>
@@ -1570,62 +1771,152 @@ function SortSheet({
   );
 }
 
-function FilterSheet({ onClose }: { onClose: () => void }) {
-  const filters = [
-    "Available in my size",
-    "Under $25",
-    "Highly rated with photos",
-    "Not see-through",
-    "Arrives before my trip",
-    "Easy to return",
-  ];
-  const [picked, setPicked] = useState<string[]>(["Available in my size", "Under $25"]);
-  const toggle = (f: string) =>
-    setPicked((p) => (p.includes(f) ? p.filter((x) => x !== f) : [...p, f]));
+function FilterPage({
+  category,
+  pendingFilterIds,
+  resultCount,
+  bottomPad,
+  onCategoryChange,
+  onToggleFilter,
+  onRemoveFilter,
+  onClearAll,
+  onApply,
+}: {
+  category: FilterCategoryId;
+  pendingFilterIds: string[];
+  resultCount: number;
+  bottomPad: boolean;
+  onCategoryChange: (category: FilterCategoryId) => void;
+  onToggleFilter: (id: string) => void;
+  onRemoveFilter: (id: string) => void;
+  onClearAll: () => void;
+  onApply: () => void;
+}) {
+  const categoryOptions = FILTER_OPTIONS.filter((option) => option.category === category);
+  const categoryCounts = FILTER_CATEGORIES.map((item) => ({
+    ...item,
+    count: pendingFilterIds.filter((id) =>
+      FILTER_OPTIONS.find((option) => option.id === id)?.category === item.id,
+    ).length,
+  }));
 
   return (
-    <Sheet onClose={onClose} title="Refine results">
-      <p className="mb-3 text-sm leading-relaxed text-muted-foreground">
-        Tell us what matters. We'll hide the rest—no endless scrolling required.
-      </p>
-      <div className="space-y-2">
-        {filters.map((f) => {
-          const on = picked.includes(f);
-          return (
-            <button
-              key={f}
-              onClick={() => toggle(f)}
-              className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3.5 text-left transition ${
-                on ? "border-foreground/40 bg-secondary" : "border-border hover:border-border/80"
-              }`}
-            >
-              <span className="text-sm font-medium">{f}</span>
-              <span
-                className={`flex h-5 w-5 items-center justify-center rounded-md border ${
-                  on ? "border-foreground bg-foreground" : "border-border"
+    <div className={`flex min-h-full flex-col ${bottomPad ? "pb-4" : "pb-6"}`}>
+      <div className="sticky top-0 z-20 border-b border-border/60 bg-background/95 backdrop-blur-md">
+        <div className="flex gap-2 overflow-x-auto px-5 py-3 scrollbar-none">
+          {categoryCounts.map((item) => {
+            const active = category === item.id;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => onCategoryChange(item.id)}
+                className={`inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full px-3.5 text-xs font-semibold transition ${
+                  active
+                    ? "bg-foreground text-primary-foreground"
+                    : "border border-border bg-card text-foreground hover:bg-secondary"
                 }`}
               >
-                {on && <Check className="h-3 w-3 text-primary-foreground" />}
-              </span>
+                {item.label}
+                {item.count > 0 && (
+                  <span
+                    className={`flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold ${
+                      active ? "bg-background text-foreground" : "bg-foreground text-primary-foreground"
+                    }`}
+                  >
+                    {item.count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {pendingFilterIds.length > 0 && (
+        <div className="border-b border-border/40 px-5 py-3">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-xs font-semibold text-foreground">Selected</p>
+            <button
+              type="button"
+              onClick={onClearAll}
+              className="text-xs font-semibold text-foreground underline-offset-2 hover:underline"
+            >
+              Clear all
             </button>
-          );
-        })}
+          </div>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {pendingFilterIds.map((id) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => onRemoveFilter(id)}
+                className="inline-flex h-8 items-center gap-1 rounded-full border border-foreground/20 bg-secondary px-3 text-xs font-semibold text-foreground"
+              >
+                {filterOptionLabel(id)}
+                <X className="h-3 w-3 opacity-60" />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="flex-1 px-5 pt-4">
+        <p className="text-sm font-semibold text-foreground">
+          {FILTER_CATEGORIES.find((item) => item.id === category)?.label}
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground">Select all that apply. We'll match every filter you choose.</p>
+        <div className="mt-3 space-y-2">
+          {categoryOptions.map((option) => {
+            const selected = pendingFilterIds.includes(option.id);
+            return (
+              <button
+                key={option.id}
+                type="button"
+                onClick={() => onToggleFilter(option.id)}
+                className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3.5 text-left transition ${
+                  selected ? "border-foreground/40 bg-secondary" : "border-border hover:border-border/80"
+                }`}
+              >
+                <span className="text-sm font-medium">{option.label}</span>
+                <span
+                  className={`flex h-5 w-5 items-center justify-center rounded-md border ${
+                    selected ? "border-foreground bg-foreground" : "border-border"
+                  }`}
+                >
+                  {selected && <Check className="h-3 w-3 text-primary-foreground" />}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
-      <div className="mt-4 flex gap-3">
-        <button
-          onClick={() => setPicked([])}
-          className="h-12 flex-1 rounded-full border border-border text-sm font-semibold"
-        >
-          Clear all
-        </button>
-        <button
-          onClick={onClose}
-          className="h-12 flex-[2] rounded-full bg-foreground text-sm font-semibold text-primary-foreground"
-        >
-          Show 42 matching dresses
-        </button>
+
+      <div
+        className={`sticky z-20 border-t border-border/60 bg-background/95 px-5 pt-3 backdrop-blur-md ${
+          bottomPad
+            ? "bottom-16 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))]"
+            : "bottom-0 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))]"
+        }`}
+      >
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={onClearAll}
+            className="h-12 flex-1 rounded-full border border-border text-sm font-semibold text-foreground"
+          >
+            Clear
+          </button>
+          <button
+            type="button"
+            onClick={onApply}
+            className="h-12 flex-[2] rounded-full bg-foreground text-sm font-semibold text-primary-foreground"
+          >
+            Show {resultCount} result{resultCount === 1 ? "" : "s"}
+          </button>
+        </div>
       </div>
-    </Sheet>
+    </div>
   );
 }
 
