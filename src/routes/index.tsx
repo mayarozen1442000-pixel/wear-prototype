@@ -515,11 +515,20 @@ function Prototype() {
 
   return (
     <div className="min-h-screen bg-secondary flex flex-col items-center px-4 py-4 md:py-8">
-      <div className="flex h-[min(100dvh,860px)] max-h-[100dvh] w-full max-w-[430px] flex-col overflow-hidden rounded-[2rem] border border-border/80 bg-background shadow-[var(--shadow-soft)]">
+      <div className="relative flex h-[min(100dvh,860px)] max-h-[100dvh] w-full max-w-[430px] flex-col rounded-[2rem] border border-border/80 bg-background shadow-[var(--shadow-soft)]">
         <TopBar
           screen={screen}
           browseTitle={browseContext.title}
           bagCount={bagCount}
+          showCart={showCartPopup}
+          cartItems={bagItems}
+          onToggleCart={() => setShowCartPopup((open) => !open)}
+          onCloseCart={() => setShowCartPopup(false)}
+          onRemoveCartItem={removeFromBag}
+          onCartCheckout={() => {
+            setShowCartPopup(false);
+            goToTab("cart");
+          }}
           onBack={() => {
             if (screen === "product") {
               setScreen("browse");
@@ -528,11 +537,19 @@ function Prototype() {
               goToTab("home");
             }
           }}
-          onBag={() => setShowCartPopup(true)}
           onSearch={() => goToTab("search")}
         />
 
-        <main ref={mainRef} className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain">
+        {showCartPopup && (
+          <button
+            type="button"
+            aria-label="Close cart"
+            className="absolute inset-0 top-14 z-40 bg-foreground/15 animate-in fade-in duration-200"
+            onClick={() => setShowCartPopup(false)}
+          />
+        )}
+
+        <main ref={mainRef} className="relative z-0 min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain">
           {screen === "discover" && (
             <Discover
               onOpenBrowse={openBrowse}
@@ -569,17 +586,6 @@ function Prototype() {
           <BottomNav activeTab={activeTab} bagCount={bagCount} onTabChange={goToTab} />
         )}
 
-        {showCartPopup && (
-          <CartSheet
-            items={bagItems}
-            onClose={() => setShowCartPopup(false)}
-            onRemoveItem={removeFromBag}
-            onCheckout={() => {
-              setShowCartPopup(false);
-              goToTab("cart");
-            }}
-          />
-        )}
         {showFilters && <FilterSheet onClose={() => setShowFilters(false)} />}
         {showAdded && (
           <AddedSheet
@@ -602,15 +608,25 @@ function TopBar({
   screen,
   browseTitle,
   bagCount,
+  showCart,
+  cartItems,
   onBack,
-  onBag,
+  onToggleCart,
+  onCloseCart,
+  onRemoveCartItem,
+  onCartCheckout,
   onSearch,
 }: {
   screen: Screen;
   browseTitle: string;
   bagCount: number;
+  showCart: boolean;
+  cartItems: { p: Product; size: string }[];
   onBack: () => void;
-  onBag: () => void;
+  onToggleCart: () => void;
+  onCloseCart: () => void;
+  onRemoveCartItem: (index: number) => void;
+  onCartCheckout: () => void;
   onSearch: () => void;
 }) {
   const showBack = screen === "browse" || screen === "product";
@@ -624,7 +640,7 @@ function TopBar({
   };
 
   return (
-    <div className="z-30 shrink-0 border-b border-border/60 bg-background/95 backdrop-blur-md">
+    <div className="relative z-50 shrink-0 border-b border-border/60 bg-background/95 backdrop-blur-md">
       <div className="flex h-14 items-center justify-between px-5">
         <div className="flex min-w-0 items-center gap-3">
           {showBack ? (
@@ -644,7 +660,7 @@ function TopBar({
             <h1 className="truncate text-base font-semibold">{titles[screen]}</h1>
           )}
         </div>
-        <div className="flex items-center gap-0.5">
+        <div className="relative flex items-center gap-0.5">
           {screen === "discover" && (
             <button
               onClick={onSearch}
@@ -655,17 +671,35 @@ function TopBar({
             </button>
           )}
           <button
-            onClick={onBag}
+            onClick={onToggleCart}
             aria-label={`Bag${bagCount ? `, ${bagCount} items` : ""}`}
-            className="relative rounded-full p-2 hover:bg-secondary transition-colors"
+            aria-expanded={showCart}
+            className={`relative rounded-full p-2 transition-colors ${
+              showCart ? "bg-foreground text-primary-foreground shadow-sm" : "hover:bg-secondary"
+            }`}
           >
             <ShoppingBag className="h-5 w-5" />
             {bagCount > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-foreground text-[10px] font-bold text-primary-foreground">
+              <span
+                className={`absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold ${
+                  showCart
+                    ? "bg-background text-foreground"
+                    : "bg-foreground text-primary-foreground"
+                }`}
+              >
                 {bagCount}
               </span>
             )}
           </button>
+
+          {showCart && (
+            <CartPopover
+              items={cartItems}
+              onClose={onCloseCart}
+              onRemoveItem={onRemoveCartItem}
+              onCheckout={onCartCheckout}
+            />
+          )}
         </div>
       </div>
     </div>
@@ -841,24 +875,32 @@ function ShopTileButton({
   label,
   sublabel,
   wrapLabel,
+  highlightOnHover,
   onClick,
   children,
 }: {
   label: string;
   sublabel?: string;
   wrapLabel?: boolean;
+  highlightOnHover?: boolean;
   onClick: () => void;
   children: React.ReactNode;
 }) {
   return (
     <button onClick={onClick} className="group w-[72px] shrink-0 p-0">
-      <div className="aspect-square w-full overflow-hidden rounded-2xl bg-secondary ring-1 ring-border/50">
+      <div
+        className={`aspect-square w-full overflow-hidden rounded-2xl ring-1 transition-all duration-200 ${
+          highlightOnHover
+            ? "bg-secondary ring-border/50 group-hover:scale-105 group-hover:bg-foreground group-hover:ring-foreground group-hover:shadow-[var(--shadow-card)]"
+            : "bg-secondary ring-border/50"
+        }`}
+      >
         {children}
       </div>
       <p
-        className={`mt-2 w-full text-center text-xs font-medium ${
+        className={`mt-2 w-full text-center text-xs font-medium transition-colors duration-200 ${
           wrapLabel ? "leading-snug break-words" : "leading-tight"
-        }`}
+        } ${highlightOnHover ? "group-hover:font-semibold group-hover:text-foreground" : ""}`}
       >
         {label}
       </p>
@@ -974,10 +1016,14 @@ function Discover({
               key={n.label}
               label={n.label}
               wrapLabel
+              highlightOnHover
               onClick={() => onOpenBrowse(n.key)}
             >
               <div className="flex h-full w-full items-center justify-center">
-                <n.Icon className="h-8 w-8 text-foreground/75" strokeWidth={1.5} />
+                <n.Icon
+                  className="h-8 w-8 text-foreground/75 transition-all duration-200 group-hover:scale-110 group-hover:text-primary-foreground"
+                  strokeWidth={1.5}
+                />
               </div>
             </ShopTileButton>
           ))}
@@ -1410,7 +1456,7 @@ function BagItemRow({
   );
 }
 
-function CartSheet({
+function CartPopover({
   items,
   onClose,
   onRemoveItem,
@@ -1425,58 +1471,84 @@ function CartSheet({
   const shipping = subtotal >= 25 ? 0 : 4.99;
 
   return (
-    <Sheet onClose={onClose} title="Your bag">
-      {items.length === 0 ? (
-        <div className="py-6 text-center">
-          <ShoppingBag className="mx-auto h-10 w-10 text-muted-foreground/50" />
-          <p className="mt-3 text-sm font-semibold">Your bag is empty</p>
-          <p className="mt-1 text-xs text-muted-foreground">Add something you love—we'll keep it here.</p>
+    <div className="absolute right-0 top-[calc(100%+0.625rem)] z-50 w-[min(20rem,calc(100vw-2.5rem))] origin-top-right animate-in fade-in zoom-in-95 slide-in-from-top-2 duration-200">
+      <div
+        aria-hidden
+        className="absolute -top-1.5 right-2.5 h-3 w-3 rotate-45 border-l border-t border-border bg-background"
+      />
+      <div className="max-h-[min(28rem,60dvh)] overflow-hidden rounded-2xl border border-border bg-background shadow-[var(--shadow-soft)]">
+        <div className="flex items-center justify-between border-b border-border/60 px-4 py-3">
+          <h3 className="text-sm font-bold">Your bag</h3>
           <button
             onClick={onClose}
-            className="mt-5 h-11 rounded-full bg-foreground px-6 text-sm font-semibold text-primary-foreground"
+            aria-label="Close cart"
+            className="rounded-full p-1 hover:bg-secondary"
           >
-            Start shopping
+            <X className="h-4 w-4" />
           </button>
         </div>
-      ) : (
-        <>
-          <p className="mb-3 text-xs text-muted-foreground">
-            {items.length} item{items.length !== 1 ? "s" : ""} · Final prices shown
-          </p>
-          <div className="space-y-2.5">
-            {items.map((item, idx) => (
-              <BagItemRow key={idx} item={item} onRemove={() => onRemoveItem(idx)} />
-            ))}
-          </div>
 
-          <div className="mt-4 rounded-2xl bg-secondary p-4 text-sm">
-            <Row label="Subtotal" value={`$${subtotal.toFixed(2)}`} />
-            <div className="mt-2">
-              <Row
-                label="Shipping"
-                value={shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}
-                accent={shipping === 0}
-              />
+        <div className="max-h-[min(22rem,50dvh)] overflow-y-auto px-4 py-3">
+          {items.length === 0 ? (
+            <div className="py-5 text-center">
+              <ShoppingBag className="mx-auto h-9 w-9 text-muted-foreground/50" />
+              <p className="mt-2.5 text-sm font-semibold">Your bag is empty</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Add something you love—we'll keep it here.
+              </p>
             </div>
-          </div>
+          ) : (
+            <>
+              <p className="mb-2.5 text-xs text-muted-foreground">
+                {items.length} item{items.length !== 1 ? "s" : ""} · Final prices shown
+              </p>
+              <div className="space-y-2">
+                {items.map((item, idx) => (
+                  <BagItemRow key={idx} item={item} onRemove={() => onRemoveItem(idx)} />
+                ))}
+              </div>
 
-          <div className="mt-4 flex gap-2">
+              <div className="mt-3 rounded-xl bg-secondary p-3 text-sm">
+                <Row label="Subtotal" value={`$${subtotal.toFixed(2)}`} />
+                <div className="mt-1.5">
+                  <Row
+                    label="Shipping"
+                    value={shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}
+                    accent={shipping === 0}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        <div className="border-t border-border/60 px-4 py-3">
+          {items.length === 0 ? (
             <button
               onClick={onClose}
-              className="h-12 flex-1 rounded-full border border-border text-sm font-semibold"
+              className="h-10 w-full rounded-full bg-foreground text-sm font-semibold text-primary-foreground"
             >
-              Keep shopping
+              Start shopping
             </button>
-            <button
-              onClick={onCheckout}
-              className="h-12 flex-[1.4] rounded-full bg-foreground text-sm font-semibold text-primary-foreground"
-            >
-              Checkout
-            </button>
-          </div>
-        </>
-      )}
-    </Sheet>
+          ) : (
+            <div className="flex gap-2">
+              <button
+                onClick={onClose}
+                className="h-10 flex-1 rounded-full border border-border text-sm font-semibold"
+              >
+                Keep shopping
+              </button>
+              <button
+                onClick={onCheckout}
+                className="h-10 flex-[1.4] rounded-full bg-foreground text-sm font-semibold text-primary-foreground"
+              >
+                Checkout
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 
