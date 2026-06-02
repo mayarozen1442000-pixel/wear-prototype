@@ -939,7 +939,7 @@ function ProfileView({ bottomPad }: { bottomPad: boolean }) {
 
 function ShopTileRow({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mt-2 overflow-x-auto px-5 py-2 scrollbar-none">
+    <div className="mt-2 overflow-x-auto px-5 pb-2 scrollbar-none">
       <div className="flex w-max items-start gap-3">{children}</div>
     </div>
   );
