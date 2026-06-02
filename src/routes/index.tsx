@@ -1401,14 +1401,14 @@ function NeedShopTile({
   onClick: () => void;
 }) {
   return (
-    <button onClick={onClick} className="group w-[58px] shrink-0">
+    <button onClick={onClick} className="group w-[72px] shrink-0">
       <div className="mx-auto flex h-[52px] w-[52px] items-center justify-center rounded-full border border-border/60 bg-card transition duration-200 group-hover:border-foreground/20 group-hover:bg-secondary/40 group-active:border-foreground/30 group-active:bg-secondary/70">
         <Icon
           className="h-4 w-4 shrink-0 text-foreground/75 transition duration-200 group-hover:text-foreground"
           strokeWidth={1.5}
         />
       </div>
-      <p className="mt-1.5 w-full truncate text-center text-[11px] font-semibold leading-none text-foreground whitespace-nowrap">
+      <p className="mt-1.5 w-full text-center text-[11px] font-medium leading-none text-muted-foreground whitespace-nowrap transition-colors group-hover:text-foreground">
         {label}
       </p>
     </button>
@@ -1425,11 +1425,11 @@ function CategoryShopTile({
   onClick: () => void;
 }) {
   return (
-    <button onClick={onClick} className="group w-[58px] shrink-0 text-left">
+    <button onClick={onClick} className="group w-[72px] shrink-0 text-left">
       <div className="mx-auto h-[52px] w-[52px] overflow-hidden rounded-full bg-secondary ring-1 ring-border/60 transition duration-200 group-hover:ring-foreground/30">
         <img src={img} alt={label} loading="lazy" className="h-full w-full object-cover" />
       </div>
-      <p className="mt-1.5 w-full truncate text-center text-[11px] font-medium text-muted-foreground transition-colors group-hover:text-foreground">
+      <p className="mt-1.5 w-full text-center text-[11px] font-medium leading-none text-muted-foreground whitespace-nowrap transition-colors group-hover:text-foreground">
         {label}
       </p>
     </button>
