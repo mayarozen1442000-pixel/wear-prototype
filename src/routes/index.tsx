@@ -1050,16 +1050,7 @@ function Discover({
         </ShopTileRow>
       </section>
 
-      <section className="mt-3 px-5">
-        <SectionHeader title="Good finds under $25" onAction={() => onOpenBrowse("under25")} />
-        <div className="mt-2 grid grid-cols-2 gap-2.5">
-          {PRODUCTS.slice(0, 4).map((p) => (
-            <ProductCard key={p.id} p={p} onClick={() => onProduct(p)} />
-          ))}
-        </div>
-      </section>
-
-      <section className="mt-4">
+      <section className="mt-3">
         <div className="px-5">
           <SectionHeader title="Shop by category" onAction={() => onOpenBrowse("dresses")} />
         </div>
@@ -1075,6 +1066,15 @@ function Discover({
             </ShopTileButton>
           ))}
         </ShopTileRow>
+      </section>
+
+      <section className="mt-3 px-5">
+        <SectionHeader title="Good finds under $25" onAction={() => onOpenBrowse("under25")} />
+        <div className="mt-2 grid grid-cols-2 gap-2.5">
+          {PRODUCTS.slice(0, 4).map((p) => (
+            <ProductCard key={p.id} p={p} onClick={() => onProduct(p)} />
+          ))}
+        </div>
       </section>
     </div>
   );
@@ -1108,7 +1108,7 @@ function SectionHeader({
 function ProductCard({ p, onClick }: { p: Product; onClick: () => void }) {
   return (
     <div className="group relative text-left">
-      <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-secondary">
+      <div className="relative aspect-square overflow-hidden rounded-xl bg-secondary">
         <button onClick={onClick} className="block h-full w-full text-left">
           <img
             src={p.img}
@@ -1325,7 +1325,7 @@ function ProductDetail({
           <img
             src={product.img}
             alt={product.name}
-            className="block h-auto w-full"
+            className="mx-auto block h-auto max-h-56 w-full object-contain"
             width={512}
             height={640}
           />
@@ -1450,7 +1450,7 @@ function BagItemRow({
 }) {
   return (
     <div className="flex gap-3 rounded-2xl border border-border p-3">
-      <div className="h-20 w-16 shrink-0 overflow-hidden rounded-xl bg-secondary">
+      <div className="h-16 w-12 shrink-0 overflow-hidden rounded-lg bg-secondary">
         <img src={item.p.img} alt="" className="h-full w-full object-cover" />
       </div>
       <div className="min-w-0 flex-1">
@@ -1592,7 +1592,7 @@ function AddedSheet({
   return (
     <Sheet onClose={onClose} title="Added to your bag">
       <div className="mt-1 flex items-center gap-3">
-        <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-secondary">
+        <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-secondary">
           <img src={product.img} alt="" className="h-full w-full object-cover" />
         </div>
         <div className="min-w-0">
@@ -1652,7 +1652,7 @@ function AddedSheet({
             { name: "Gold hoop set", price: 9.5, img: catAccessories },
           ].map((a) => (
             <div key={a.name} className="flex items-center gap-2.5 rounded-2xl bg-secondary p-2.5">
-              <div className="h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-background">
+              <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-background">
                 <img src={a.img} alt="" className="h-full w-full object-cover" />
               </div>
               <div className="min-w-0">
