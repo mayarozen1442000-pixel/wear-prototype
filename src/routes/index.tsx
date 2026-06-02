@@ -210,6 +210,60 @@ const PRODUCT_GALLERIES: Record<string, ProductImage[]> = {
     { src: p6, label: "Back view", position: "object-[center_18%]" },
     { src: p4, label: "Shoulder detail", position: "object-center" },
   ]),
+  p7: gallery("Ocean stripe maxi", [
+    { src: hero, label: "Front view", position: "object-[center_28%]" },
+    { src: p3, label: "Side view", position: "object-[center_15%]" },
+    { src: p1, label: "Back view", position: "object-[center_20%]" },
+    { src: p2, label: "Stripe detail", position: "object-center" },
+  ]),
+  p8: gallery("Lemon smock mini", [
+    { src: catDresses, label: "Front view", position: "object-[center_22%]" },
+    { src: p2, label: "Side view", position: "object-[center_18%]" },
+    { src: p5, label: "Styled look", position: "object-[center_25%]" },
+    { src: p6, label: "Fabric detail", position: "object-center" },
+  ]),
+  s5: gallery("Cork footbed slide", [
+    { src: p1, label: "Front view", position: "object-[center_55%]" },
+    { src: catShoes, label: "Side view", position: "object-[center_48%]" },
+    { src: p2, label: "On foot", position: "object-[center_35%]" },
+    { src: hero, label: "Sole detail", position: "object-center" },
+  ]),
+  s6: gallery("Braided fisherman's sandal", [
+    { src: p3, label: "Front view", position: "object-[center_50%]" },
+    { src: catShoes, label: "Side view", position: "object-[center_52%]" },
+    { src: p5, label: "Styled look", position: "object-[center_30%]" },
+    { src: p4, label: "Strap detail", position: "object-center" },
+  ]),
+  a5: gallery("Pearl hair claw", [
+    { src: p5, label: "Front view", position: "object-[center_45%]" },
+    { src: catAccessories, label: "Styled look", position: "object-[center_50%]" },
+    { src: p6, label: "Worn look", position: "object-[center_20%]" },
+    { src: p2, label: "Close-up", position: "object-center" },
+  ]),
+  a6: gallery("Canvas market tote", [
+    { src: p6, label: "Front view", position: "object-[center_30%]" },
+    { src: hero, label: "Styled look", position: "object-[center_35%]" },
+    { src: catShoes, label: "Side view", position: "object-[center_45%]" },
+    { src: p4, label: "Interior detail", position: "object-center" },
+  ]),
+  a7: gallery("Mini raffia bucket", [
+    { src: p2, label: "Front view", position: "object-[center_40%]" },
+    { src: catAccessories, label: "Side view", position: "object-[center_48%]" },
+    { src: hero, label: "Styled look", position: "object-[center_32%]" },
+    { src: p3, label: "Weave detail", position: "object-center" },
+  ]),
+  t5: gallery("Mesh workout tank", [
+    { src: p4, label: "Front view", position: "object-[center_22%]" },
+    { src: p1, label: "Side view", position: "object-[center_20%]" },
+    { src: p3, label: "Back view", position: "object-[center_18%]" },
+    { src: p5, label: "Mesh detail", position: "object-center" },
+  ]),
+  t6: gallery("Soft jersey tee", [
+    { src: p1, label: "Front view", position: "object-[center_20%]" },
+    { src: p6, label: "Side view", position: "object-[center_18%]" },
+    { src: p2, label: "Back view", position: "object-[center_22%]" },
+    { src: p4, label: "Fabric detail", position: "object-center" },
+  ]),
 };
 
 function getProductImages(product: Product): ProductImage[] {
@@ -300,6 +354,32 @@ const PRODUCTS: Product[] = [
     fabric: "Crisp cotton poplin",
     fitNote: "Structured shoulders. Belt included.",
     reviewSummary: "Looks polished without ironing. Buttons are secure—no gaping.",
+  },
+  {
+    id: "p7",
+    name: "Ocean stripe maxi",
+    price: 26.5,
+    wasPrice: 34.99,
+    img: hero,
+    rating: 4.5,
+    reviews: 312,
+    cue: "Vacation pick · Size M in stock",
+    fabric: "Lightweight cotton blend",
+    fitNote: "Relaxed through the hips with adjustable straps.",
+    reviewSummary: "Beach photos look just like the listing—easy to dress up at night.",
+  },
+  {
+    id: "p8",
+    name: "Lemon smock mini",
+    price: 21.0,
+    wasPrice: 28.0,
+    img: catDresses,
+    rating: 4.4,
+    reviews: 488,
+    cue: "Arrives by Jul 20",
+    fabric: "Soft cotton poplin",
+    fitNote: "Smock bodice gives room through the chest.",
+    reviewSummary: "Bright color without looking cheap—great for daytime plans.",
   },
 ];
 
@@ -404,6 +484,26 @@ const SHOE_PRODUCTS: Product[] = [
     cue: "Best under $20",
     tag: "Top rated",
   },
+  {
+    id: "s5",
+    name: "Cork footbed slide",
+    price: 15.5,
+    img: p1,
+    rating: 4.5,
+    reviews: 356,
+    cue: "Comfy arch support · Ships today",
+  },
+  {
+    id: "s6",
+    name: "Braided fisherman's sandal",
+    price: 17.9,
+    wasPrice: 22.99,
+    img: p3,
+    rating: 4.6,
+    reviews: 278,
+    cue: "Resort-ready · Easy to pack",
+    tag: "Top rated",
+  },
 ];
 
 const ACCESSORY_PRODUCTS: Product[] = [
@@ -445,6 +545,36 @@ const ACCESSORY_PRODUCTS: Product[] = [
     rating: 4.4,
     reviews: 189,
     cue: "Tarnish-resistant finish",
+  },
+  {
+    id: "a5",
+    name: "Pearl hair claw",
+    price: 8.5,
+    img: p5,
+    rating: 4.7,
+    reviews: 641,
+    cue: "Secure hold · Lightweight",
+    tag: "Top rated",
+  },
+  {
+    id: "a6",
+    name: "Canvas market tote",
+    price: 16.0,
+    img: p6,
+    rating: 4.5,
+    reviews: 392,
+    cue: "Fits laptop + lunch · Ships today",
+  },
+  {
+    id: "a7",
+    name: "Mini raffia bucket",
+    price: 19.5,
+    wasPrice: 26.0,
+    img: p2,
+    rating: 4.6,
+    reviews: 214,
+    cue: "Crossbody strap included",
+    tag: "Top rated",
   },
 ];
 
@@ -488,7 +618,31 @@ const TOP_PRODUCTS: Product[] = [
     cue: "Dinner-ready style",
     tag: "Top rated",
   },
+  {
+    id: "t5",
+    name: "Mesh workout tank",
+    price: 12.5,
+    img: p4,
+    rating: 4.4,
+    reviews: 502,
+    cue: "Breathable mesh · Size M in stock",
+  },
+  {
+    id: "t6",
+    name: "Soft jersey tee",
+    price: 10.9,
+    img: p1,
+    rating: 4.5,
+    reviews: 689,
+    cue: "Everyday basic · Easy care",
+  },
 ];
+
+const BAG_PRODUCTS = ACCESSORY_PRODUCTS.filter((product) => /bag|tote|bucket/i.test(product.name));
+const SANDAL_PRODUCTS = SHOE_PRODUCTS.filter((product) => /sandal|slide|espadrille/i.test(product.name));
+const JEWELRY_HAT_PRODUCTS = ACCESSORY_PRODUCTS.filter(
+  (product) => !/bag|tote|bucket/i.test(product.name),
+);
 
 const ALL_CATALOG = [...PRODUCTS, ...SHOE_PRODUCTS, ...ACCESSORY_PRODUCTS, ...TOP_PRODUCTS];
 
@@ -643,7 +797,7 @@ const BROWSE: Record<string, BrowseContext> = {
   ),
   sandals: makeBrowseContext(
     "Sandals",
-    SHOE_PRODUCTS,
+    SANDAL_PRODUCTS,
     "sandals",
     "Size M · Final prices",
     "Light, packable styles for warm days and getaways.",
@@ -651,7 +805,7 @@ const BROWSE: Record<string, BrowseContext> = {
   ),
   accessories: makeBrowseContext(
     "Accessories",
-    ACCESSORY_PRODUCTS,
+    JEWELRY_HAT_PRODUCTS,
     "accessories",
     "Final prices",
     "Small add-ons that complete the look—most under $20.",
@@ -659,7 +813,7 @@ const BROWSE: Record<string, BrowseContext> = {
   ),
   bags: makeBrowseContext(
     "Bags",
-    ACCESSORY_PRODUCTS.filter((p) => p.name.toLowerCase().includes("bag")),
+    BAG_PRODUCTS,
     "bags",
     "Final prices",
     "Room for essentials without the bulk.",
@@ -719,7 +873,7 @@ const BROWSE: Record<string, BrowseContext> = {
   ),
   hotDay: makeBrowseContext(
     "Hot day",
-    [PRODUCTS[1], PRODUCTS[2], PRODUCTS[3], TOP_PRODUCTS[0], TOP_PRODUCTS[1]],
+    [PRODUCTS[1], PRODUCTS[2], PRODUCTS[3], PRODUCTS[6], TOP_PRODUCTS[0], TOP_PRODUCTS[1], ACCESSORY_PRODUCTS[1], SANDAL_PRODUCTS[0]],
     "items",
     "Light fabrics · Final prices",
     "Breathable picks for heat—linen, viscose, and open knits.",
@@ -727,7 +881,7 @@ const BROWSE: Record<string, BrowseContext> = {
   ),
   noIron: makeBrowseContext(
     "No-iron",
-    [PRODUCTS[1], PRODUCTS[5], TOP_PRODUCTS[1], PRODUCTS[3]],
+    [PRODUCTS[1], PRODUCTS[5], PRODUCTS[7], TOP_PRODUCTS[1], TOP_PRODUCTS[5], PRODUCTS[3]],
     "items",
     "Easy-care fabrics · Final prices",
     "Wrinkle-resistant styles that look polished straight from the bag.",
@@ -735,7 +889,7 @@ const BROWSE: Record<string, BrowseContext> = {
   ),
   dinnerPlans: makeBrowseContext(
     "Night out",
-    [PRODUCTS[4], PRODUCTS[5], PRODUCTS[0], TOP_PRODUCTS[3]],
+    [PRODUCTS[4], PRODUCTS[5], PRODUCTS[0], PRODUCTS[6], TOP_PRODUCTS[3], SHOE_PRODUCTS[1], ACCESSORY_PRODUCTS[0]],
     "items",
     "Dressy but comfy · Final prices",
     "Elevated looks that still feel easy to wear all evening.",
@@ -743,7 +897,7 @@ const BROWSE: Record<string, BrowseContext> = {
   ),
   packLight: makeBrowseContext(
     "Pack light",
-    [PRODUCTS[3], PRODUCTS[4], PRODUCTS[1], SHOE_PRODUCTS[2], ACCESSORY_PRODUCTS[1]],
+    [PRODUCTS[3], PRODUCTS[4], PRODUCTS[1], PRODUCTS[6], SHOE_PRODUCTS[2], SHOE_PRODUCTS[4], ACCESSORY_PRODUCTS[1], BAG_PRODUCTS[1]],
     "items",
     "Wrinkle-friendly · Final prices",
     "Pieces that pack flat and still look great on arrival.",
@@ -751,7 +905,7 @@ const BROWSE: Record<string, BrowseContext> = {
   ),
   sporty: makeBrowseContext(
     "Sporty",
-    [PRODUCTS[3], TOP_PRODUCTS[0], TOP_PRODUCTS[2], SHOE_PRODUCTS[0], SHOE_PRODUCTS[2]],
+    [PRODUCTS[3], TOP_PRODUCTS[0], TOP_PRODUCTS[2], TOP_PRODUCTS[4], SHOE_PRODUCTS[0], SHOE_PRODUCTS[2], SHOE_PRODUCTS[4]],
     "items",
     "Move-ready · Final prices",
     "Stretchy, easy layers and flats built for long days out.",
@@ -759,7 +913,7 @@ const BROWSE: Record<string, BrowseContext> = {
   ),
   gym: makeBrowseContext(
     "Gym",
-    [TOP_PRODUCTS[0], TOP_PRODUCTS[2], PRODUCTS[3], SHOE_PRODUCTS[0], SHOE_PRODUCTS[2], TOP_PRODUCTS[1]],
+    [TOP_PRODUCTS[0], TOP_PRODUCTS[2], TOP_PRODUCTS[4], TOP_PRODUCTS[5], PRODUCTS[3], SHOE_PRODUCTS[0], SHOE_PRODUCTS[4], SHOE_PRODUCTS[5]],
     "items",
     "Move-ready · Final prices",
     "Stretch-friendly tops, layers, and flats built for workouts and warm-ups.",
@@ -798,9 +952,9 @@ const SHOP_BY_CATEGORY_ITEMS: { label: string; key: keyof typeof BROWSE; img: st
   { label: "Dresses", key: "dresses", img: catDresses },
   { label: "Shoes", key: "shoes", img: catShoes },
   { label: "Accessories", key: "accessories", img: catAccessories },
-  { label: "Tops", key: "tops", img: catDresses },
-  { label: "Bags", key: "bags", img: catAccessories },
-  { label: "Sandals", key: "sandals", img: catShoes },
+  { label: "Tops", key: "tops", img: p6 },
+  { label: "Bags", key: "bags", img: p2 },
+  { label: "Sandals", key: "sandals", img: p1 },
 ];
 
 function Prototype() {
@@ -1608,7 +1762,7 @@ function SectionHeader({
       {onAction && (
         <button
           onClick={onAction}
-          className="flex shrink-0 items-center gap-0.5 text-xs font-medium text-muted-foreground underline-offset-2 transition-colors hover:text-foreground hover:underline"
+          className="flex shrink-0 items-center gap-0.5 text-xs font-medium text-foreground underline-offset-2 hover:underline"
         >
           See all <ChevronRight className="h-3.5 w-3.5" />
         </button>
