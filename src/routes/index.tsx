@@ -1011,9 +1011,11 @@ function Discover({
         </button>
       </div>
 
-      <div className="mt-2">
-        <p className="px-5 text-xs font-medium text-muted-foreground">Quick filters</p>
-        <div className="mt-1.5 flex gap-2 overflow-x-auto px-5 pb-0.5 scrollbar-none">
+      <div className="mt-3">
+        <div className="px-5">
+          <SectionHeader title="Quick filters" />
+        </div>
+        <div className="mt-2 flex gap-2 overflow-x-auto px-5 pb-0.5 scrollbar-none">
           {chips.map((c) => (
             <button
               key={c.label}
@@ -1095,12 +1097,14 @@ function SectionHeader({
         <h3 className="text-lg font-bold tracking-tight">{title}</h3>
         {subtitle && <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{subtitle}</p>}
       </div>
-      <button
-        onClick={onAction}
-        className="flex shrink-0 items-center gap-0.5 text-xs font-semibold text-foreground underline-offset-2 hover:underline"
-      >
-        See all <ChevronRight className="h-3.5 w-3.5" />
-      </button>
+      {onAction && (
+        <button
+          onClick={onAction}
+          className="flex shrink-0 items-center gap-0.5 text-xs font-semibold text-foreground underline-offset-2 hover:underline"
+        >
+          See all <ChevronRight className="h-3.5 w-3.5" />
+        </button>
+      )}
     </div>
   );
 }
