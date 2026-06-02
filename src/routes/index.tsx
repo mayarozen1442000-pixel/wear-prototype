@@ -1256,7 +1256,7 @@ function SearchView({
       </section>
 
       <section className="mt-6">
-        <SectionHeader title="Just for you" variant="lead" onAction={() => onOpenBrowse("trending")} />
+        <SectionHeader title="Just for you" onAction={() => onOpenBrowse("trending")} />
         <div className="mt-3 grid grid-cols-2 gap-3">
           {justForYou.map((p) => (
             <ProductCard key={p.id} p={p} onClick={() => onProduct(p)} />
@@ -1338,15 +1338,13 @@ function NeedShopTile({
   onClick: () => void;
 }) {
   return (
-    <button onClick={onClick} className="group w-[84px] shrink-0 text-left">
-      <div className="flex h-[78px] w-full flex-col items-center justify-between rounded-xl border border-border/60 bg-card px-2.5 py-2.5 transition duration-200 group-hover:border-foreground/20 group-hover:bg-secondary/40 group-active:border-foreground/30 group-active:bg-secondary/70">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-secondary/90">
-          <Icon
-            className="h-4 w-4 text-foreground/75 transition duration-200 group-hover:text-foreground"
-            strokeWidth={1.5}
-          />
-        </div>
-        <span className="flex h-8 w-full items-center justify-center text-center text-[11px] font-semibold leading-tight text-foreground line-clamp-2">
+    <button onClick={onClick} className="group w-[88px] shrink-0">
+      <div className="mx-auto flex h-[88px] w-[88px] flex-col items-center justify-center gap-1.5 rounded-full border border-border/60 bg-card px-2 transition duration-200 group-hover:border-foreground/20 group-hover:bg-secondary/40 group-active:border-foreground/30 group-active:bg-secondary/70">
+        <Icon
+          className="h-4 w-4 shrink-0 text-foreground/75 transition duration-200 group-hover:text-foreground"
+          strokeWidth={1.5}
+        />
+        <span className="text-center text-[10px] font-semibold leading-none text-foreground whitespace-nowrap">
           {label}
         </span>
       </div>
@@ -1445,7 +1443,7 @@ function Discover({
       </div>
 
       <div className="border-t border-border/35 px-5 pt-3.5">
-        <SectionHeader title="Quick filters" variant="standard" />
+        <SectionHeader title="Quick filters" />
         <div className="-mx-5 mt-1.5 overflow-x-auto px-5 pb-1 scrollbar-none">
           <div className="flex w-max gap-2">
             {QUICK_FILTER_PRESETS.map((chip) => (
@@ -1463,9 +1461,9 @@ function Discover({
 
       <section className="mt-5">
         <div className="px-5">
-          <SectionHeader title="Shop by need" variant="lead" onAction={() => onOpenBrowse("hotDay")} />
+          <SectionHeader title="Shop by need" onAction={() => onOpenBrowse("hotDay")} />
         </div>
-        <ShopTileRow align="stretch" gap="wide">
+        <ShopTileRow gap="wide">
           {needs.map((n) => (
             <NeedShopTile
               key={n.label}
@@ -1479,7 +1477,7 @@ function Discover({
 
       <section className="mt-4">
         <div className="px-5">
-          <SectionHeader title="Shop by category" variant="standard" onAction={() => onOpenBrowse("dresses")} />
+          <SectionHeader title="Shop by category" onAction={() => onOpenBrowse("dresses")} />
         </div>
         <ShopTileRow compact>
           {categories.map((c) => (
@@ -1494,7 +1492,7 @@ function Discover({
       </section>
 
       <section className="mt-3 px-5">
-        <SectionHeader title="Good finds under $25" variant="lead" onAction={() => onOpenBrowse("under25")} />
+        <SectionHeader title="Good finds under $25" onAction={() => onOpenBrowse("under25")} />
         <div className="mt-2 grid grid-cols-2 gap-2.5">
           {PRODUCTS.slice(0, 4).map((p) => (
             <ProductCard key={p.id} p={p} onClick={() => onProduct(p)} />
@@ -1508,23 +1506,16 @@ function Discover({
 function SectionHeader({
   title,
   subtitle,
-  variant = "standard",
   onAction,
 }: {
   title: string;
   subtitle?: string;
-  variant?: "lead" | "standard";
   onAction?: () => void;
 }) {
-  const titleClass =
-    variant === "lead"
-      ? "text-base font-bold tracking-tight text-foreground"
-      : "text-sm font-semibold tracking-tight text-foreground";
-
   return (
     <div className="flex items-end justify-between gap-3">
       <div>
-        <h3 className={titleClass}>{title}</h3>
+        <h3 className="text-base font-bold tracking-tight text-foreground">{title}</h3>
         {subtitle && <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{subtitle}</p>}
       </div>
       {onAction && (
