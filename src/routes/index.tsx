@@ -524,10 +524,23 @@ function Prototype() {
   const [showCartPopup, setShowCartPopup] = useState(false);
   const [size, setSize] = useState("M");
   const [browseContext, setBrowseContext] = useState<BrowseContext>(DEFAULT_BROWSE);
+  const [browseSort, setBrowseSort] = useState<SortOption>("relevance");
+  const [showSort, setShowSort] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     mainRef.current?.scrollTo(0, 0);
+  }, [screen]);
+
+  useEffect(() => {
+    setBrowseSort("relevance");
+    setShowSort(false);
+  }, [browseContext.title]);
+
+  useEffect(() => {
+    if (screen !== "browse") {
+      setShowSort(false);
+    }
   }, [screen]);
 
   const goProduct = (p: Product) => {
@@ -557,16 +570,29 @@ function Prototype() {
 
   const openBrowse = (key: keyof typeof BROWSE) => {
     setBrowseContext(BROWSE[key]);
+    setBrowseSort("relevance");
+    setShowSort(false);
     setActiveTab("trending");
     setScreen("browse");
   };
 
   const bagSubtotal = bagItems.reduce((sum, item) => sum + item.p.price, 0);
   const showBottomNav = screen !== "product";
+  const overlayOpen = showSort || showFilters || showAdded;
+
+  useEffect(() => {
+    const el = mainRef.current;
+    if (!el) return;
+    if (overlayOpen) {
+      el.style.overflow = "hidden";
+    } else {
+      el.style.overflow = "";
+    }
+  }, [overlayOpen]);
 
   return (
     <div className="min-h-screen bg-secondary flex flex-col items-center px-4 py-4 md:py-8">
-      <div className="relative flex h-[min(100dvh,860px)] max-h-[100dvh] w-full max-w-[430px] flex-col rounded-[2rem] border border-border/80 bg-background shadow-[var(--shadow-soft)]">
+      <div className="relative flex h-[min(100dvh,860px)] max-h-[100dvh] w-full max-w-[430px] flex-col overflow-hidden rounded-[2rem] border border-border/80 bg-background shadow-[var(--shadow-soft)]">
         <TopBar
           screen={screen}
           browseTitle={browseContext.title}
@@ -613,8 +639,10 @@ function Prototype() {
           {screen === "browse" && (
             <Browse
               context={browseContext}
+              sort={browseSort}
               onProduct={goProduct}
               onOpenFilters={() => setShowFilters(true)}
+              onOpenSort={() => setShowSort(true)}
               bottomPad={showBottomNav}
             />
           )}
@@ -643,6 +671,16 @@ function Prototype() {
         )}
 
         {showFilters && <FilterSheet onClose={() => setShowFilters(false)} />}
+        {showSort && (
+          <SortSheet
+            sort={browseSort}
+            onSelect={(option) => {
+              setBrowseSort(option);
+              setShowSort(false);
+            }}
+            onClose={() => setShowSort(false)}
+          />
+        )}
         {showAdded && (
           <AddedSheet
             product={activeProduct}
@@ -1208,23 +1246,23 @@ function ProductCard({ p, onClick }: { p: Product; onClick: () => void }) {
 
 function Browse({
   context,
+  sort,
   onProduct,
   onOpenFilters,
+  onOpenSort,
   bottomPad,
 }: {
   context: BrowseContext;
+  sort: SortOption;
   onProduct: (p: Product) => void;
   onOpenFilters: () => void;
+  onOpenSort: () => void;
   bottomPad: boolean;
 }) {
   const [active, setActive] = useState(context.subfilters[0]);
-  const [sort, setSort] = useState<SortOption>("relevance");
-  const [showSort, setShowSort] = useState(false);
 
   useEffect(() => {
     setActive(context.subfilters[0]);
-    setSort("relevance");
-    setShowSort(false);
   }, [context.title]);
 
   const sortedProducts = useMemo(
@@ -1268,7 +1306,7 @@ function Browse({
             icon={<ArrowUpDown className="h-3.5 w-3.5" />}
             label={sortLabel(sort)}
             active={sort !== "relevance"}
-            onClick={() => setShowSort(true)}
+            onClick={() => onOpenSort()}
           />
           <ControlBtn
             icon={<SlidersHorizontal className="h-3.5 w-3.5" />}
@@ -1293,17 +1331,6 @@ function Browse({
             </div>
           ))}
         </div>
-      )}
-
-      {showSort && (
-        <SortSheet
-          sort={sort}
-          onSelect={(option) => {
-            setSort(option);
-            setShowSort(false);
-          }}
-          onClose={() => setShowSort(false)}
-        />
       )}
     </div>
   );
@@ -1354,13 +1381,16 @@ function SortSheet({
             <button
               key={option.id}
               onClick={() => onSelect(option.id)}
-              className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3.5 text-left transition ${
+              className={`flex w-full items-start justify-between gap-3 rounded-2xl border px-4 py-3.5 text-left transition ${
                 selected ? "border-foreground/40 bg-secondary" : "border-border hover:border-border/80"
               }`}
             >
-              <span className="text-sm font-medium">{option.label}</span>
+              <div className="min-w-0 flex-1">
+                <span className="text-sm font-medium">{option.label}</span>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{option.hint}</p>
+              </div>
               <span
-                className={`flex h-5 w-5 items-center justify-center rounded-full border ${
+                className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
                   selected ? "border-foreground bg-foreground" : "border-border"
                 }`}
               >
@@ -1963,15 +1993,28 @@ function Sheet({
   title: string;
 }) {
   return (
-    <div className="fixed inset-0 z-40 flex justify-center">
-      <div className="absolute inset-0 animate-in fade-in bg-foreground/45" onClick={onClose} />
-      <div className="absolute bottom-0 flex max-h-[85vh] w-full max-w-[430px] flex-col overflow-hidden rounded-t-3xl bg-background shadow-[var(--shadow-sheet)] animate-in slide-in-from-bottom duration-300">
+    <div className="absolute inset-0 z-50 flex flex-col justify-end overflow-hidden">
+      <button
+        type="button"
+        aria-label="Close sheet"
+        className="absolute inset-0 animate-in fade-in bg-foreground/45"
+        onClick={onClose}
+      />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="sheet-title"
+        className="relative flex max-h-[72%] w-full min-h-0 flex-col overflow-hidden rounded-t-3xl bg-background shadow-[var(--shadow-sheet)] animate-in slide-in-from-bottom duration-300"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="shrink-0 px-5 pb-3 pt-5">
           <div className="mb-1 flex items-center justify-center">
             <span className="h-1 w-10 rounded-full bg-border" />
           </div>
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold">{title}</h3>
+            <h3 id="sheet-title" className="text-base font-bold">
+              {title}
+            </h3>
             <button
               onClick={onClose}
               aria-label="Close"
@@ -1981,7 +2024,7 @@ function Sheet({
             </button>
           </div>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-7">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-7 [-webkit-overflow-scrolling:touch] [touch-action:pan-y]">
           {children}
         </div>
       </div>
