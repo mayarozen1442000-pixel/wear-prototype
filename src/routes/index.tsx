@@ -264,6 +264,48 @@ const PRODUCT_GALLERIES: Record<string, ProductImage[]> = {
     { src: p2, label: "Back view", position: "object-[center_22%]" },
     { src: p4, label: "Fabric detail", position: "object-center" },
   ]),
+  bo1: gallery("Linen wide-leg pant", [
+    { src: p6, label: "Front view", position: "object-[center_22%]" },
+    { src: p1, label: "Side view", position: "object-[center_20%]" },
+    { src: p5, label: "Back view", position: "object-[center_25%]" },
+    { src: p2, label: "Fabric detail", position: "object-center" },
+  ]),
+  bo2: gallery("High-rise denim shorts", [
+    { src: p2, label: "Front view", position: "object-[center_24%]" },
+    { src: p6, label: "Side view", position: "object-[center_20%]" },
+    { src: p1, label: "Back view", position: "object-[center_22%]" },
+    { src: p4, label: "Denim detail", position: "object-center" },
+  ]),
+  bo3: gallery("Flowy midi skirt", [
+    { src: p3, label: "Front view", position: "object-[center_18%]" },
+    { src: p2, label: "Side view", position: "object-[center_20%]" },
+    { src: p1, label: "Movement", position: "object-[center_15%]" },
+    { src: p5, label: "Print detail", position: "object-center" },
+  ]),
+  bo4: gallery("Ribbed bike shorts", [
+    { src: p4, label: "Front view", position: "object-[center_28%]" },
+    { src: p1, label: "Side view", position: "object-[center_22%]" },
+    { src: p3, label: "Back view", position: "object-[center_20%]" },
+    { src: p6, label: "Rib detail", position: "object-center" },
+  ]),
+  sw1: gallery("Classic one-piece", [
+    { src: hero, label: "Front view", position: "object-[center_30%]" },
+    { src: p3, label: "Side view", position: "object-[center_18%]" },
+    { src: p1, label: "Back view", position: "object-[center_22%]" },
+    { src: p4, label: "Fit detail", position: "object-center" },
+  ]),
+  sw2: gallery("Striped bikini set", [
+    { src: p1, label: "Front view", position: "object-[center_25%]" },
+    { src: hero, label: "Styled look", position: "object-[center_32%]" },
+    { src: p3, label: "Side view", position: "object-[center_18%]" },
+    { src: p2, label: "Strap detail", position: "object-center" },
+  ]),
+  sw3: gallery("High-cut swimsuit", [
+    { src: p3, label: "Front view", position: "object-[center_20%]" },
+    { src: p5, label: "Side view", position: "object-[center_28%]" },
+    { src: hero, label: "Back view", position: "object-[center_30%]" },
+    { src: p1, label: "Liner detail", position: "object-center" },
+  ]),
 };
 
 function getProductImages(product: Product): ProductImage[] {
@@ -638,13 +680,109 @@ const TOP_PRODUCTS: Product[] = [
   },
 ];
 
+const BOTTOM_PRODUCTS: Product[] = [
+  {
+    id: "bo1",
+    name: "Linen wide-leg pant",
+    price: 24.0,
+    wasPrice: 31.99,
+    img: p6,
+    rating: 4.6,
+    reviews: 421,
+    cue: "Breathable · Size M in stock",
+    tag: "Top rated",
+    fabric: "Lightweight linen blend",
+    fitNote: "High rise with relaxed leg. Size up for a looser fit.",
+  },
+  {
+    id: "bo2",
+    name: "High-rise denim shorts",
+    price: 18.5,
+    img: p2,
+    rating: 4.5,
+    reviews: 867,
+    cue: "Stretch denim · Ships today",
+    fabric: "Cotton stretch denim",
+    fitNote: "Snug at the waist, relaxed through the thigh.",
+  },
+  {
+    id: "bo3",
+    name: "Flowy midi skirt",
+    price: 22.0,
+    wasPrice: 29.99,
+    img: p3,
+    rating: 4.7,
+    reviews: 533,
+    cue: "Most saved this week",
+    tag: "Top rated",
+    fabric: "Soft viscose",
+    fitNote: "Elastic waist. Sits at the natural waist.",
+  },
+  {
+    id: "bo4",
+    name: "Ribbed bike shorts",
+    price: 12.9,
+    img: p4,
+    rating: 4.4,
+    reviews: 612,
+    cue: "Workout-ready · Size M in stock",
+    fabric: "Stretch rib knit",
+    fitNote: "Mid-thigh length with a compressive feel.",
+  },
+];
+
+const SWIMWEAR_PRODUCTS: Product[] = [
+  {
+    id: "sw1",
+    name: "Classic one-piece",
+    price: 29.0,
+    wasPrice: 38.0,
+    img: hero,
+    rating: 4.6,
+    reviews: 384,
+    cue: "Resort-ready · Free returns",
+    tag: "Top rated",
+    fabric: "Quick-dry nylon blend",
+    fitNote: "Supportive fit with adjustable straps.",
+  },
+  {
+    id: "sw2",
+    name: "Striped bikini set",
+    price: 19.5,
+    img: p1,
+    rating: 4.5,
+    reviews: 492,
+    cue: "Mix-and-match fit · Under $20",
+    fabric: "Stretch swim fabric",
+    fitNote: "Runs true to size. Removable padding.",
+  },
+  {
+    id: "sw3",
+    name: "High-cut swimsuit",
+    price: 21.0,
+    img: p3,
+    rating: 4.4,
+    reviews: 276,
+    cue: "Flattering leg line · Size M in stock",
+    fabric: "Matte swim jersey",
+    fitNote: "Higher cut on the hip. Size up if between sizes.",
+  },
+];
+
 const BAG_PRODUCTS = ACCESSORY_PRODUCTS.filter((product) => /bag|tote|bucket/i.test(product.name));
 const SANDAL_PRODUCTS = SHOE_PRODUCTS.filter((product) => /sandal|slide|espadrille/i.test(product.name));
 const JEWELRY_HAT_PRODUCTS = ACCESSORY_PRODUCTS.filter(
   (product) => !/bag|tote|bucket/i.test(product.name),
 );
 
-const ALL_CATALOG = [...PRODUCTS, ...SHOE_PRODUCTS, ...ACCESSORY_PRODUCTS, ...TOP_PRODUCTS];
+const ALL_CATALOG = [
+  ...PRODUCTS,
+  ...SHOE_PRODUCTS,
+  ...ACCESSORY_PRODUCTS,
+  ...TOP_PRODUCTS,
+  ...BOTTOM_PRODUCTS,
+  ...SWIMWEAR_PRODUCTS,
+];
 
 type FilterCategoryId = "size" | "price" | "delivery" | "rating" | "returns" | "confidence";
 
@@ -795,13 +933,21 @@ const BROWSE: Record<string, BrowseContext> = {
     "Sorted by popularity. Every price includes active discounts.",
     ["All", "Sandals", "Flats", "Heels", "Slides"],
   ),
-  sandals: makeBrowseContext(
-    "Sandals",
-    SANDAL_PRODUCTS,
-    "sandals",
+  bottoms: makeBrowseContext(
+    "Bottoms",
+    BOTTOM_PRODUCTS,
+    "bottoms",
     "Size M · Final prices",
-    "Light, packable styles for warm days and getaways.",
-    ["All", "Flat", "Wedge", "Slide"],
+    "Pants, shorts, and skirts with fit notes upfront.",
+    ["All", "Pants", "Shorts", "Skirts"],
+  ),
+  swimwear: makeBrowseContext(
+    "Swimwear",
+    [PRODUCTS[3], ...SWIMWEAR_PRODUCTS],
+    "items",
+    "Size M · Final prices",
+    "Swimsuits and cover-ups for pool days and getaways.",
+    ["All", "One-piece", "Bikini", "Cover-ups"],
   ),
   accessories: makeBrowseContext(
     "Accessories",
@@ -809,15 +955,7 @@ const BROWSE: Record<string, BrowseContext> = {
     "accessories",
     "Final prices",
     "Small add-ons that complete the look—most under $20.",
-    ["All", "Jewelry", "Bags", "Hats"],
-  ),
-  bags: makeBrowseContext(
-    "Bags",
-    BAG_PRODUCTS,
-    "bags",
-    "Final prices",
-    "Room for essentials without the bulk.",
-    ["All", "Crossbody", "Tote", "Mini"],
+    ["All", "Jewelry", "Hats", "Hair"],
   ),
   tops: makeBrowseContext(
     "Tops",
@@ -897,7 +1035,7 @@ const BROWSE: Record<string, BrowseContext> = {
   ),
   packLight: makeBrowseContext(
     "Pack light",
-    [PRODUCTS[3], PRODUCTS[4], PRODUCTS[1], PRODUCTS[6], SHOE_PRODUCTS[2], SHOE_PRODUCTS[4], ACCESSORY_PRODUCTS[1], BAG_PRODUCTS[1]],
+    [PRODUCTS[3], PRODUCTS[4], PRODUCTS[1], PRODUCTS[6], SHOE_PRODUCTS[2], SHOE_PRODUCTS[4], ACCESSORY_PRODUCTS[1], SWIMWEAR_PRODUCTS[0]],
     "items",
     "Wrinkle-friendly · Final prices",
     "Pieces that pack flat and still look great on arrival.",
@@ -953,8 +1091,8 @@ const SHOP_BY_CATEGORY_ITEMS: { label: string; key: keyof typeof BROWSE; img: st
   { label: "Shoes", key: "shoes", img: catShoes },
   { label: "Accessories", key: "accessories", img: catAccessories },
   { label: "Tops", key: "tops", img: p6 },
-  { label: "Bags", key: "bags", img: p2 },
-  { label: "Sandals", key: "sandals", img: p1 },
+  { label: "Swimwear", key: "swimwear", img: hero },
+  { label: "Bottoms", key: "bottoms", img: p3 },
 ];
 
 function Prototype() {
