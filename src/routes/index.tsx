@@ -974,7 +974,7 @@ const BROWSE: Record<string, BrowseContext> = {
     ["All", "Dresses", "Tops", "Shoes", "Accessories"],
   ),
   trending: makeBrowseContext(
-    "Trending now",
+    "Trending",
     [...PRODUCTS, ...SHOE_PRODUCTS.slice(0, 2), ...ACCESSORY_PRODUCTS.slice(0, 1)],
     "items",
     "Updated today · Final prices",
@@ -1109,6 +1109,7 @@ function Prototype() {
   const [activeFilterIds, setActiveFilterIds] = useState<string[]>([]);
   const [pendingFilterIds, setPendingFilterIds] = useState<string[]>([]);
   const [filterCategory, setFilterCategory] = useState<FilterCategoryId>("price");
+  const [filterReturn, setFilterReturn] = useState<{ screen: Screen; tab: Tab } | null>(null);
   const mainRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -1172,6 +1173,7 @@ function Prototype() {
   };
 
   const openFilters = (category: FilterCategoryId, preselectOptionId?: string) => {
+    setFilterReturn({ screen, tab: activeTab });
     setFilterCategory(category);
     setPendingFilterIds(() => {
       const base = [...activeFilterIds];
@@ -1206,6 +1208,21 @@ function Prototype() {
     setBrowseContext(buildFilteredBrowseContext(filterIds));
   };
 
+  const goBack = () => {
+    if (screen === "product") {
+      setScreen("browse");
+      setActiveTab("trending");
+      return;
+    }
+    if (screen === "filters" && filterReturn) {
+      setScreen(filterReturn.screen);
+      setActiveTab(filterReturn.tab);
+      setFilterReturn(null);
+      return;
+    }
+    goToTab("home");
+  };
+
   const bagSubtotal = bagItems.reduce((sum, item) => sum + item.p.price, 0);
   const showBottomNav = screen !== "product";
   const overlayOpen = showSort || showAdded;
@@ -1237,18 +1254,7 @@ function Prototype() {
             setShowCartPopup(false);
             goToTab("cart");
           }}
-          onBack={() => {
-            if (screen === "product") {
-              setScreen("browse");
-              setActiveTab("trending");
-            } else if (screen === "browse") {
-              goToTab("home");
-            } else if (screen === "filters") {
-              goToTab("home");
-            } else if (screen === "needs" || screen === "categories") {
-              goToTab("home");
-            }
-          }}
+          onBack={goBack}
           onSearch={() => goToTab("search")}
           onGoHome={() => goToTab("home")}
         />
@@ -1388,12 +1394,7 @@ function TopBar({
   onSearch: () => void;
   onGoHome: () => void;
 }) {
-  const showBack =
-    screen === "browse" ||
-    screen === "product" ||
-    screen === "filters" ||
-    screen === "needs" ||
-    screen === "categories";
+  const showBack = screen !== "discover";
   const titles: Record<Screen, string> = {
     discover: "",
     browse: browseTitle,
@@ -1420,7 +1421,7 @@ function TopBar({
             >
               <ArrowLeft className="h-5 w-5" />
             </button>
-          ) : screen === "discover" ? (
+          ) : (
             <button
               onClick={onGoHome}
               aria-label="Go to home"
@@ -1428,8 +1429,6 @@ function TopBar({
             >
               WEAR<span className="text-foreground">.</span>
             </button>
-          ) : (
-            <span className="w-9" aria-hidden="true" />
           )}
         </div>
 
