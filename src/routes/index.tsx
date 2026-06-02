@@ -19,7 +19,7 @@ import {
   Sparkles,
   Luggage,
   Dumbbell,
-  Weight,
+  Activity,
   ShieldCheck,
   Home,
   User,
@@ -941,11 +941,11 @@ const DEFAULT_BROWSE = BROWSE.dresses;
 
 const SHOP_BY_NEED_ITEMS: { label: string; key: keyof typeof BROWSE; Icon: typeof Sun }[] = [
   { label: "Hot day", key: "hotDay", Icon: Sun },
-  { label: "Gym", key: "gym", Icon: Weight },
+  { label: "Gym", key: "gym", Icon: Dumbbell },
   { label: "No-iron", key: "noIron", Icon: Shirt },
   { label: "Night out", key: "dinnerPlans", Icon: Sparkles },
   { label: "Pack light", key: "packLight", Icon: Luggage },
-  { label: "Sporty", key: "sporty", Icon: Dumbbell },
+  { label: "Sporty", key: "sporty", Icon: Activity },
 ];
 
 const SHOP_BY_CATEGORY_ITEMS: { label: string; key: keyof typeof BROWSE; img: string }[] = [
