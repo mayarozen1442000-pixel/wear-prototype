@@ -1608,7 +1608,7 @@ function SectionHeader({
       {onAction && (
         <button
           onClick={onAction}
-          className="flex shrink-0 items-center gap-0.5 text-xs font-medium text-foreground underline-offset-2 hover:underline"
+          className="flex shrink-0 items-center gap-0.5 text-xs font-medium text-muted-foreground underline-offset-2 transition-colors hover:text-foreground hover:underline"
         >
           See all <ChevronRight className="h-3.5 w-3.5" />
         </button>
