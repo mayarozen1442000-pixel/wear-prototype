@@ -19,7 +19,7 @@ import {
   Sparkles,
   Luggage,
   Dumbbell,
-  Activity,
+  Weight,
   ShieldCheck,
   Home,
   User,
@@ -787,7 +787,7 @@ const DEFAULT_BROWSE = BROWSE.dresses;
 
 const SHOP_BY_NEED_ITEMS: { label: string; key: keyof typeof BROWSE; Icon: typeof Sun }[] = [
   { label: "Hot day", key: "hotDay", Icon: Sun },
-  { label: "Gym", key: "gym", Icon: Activity },
+  { label: "Gym", key: "gym", Icon: Weight },
   { label: "No-iron", key: "noIron", Icon: Shirt },
   { label: "Night out", key: "dinnerPlans", Icon: Sparkles },
   { label: "Pack light", key: "packLight", Icon: Luggage },
