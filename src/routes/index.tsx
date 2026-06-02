@@ -1539,18 +1539,6 @@ function ProductDetail({
           </div>
         </div>
 
-        <div className="mt-4 rounded-2xl border border-border p-4">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-            What shoppers say
-          </p>
-          <p className="mt-2 text-sm leading-relaxed">
-            {product.reviewSummary ??
-              "Shoppers say it feels light, fits close, and looks like the photos."}
-          </p>
-          <button className="mt-2 text-xs font-semibold text-foreground underline-offset-2 hover:underline">
-            Read all reviews
-          </button>
-        </div>
         </div>
       </div>
 
@@ -1564,6 +1552,21 @@ function ProductDetail({
         <p className="mt-2 text-center text-[11px] text-muted-foreground">
           Size {size} selected · Free returns if the fit isn't right
         </p>
+      </div>
+
+      <div className="px-5 pb-6 pt-4">
+        <div className="rounded-2xl border border-border p-4">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+            What shoppers say
+          </p>
+          <p className="mt-2 text-sm leading-relaxed">
+            {product.reviewSummary ??
+              "Shoppers say it feels light, fits close, and looks like the photos."}
+          </p>
+          <button className="mt-2 text-xs font-semibold text-foreground underline-offset-2 hover:underline">
+            Read all reviews
+          </button>
+        </div>
       </div>
     </div>
   );
