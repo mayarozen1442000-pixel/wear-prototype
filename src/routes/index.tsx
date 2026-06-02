@@ -1962,21 +1962,25 @@ function Sheet({
   return (
     <div className="fixed inset-0 z-40 flex justify-center">
       <div className="absolute inset-0 animate-in fade-in bg-foreground/45" onClick={onClose} />
-      <div className="absolute bottom-0 max-h-[85vh] w-full max-w-[430px] overflow-y-auto rounded-t-3xl bg-background p-5 pb-7 shadow-[var(--shadow-sheet)] animate-in slide-in-from-bottom duration-300">
-        <div className="mb-1 flex items-center justify-center">
-          <span className="h-1 w-10 rounded-full bg-border" />
+      <div className="absolute bottom-0 flex max-h-[85vh] w-full max-w-[430px] flex-col overflow-hidden rounded-t-3xl bg-background shadow-[var(--shadow-sheet)] animate-in slide-in-from-bottom duration-300">
+        <div className="shrink-0 px-5 pb-3 pt-5">
+          <div className="mb-1 flex items-center justify-center">
+            <span className="h-1 w-10 rounded-full bg-border" />
+          </div>
+          <div className="flex items-center justify-between">
+            <h3 className="text-base font-bold">{title}</h3>
+            <button
+              onClick={onClose}
+              aria-label="Close"
+              className="-mr-1 rounded-full p-1.5 hover:bg-secondary"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
         </div>
-        <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-base font-bold">{title}</h3>
-          <button
-            onClick={onClose}
-            aria-label="Close"
-            className="-mr-1 rounded-full p-1.5 hover:bg-secondary"
-          >
-            <X className="h-5 w-5" />
-          </button>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-7">
+          {children}
         </div>
-        {children}
       </div>
     </div>
   );
