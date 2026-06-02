@@ -1066,7 +1066,7 @@ function Discover({
         <div className="px-5">
           <SectionHeader title="Quick filters" />
         </div>
-        <div className="mt-2 flex gap-2 overflow-x-auto px-5 pb-0.5 scrollbar-none">
+        <ShopTileRow>
           {chips.map((c) => (
             <button
               key={c.label}
@@ -1076,7 +1076,7 @@ function Discover({
               {c.label}
             </button>
           ))}
-        </div>
+        </ShopTileRow>
       </div>
 
       <section className="mt-3">
