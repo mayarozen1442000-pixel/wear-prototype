@@ -1406,10 +1406,12 @@ function TopBar({
     categories: "Shop by category",
   };
 
+  const pageTitle = titles[screen];
+
   return (
     <div className="relative z-50 shrink-0 border-b border-border/60 bg-background/95 backdrop-blur-md">
-      <div className="flex h-14 items-center justify-between px-5">
-        <div className="flex min-w-0 items-center gap-3">
+      <div className="relative flex h-14 items-center justify-between px-5">
+        <div className="z-10 flex min-w-9 items-center justify-start">
           {showBack ? (
             <button
               onClick={onBack}
@@ -1418,7 +1420,7 @@ function TopBar({
             >
               <ArrowLeft className="h-5 w-5" />
             </button>
-          ) : (
+          ) : screen === "discover" ? (
             <button
               onClick={onGoHome}
               aria-label="Go to home"
@@ -1426,12 +1428,18 @@ function TopBar({
             >
               WEAR<span className="text-foreground">.</span>
             </button>
-          )}
-          {titles[screen] && (
-            <h1 className="truncate text-base font-semibold">{titles[screen]}</h1>
+          ) : (
+            <span className="w-9" aria-hidden="true" />
           )}
         </div>
-        <div className="relative flex items-center gap-0.5">
+
+        {pageTitle && (
+          <h1 className="pointer-events-none absolute inset-x-0 truncate px-16 text-center text-base font-semibold">
+            {pageTitle}
+          </h1>
+        )}
+
+        <div className="relative z-10 flex min-w-9 items-center justify-end gap-0.5">
           {screen === "discover" && (
             <button
               onClick={onSearch}
