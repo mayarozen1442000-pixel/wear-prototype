@@ -538,6 +538,7 @@ function Prototype() {
             }
           }}
           onSearch={() => goToTab("search")}
+          onGoHome={() => goToTab("home")}
         />
 
         {showCartPopup && (
@@ -577,7 +578,11 @@ function Prototype() {
             />
           )}
           {screen === "search" && (
-            <SearchView bottomPad={showBottomNav} onOpenBrowse={openBrowse} />
+            <SearchView
+              bottomPad={showBottomNav}
+              onOpenBrowse={openBrowse}
+              onProduct={goProduct}
+            />
           )}
           {screen === "profile" && <ProfileView bottomPad={showBottomNav} />}
         </main>
@@ -616,6 +621,7 @@ function TopBar({
   onRemoveCartItem,
   onCartCheckout,
   onSearch,
+  onGoHome,
 }: {
   screen: Screen;
   browseTitle: string;
@@ -628,6 +634,7 @@ function TopBar({
   onRemoveCartItem: (index: number) => void;
   onCartCheckout: () => void;
   onSearch: () => void;
+  onGoHome: () => void;
 }) {
   const showBack = screen === "browse" || screen === "product";
   const titles: Record<Screen, string> = {
@@ -652,9 +659,13 @@ function TopBar({
               <ArrowLeft className="h-5 w-5" />
             </button>
           ) : (
-            <span className="text-2xl font-bold tracking-tight text-foreground">
+            <button
+              onClick={onGoHome}
+              aria-label="Go to home"
+              className="text-2xl font-bold tracking-tight text-foreground transition-opacity hover:opacity-70"
+            >
               WEAR<span className="text-foreground">.</span>
-            </span>
+            </button>
           )}
           {titles[screen] && (
             <h1 className="truncate text-base font-semibold">{titles[screen]}</h1>
@@ -762,10 +773,13 @@ function BottomNav({
 function SearchView({
   bottomPad,
   onOpenBrowse,
+  onProduct,
 }: {
   bottomPad: boolean;
   onOpenBrowse: (key: keyof typeof BROWSE) => void;
+  onProduct: (p: Product) => void;
 }) {
+  const justForYou = [PRODUCTS[1], PRODUCTS[4], PRODUCTS[0], ACCESSORY_PRODUCTS[0]];
   const recent: { label: string; key: keyof typeof BROWSE }[] = [
     { label: "Linen mini dress", key: "linenMini" },
     { label: "Vacation cover-up", key: "vacationCoverUp" },
@@ -806,7 +820,7 @@ function SearchView({
         </div>
       </section>
 
-      <section className="mt-6">
+      <section className="mt-5">
         <h2 className="text-sm font-bold">Trending now</h2>
         <div className="mt-2 space-y-2">
           {trending.map((term) => (
@@ -818,6 +832,15 @@ function SearchView({
               {term.label}
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-6">
+        <SectionHeader title="Just for you" onAction={() => onOpenBrowse("trending")} />
+        <div className="mt-3 grid grid-cols-2 gap-3">
+          {justForYou.map((p) => (
+            <ProductCard key={p.id} p={p} onClick={() => onProduct(p)} />
           ))}
         </div>
       </section>
@@ -951,49 +974,46 @@ function Discover({
 
   return (
     <div className={bottomPad ? "pb-4" : "pb-10"}>
-      <div className="px-5 pt-3">
+      <div className="px-5 pt-2">
         <button
           onClick={onOpenSearch}
-          className="flex h-11 w-full items-center gap-2.5 rounded-full border border-border bg-secondary px-4 text-left"
+          className="flex h-10 w-full items-center gap-2.5 rounded-full border border-border bg-secondary px-4 text-left"
         >
           <Search className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm text-muted-foreground">Search dresses, cover-ups, sandals…</span>
         </button>
       </div>
 
-      <div className="mt-3 px-5">
+      <div className="mt-2 px-5">
         <button
           onClick={() => onOpenBrowse("summerEdit")}
-          className="group relative block w-full overflow-hidden rounded-3xl text-left"
+          className="group relative block w-full overflow-hidden rounded-2xl text-left"
         >
           <img
             src={hero}
             alt="Model wearing a lightweight vacation dress on a sunny boardwalk"
-            className="h-60 w-full object-cover object-[center_30%] transition duration-700 group-hover:scale-[1.02]"
+            className="h-36 w-full object-cover object-[center_30%] transition duration-700 group-hover:scale-[1.02]"
             width={832}
             height={576}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
-          <div className="absolute bottom-0 left-0 flex max-w-[85%] flex-col items-start p-5 text-left text-white">
-            <span className="mb-2 inline-block rounded-sm bg-white px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-foreground">
+          <div className="absolute bottom-0 left-0 flex max-w-[90%] flex-col items-start p-3.5 text-left text-white">
+            <span className="mb-1.5 inline-block rounded-sm bg-white px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-foreground">
               Summer edit
             </span>
-            <h2 className="text-[1.65rem] font-bold leading-[1.15] tracking-tight">
+            <h2 className="text-lg font-bold leading-tight tracking-tight">
               Pack light. Dress up nightly.
             </h2>
-            <p className="mt-1.5 max-w-[28ch] text-sm leading-snug opacity-95">
-              Vacation dresses under $35—with final prices, delivery dates, and fit notes upfront.
-            </p>
-            <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold">
-              Shop the edit <ChevronRight className="h-4 w-4" />
+            <span className="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold">
+              Shop the edit <ChevronRight className="h-3.5 w-3.5" />
             </span>
           </div>
         </button>
       </div>
 
-      <div className="mt-3">
+      <div className="mt-2">
         <p className="px-5 text-xs font-medium text-muted-foreground">Quick filters</p>
-        <div className="mt-2 flex gap-2 overflow-x-auto px-5 pb-1 scrollbar-none">
+        <div className="mt-1.5 flex gap-2 overflow-x-auto px-5 pb-0.5 scrollbar-none">
           {chips.map((c) => (
             <button
               key={c.label}
@@ -1006,7 +1026,7 @@ function Discover({
         </div>
       </div>
 
-      <section className="mt-5">
+      <section className="mt-3">
         <div className="px-5">
           <SectionHeader title="Shop by need" onAction={() => onOpenBrowse("hotDay")} />
         </div>
@@ -1021,7 +1041,7 @@ function Discover({
             >
               <div className="flex h-full w-full items-center justify-center">
                 <n.Icon
-                  className="h-8 w-8 text-foreground/70 transition-all duration-200 group-hover:text-foreground group-hover:scale-105"
+                  className="h-7 w-7 text-foreground/70 transition-all duration-200 group-hover:text-foreground group-hover:scale-105"
                   strokeWidth={1.5}
                 />
               </div>
@@ -1030,7 +1050,16 @@ function Discover({
         </ShopTileRow>
       </section>
 
-      <section className="mt-5">
+      <section className="mt-3 px-5">
+        <SectionHeader title="Good finds under $25" onAction={() => onOpenBrowse("under25")} />
+        <div className="mt-2 grid grid-cols-2 gap-2.5">
+          {PRODUCTS.slice(0, 4).map((p) => (
+            <ProductCard key={p.id} p={p} onClick={() => onProduct(p)} />
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-4">
         <div className="px-5">
           <SectionHeader title="Shop by category" onAction={() => onOpenBrowse("dresses")} />
         </div>
@@ -1046,15 +1075,6 @@ function Discover({
             </ShopTileButton>
           ))}
         </ShopTileRow>
-      </section>
-
-      <section className="mt-5 px-5">
-        <SectionHeader title="Good finds under $25" onAction={() => onOpenBrowse("under25")} />
-        <div className="mt-3 grid grid-cols-2 gap-3">
-          {PRODUCTS.slice(0, 4).map((p) => (
-            <ProductCard key={p.id} p={p} onClick={() => onProduct(p)} />
-          ))}
-        </div>
       </section>
     </div>
   );
