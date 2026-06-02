@@ -865,7 +865,7 @@ function ProfileView({ bottomPad }: { bottomPad: boolean }) {
 
 function ShopTileRow({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mt-2 overflow-x-auto px-5 pb-1 scrollbar-none">
+    <div className="mt-2 overflow-x-auto px-5 py-2 scrollbar-none">
       <div className="flex w-max items-start gap-3">{children}</div>
     </div>
   );
@@ -889,10 +889,10 @@ function ShopTileButton({
   return (
     <button onClick={onClick} className="group w-[72px] shrink-0 p-0">
       <div
-        className={`aspect-square w-full overflow-hidden rounded-2xl ring-1 transition-all duration-200 ${
+        className={`aspect-square w-full rounded-2xl ring-1 transition-all duration-200 ${
           highlightOnHover
-            ? "bg-secondary ring-border/50 group-hover:scale-105 group-hover:bg-foreground group-hover:ring-foreground group-hover:shadow-[var(--shadow-card)]"
-            : "bg-secondary ring-border/50"
+            ? "bg-secondary ring-border/50 group-hover:bg-muted group-hover:ring-foreground/20 group-hover:shadow-[var(--shadow-card)]"
+            : "overflow-hidden bg-secondary ring-border/50"
         }`}
       >
         {children}
@@ -900,7 +900,7 @@ function ShopTileButton({
       <p
         className={`mt-2 w-full text-center text-xs font-medium transition-colors duration-200 ${
           wrapLabel ? "leading-snug break-words" : "leading-tight"
-        } ${highlightOnHover ? "group-hover:font-semibold group-hover:text-foreground" : ""}`}
+        } ${highlightOnHover ? "text-muted-foreground group-hover:text-foreground" : ""}`}
       >
         {label}
       </p>
@@ -1021,7 +1021,7 @@ function Discover({
             >
               <div className="flex h-full w-full items-center justify-center">
                 <n.Icon
-                  className="h-8 w-8 text-foreground/75 transition-all duration-200 group-hover:scale-110 group-hover:text-primary-foreground"
+                  className="h-8 w-8 text-foreground/70 transition-all duration-200 group-hover:text-foreground group-hover:scale-105"
                   strokeWidth={1.5}
                 />
               </div>
