@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import {
   Search,
   ShoppingBag,
@@ -169,6 +169,57 @@ type BrowseContext = {
   subfilters: string[];
   products: Product[];
 };
+
+type SortOption = "relevance" | "price-asc" | "price-desc" | "rating" | "reviews";
+
+const SORT_OPTIONS: { id: SortOption; label: string; hint: string }[] = [
+  {
+    id: "relevance",
+    label: "Relevance",
+    hint: "Sorted by relevance. Every price includes active discounts—no codes to hunt.",
+  },
+  {
+    id: "price-asc",
+    label: "Price: low to high",
+    hint: "Showing lowest prices first—all discounts already applied.",
+  },
+  {
+    id: "price-desc",
+    label: "Price: high to low",
+    hint: "Showing highest prices first—all discounts already applied.",
+  },
+  {
+    id: "rating",
+    label: "Top rated",
+    hint: "Highest customer ratings first.",
+  },
+  {
+    id: "reviews",
+    label: "Most reviewed",
+    hint: "Styles with the most shopper reviews first.",
+  },
+];
+
+function sortProducts(products: Product[], sort: SortOption): Product[] {
+  const items = [...products];
+  switch (sort) {
+    case "price-asc":
+      return items.sort((a, b) => a.price - b.price);
+    case "price-desc":
+      return items.sort((a, b) => b.price - a.price);
+    case "rating":
+      return items.sort((a, b) => b.rating - a.rating || b.reviews - a.reviews);
+    case "reviews":
+      return items.sort((a, b) => b.reviews - a.reviews);
+    default:
+      return items;
+  }
+}
+
+function sortLabel(sort: SortOption): string {
+  if (sort === "relevance") return "Sort";
+  return SORT_OPTIONS.find((o) => o.id === sort)?.label ?? "Sort";
+}
 
 const SHOE_PRODUCTS: Product[] = [
   {
@@ -1167,12 +1218,24 @@ function Browse({
   bottomPad: boolean;
 }) {
   const [active, setActive] = useState(context.subfilters[0]);
+  const [sort, setSort] = useState<SortOption>("relevance");
+  const [showSort, setShowSort] = useState(false);
 
   useEffect(() => {
     setActive(context.subfilters[0]);
+    setSort("relevance");
+    setShowSort(false);
   }, [context.title]);
 
-  const count = context.products.length;
+  const sortedProducts = useMemo(
+    () => sortProducts(context.products, sort),
+    [context.products, sort],
+  );
+  const activeSortHint =
+    sort === "relevance"
+      ? context.sortHint
+      : (SORT_OPTIONS.find((o) => o.id === sort)?.hint ?? context.sortHint);
+  const count = sortedProducts.length;
 
   return (
     <div className={bottomPad ? "pb-4" : "pb-10"}>
@@ -1201,7 +1264,12 @@ function Browse({
           {context.meta}
         </p>
         <div className="flex gap-1.5">
-          <ControlBtn icon={<ArrowUpDown className="h-3.5 w-3.5" />} label="Sort" />
+          <ControlBtn
+            icon={<ArrowUpDown className="h-3.5 w-3.5" />}
+            label={sortLabel(sort)}
+            active={sort !== "relevance"}
+            onClick={() => setShowSort(true)}
+          />
           <ControlBtn
             icon={<SlidersHorizontal className="h-3.5 w-3.5" />}
             label="Refine"
@@ -1210,7 +1278,7 @@ function Browse({
         </div>
       </div>
 
-      <p className="px-5 pt-3 text-xs text-muted-foreground">{context.sortHint}</p>
+      <p className="px-5 pt-3 text-xs text-muted-foreground">{activeSortHint}</p>
 
       {count === 0 ? (
         <div className="mx-5 mt-6 rounded-2xl border border-dashed border-border py-12 text-center">
@@ -1219,12 +1287,23 @@ function Browse({
         </div>
       ) : (
         <div className="mt-3 grid grid-cols-2 gap-3 px-5">
-          {context.products.map((p) => (
+          {sortedProducts.map((p) => (
             <div key={p.id} className="relative">
               <ProductCard p={p} onClick={() => onProduct(p)} />
             </div>
           ))}
         </div>
+      )}
+
+      {showSort && (
+        <SortSheet
+          sort={sort}
+          onSelect={(option) => {
+            setSort(option);
+            setShowSort(false);
+          }}
+          onClose={() => setShowSort(false)}
+        />
       )}
     </div>
   );
@@ -1233,20 +1312,65 @@ function Browse({
 function ControlBtn({
   icon,
   label,
+  active,
   onClick,
 }: {
   icon?: React.ReactNode;
   label: string;
+  active?: boolean;
   onClick?: () => void;
 }) {
   return (
     <button
       onClick={onClick}
-      className="flex h-8 items-center gap-1 rounded-full bg-secondary px-3 text-xs font-semibold transition hover:bg-muted"
+      className={`flex h-8 max-w-[9.5rem] items-center gap-1 truncate rounded-full px-3 text-xs font-semibold transition ${
+        active ? "bg-foreground text-primary-foreground" : "bg-secondary hover:bg-muted"
+      }`}
     >
       {icon}
-      {label}
+      <span className="truncate">{label}</span>
     </button>
+  );
+}
+
+function SortSheet({
+  sort,
+  onSelect,
+  onClose,
+}: {
+  sort: SortOption;
+  onSelect: (sort: SortOption) => void;
+  onClose: () => void;
+}) {
+  return (
+    <Sheet onClose={onClose} title="Sort by">
+      <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
+        Choose how you'd like these results ordered.
+      </p>
+      <div className="space-y-2">
+        {SORT_OPTIONS.map((option) => {
+          const selected = sort === option.id;
+          return (
+            <button
+              key={option.id}
+              onClick={() => onSelect(option.id)}
+              className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3.5 text-left transition ${
+                selected ? "border-foreground/40 bg-secondary" : "border-border hover:border-border/80"
+              }`}
+            >
+              <span className="text-sm font-medium">{option.label}</span>
+              <span
+                className={`flex h-5 w-5 items-center justify-center rounded-full border ${
+                  selected ? "border-foreground bg-foreground" : "border-border"
+                }`}
+              >
+                {selected && <Check className="h-3 w-3 text-primary-foreground" />}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </Sheet>
   );
 }
 
