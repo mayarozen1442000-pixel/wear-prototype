@@ -60,7 +60,8 @@ type Screen =
   | "profile"
   | "filters"
   | "needs"
-  | "categories";
+  | "categories"
+  | "wishlist";
 type Tab = "home" | "search" | "trending" | "cart" | "profile";
 
 const TAB_TO_SCREEN: Record<Tab, Screen> = {
@@ -1110,7 +1111,26 @@ function Prototype() {
   const [pendingFilterIds, setPendingFilterIds] = useState<string[]>([]);
   const [filterCategory, setFilterCategory] = useState<FilterCategoryId>("price");
   const [filterReturn, setFilterReturn] = useState<{ screen: Screen; tab: Tab } | null>(null);
+  const [productReturn, setProductReturn] = useState<{ screen: Screen; tab: Tab } | null>(null);
+  const [wishlistIds, setWishlistIds] = useState<string[]>([]);
   const mainRef = useRef<HTMLElement>(null);
+
+  const isWishlisted = (productId: string) => wishlistIds.includes(productId);
+
+  const toggleWishlist = (productId: string) => {
+    setWishlistIds((ids) =>
+      ids.includes(productId) ? ids.filter((id) => id !== productId) : [...ids, productId],
+    );
+  };
+
+  const wishlistProducts = useMemo(
+    () => ALL_CATALOG.filter((product) => wishlistIds.includes(product.id)),
+    [wishlistIds],
+  );
+
+  const openWishlist = () => {
+    setScreen("wishlist");
+  };
 
   useEffect(() => {
     mainRef.current?.scrollTo(0, 0);
@@ -1128,6 +1148,7 @@ function Prototype() {
   }, [screen]);
 
   const goProduct = (p: Product) => {
+    setProductReturn({ screen, tab: activeTab });
     setActiveProduct(p);
     setSize("M");
     setScreen("product");
@@ -1209,9 +1230,20 @@ function Prototype() {
   };
 
   const goBack = () => {
+    if (screen === "product" && productReturn) {
+      setScreen(productReturn.screen);
+      setActiveTab(productReturn.tab);
+      setProductReturn(null);
+      return;
+    }
     if (screen === "product") {
       setScreen("browse");
       setActiveTab("trending");
+      return;
+    }
+    if (screen === "wishlist") {
+      setScreen("profile");
+      setActiveTab("profile");
       return;
     }
     if (screen === "filters" && filterReturn) {
@@ -1277,6 +1309,8 @@ function Prototype() {
               onOpenCategoriesIndex={openCategoriesIndex}
               onOpenSearch={() => goToTab("search")}
               onProduct={goProduct}
+              isWishlisted={isWishlisted}
+              onToggleWishlist={toggleWishlist}
               bottomPad={showBottomNav}
             />
           )}
@@ -1292,6 +1326,8 @@ function Prototype() {
               sort={browseSort}
               activeFilterIds={activeFilterIds}
               onProduct={goProduct}
+              isWishlisted={isWishlisted}
+              onToggleWishlist={toggleWishlist}
               onOpenFilters={() => openFilters(filterCategory)}
               onRemoveFilter={(id) => updateActiveFilters(activeFilterIds.filter((f) => f !== id))}
               onOpenSort={() => setShowSort(true)}
@@ -1316,7 +1352,14 @@ function Prototype() {
             />
           )}
           {screen === "product" && (
-            <ProductDetail product={activeProduct} size={size} setSize={setSize} onAdd={addToBag} />
+            <ProductDetail
+              product={activeProduct}
+              size={size}
+              setSize={setSize}
+              saved={isWishlisted(activeProduct.id)}
+              onToggleSave={() => toggleWishlist(activeProduct.id)}
+              onAdd={addToBag}
+            />
           )}
           {screen === "checkout" && (
             <Checkout
@@ -1331,9 +1374,26 @@ function Prototype() {
               bottomPad={showBottomNav}
               onOpenBrowse={openBrowse}
               onProduct={goProduct}
+              isWishlisted={isWishlisted}
+              onToggleWishlist={toggleWishlist}
             />
           )}
-          {screen === "profile" && <ProfileView bottomPad={showBottomNav} />}
+          {screen === "profile" && (
+            <ProfileView
+              bottomPad={showBottomNav}
+              wishlistCount={wishlistIds.length}
+              onOpenWishlist={openWishlist}
+            />
+          )}
+          {screen === "wishlist" && (
+            <WishlistView
+              products={wishlistProducts}
+              bottomPad={showBottomNav}
+              isWishlisted={isWishlisted}
+              onToggleWishlist={toggleWishlist}
+              onProduct={goProduct}
+            />
+          )}
         </main>
 
         {showBottomNav && (
@@ -1405,6 +1465,7 @@ function TopBar({
     filters: "Filters",
     needs: "Shop by need",
     categories: "Shop by category",
+    wishlist: "Wishlist",
   };
 
   const pageTitle = titles[screen];
@@ -1542,11 +1603,15 @@ function SearchView({
   bottomPad,
   onOpenBrowse,
   onProduct,
+  isWishlisted,
+  onToggleWishlist,
 }: {
   active: boolean;
   bottomPad: boolean;
   onOpenBrowse: (key: keyof typeof BROWSE) => void;
   onProduct: (p: Product) => void;
+  isWishlisted: (id: string) => boolean;
+  onToggleWishlist: (id: string) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const justForYou = [PRODUCTS[1], PRODUCTS[4], PRODUCTS[0], ACCESSORY_PRODUCTS[0]];
@@ -1621,7 +1686,13 @@ function SearchView({
         <SectionHeader title="Just for you" onAction={() => onOpenBrowse("trending")} />
         <div className="mt-3 grid grid-cols-2 gap-3">
           {justForYou.map((p) => (
-            <ProductCard key={p.id} p={p} onClick={() => onProduct(p)} />
+            <ProductCard
+              key={p.id}
+              p={p}
+              saved={isWishlisted(p.id)}
+              onToggleSave={() => onToggleWishlist(p.id)}
+              onClick={() => onProduct(p)}
+            />
           ))}
         </div>
       </section>
@@ -1629,10 +1700,25 @@ function SearchView({
   );
 }
 
-function ProfileView({ bottomPad }: { bottomPad: boolean }) {
+function ProfileView({
+  bottomPad,
+  wishlistCount,
+  onOpenWishlist,
+}: {
+  bottomPad: boolean;
+  wishlistCount: number;
+  onOpenWishlist: () => void;
+}) {
   const links = [
     { label: "Orders & tracking", detail: "See delivery updates in one place" },
-    { label: "Saved items", detail: "12 pieces waiting for you" },
+    {
+      label: "Saved items",
+      detail:
+        wishlistCount === 0
+          ? "Save pieces you love with the heart icon"
+          : `${wishlistCount} piece${wishlistCount === 1 ? "" : "s"} waiting for you`,
+      onClick: onOpenWishlist,
+    },
     { label: "Size profile", detail: "M · Updated from recent orders" },
     { label: "Returns & help", detail: "Free returns within 30 days" },
   ];
@@ -1653,6 +1739,8 @@ function ProfileView({ bottomPad }: { bottomPad: boolean }) {
         {links.map((link) => (
           <button
             key={link.label}
+            type="button"
+            onClick={link.onClick}
             className="flex w-full items-center justify-between rounded-2xl border border-border px-4 py-3.5 text-left hover:bg-secondary/60"
           >
             <div>
@@ -1663,6 +1751,51 @@ function ProfileView({ bottomPad }: { bottomPad: boolean }) {
           </button>
         ))}
       </div>
+    </div>
+  );
+}
+
+function WishlistView({
+  products,
+  bottomPad,
+  isWishlisted,
+  onToggleWishlist,
+  onProduct,
+}: {
+  products: Product[];
+  bottomPad: boolean;
+  isWishlisted: (id: string) => boolean;
+  onToggleWishlist: (id: string) => void;
+  onProduct: (p: Product) => void;
+}) {
+  return (
+    <div className={`px-5 pt-4 ${bottomPad ? "pb-6" : "pb-10"}`}>
+      {products.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-border py-14 text-center">
+          <Heart className="mx-auto h-8 w-8 text-muted-foreground/50" />
+          <p className="mt-3 text-sm font-semibold">Nothing saved yet</p>
+          <p className="mt-1 px-6 text-xs leading-relaxed text-muted-foreground">
+            Tap the heart on any product to save it here for later.
+          </p>
+        </div>
+      ) : (
+        <>
+          <p className="text-sm text-muted-foreground">
+            {products.length} saved item{products.length === 1 ? "" : "s"}
+          </p>
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            {products.map((p) => (
+              <ProductCard
+                key={p.id}
+                p={p}
+                saved={isWishlisted(p.id)}
+                onToggleSave={() => onToggleWishlist(p.id)}
+                onClick={() => onProduct(p)}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -1727,6 +1860,8 @@ function Discover({
   onOpenCategoriesIndex,
   onOpenSearch,
   onProduct,
+  isWishlisted,
+  onToggleWishlist,
   bottomPad,
 }: {
   onOpenBrowse: (key: keyof typeof BROWSE) => void;
@@ -1735,6 +1870,8 @@ function Discover({
   onOpenCategoriesIndex: () => void;
   onOpenSearch: () => void;
   onProduct: (p: Product) => void;
+  isWishlisted: (id: string) => boolean;
+  onToggleWishlist: (id: string) => void;
   bottomPad: boolean;
 }) {
   return (
@@ -1829,7 +1966,13 @@ function Discover({
         <SectionHeader title="Recommended for you" onAction={() => onOpenBrowse("under25")} />
         <div className="mt-2 grid grid-cols-2 gap-2.5">
           {PRODUCTS.slice(0, 4).map((p) => (
-            <ProductCard key={p.id} p={p} onClick={() => onProduct(p)} />
+            <ProductCard
+              key={p.id}
+              p={p}
+              saved={isWishlisted(p.id)}
+              onToggleSave={() => onToggleWishlist(p.id)}
+              onClick={() => onProduct(p)}
+            />
           ))}
         </div>
       </section>
@@ -1916,7 +2059,17 @@ function SectionHeader({
   );
 }
 
-function ProductCard({ p, onClick }: { p: Product; onClick: () => void }) {
+function ProductCard({
+  p,
+  onClick,
+  saved = false,
+  onToggleSave,
+}: {
+  p: Product;
+  onClick: () => void;
+  saved?: boolean;
+  onToggleSave?: () => void;
+}) {
   return (
     <div className="group relative text-left">
       <div className="relative aspect-square overflow-hidden rounded-xl bg-secondary">
@@ -1935,15 +2088,16 @@ function ProductCard({ p, onClick }: { p: Product; onClick: () => void }) {
         )}
         <button
           type="button"
-          aria-label={`Save ${p.name}`}
-          aria-pressed={false}
+          aria-label={saved ? `Remove ${p.name} from saved` : `Save ${p.name}`}
+          aria-pressed={saved}
           onClick={(e) => {
             e.stopPropagation();
             e.preventDefault();
+            onToggleSave?.();
           }}
           className="absolute right-2.5 top-2.5 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-background/92 shadow-sm ring-1 ring-border/40 transition active:scale-95"
         >
-          <Heart className="h-4 w-4" />
+          <Heart className={`h-4 w-4 ${saved ? "fill-foreground" : ""}`} />
         </button>
       </div>
       <button onClick={onClick} className="mt-2.5 block w-full px-0.5 text-left">
@@ -1972,6 +2126,8 @@ function Browse({
   sort,
   activeFilterIds,
   onProduct,
+  isWishlisted,
+  onToggleWishlist,
   onOpenFilters,
   onRemoveFilter,
   onOpenSort,
@@ -1981,6 +2137,8 @@ function Browse({
   sort: SortOption;
   activeFilterIds: string[];
   onProduct: (p: Product) => void;
+  isWishlisted: (id: string) => boolean;
+  onToggleWishlist: (id: string) => void;
   onOpenFilters: () => void;
   onRemoveFilter: (id: string) => void;
   onOpenSort: () => void;
@@ -2071,7 +2229,12 @@ function Browse({
         <div className="mt-3 grid grid-cols-2 gap-3 px-5">
           {sortedProducts.map((p) => (
             <div key={p.id} className="relative">
-              <ProductCard p={p} onClick={() => onProduct(p)} />
+              <ProductCard
+                p={p}
+                saved={isWishlisted(p.id)}
+                onToggleSave={() => onToggleWishlist(p.id)}
+                onClick={() => onProduct(p)}
+              />
             </div>
           ))}
         </div>
@@ -2301,11 +2464,15 @@ function ProductDetail({
   product,
   size,
   setSize,
+  saved,
+  onToggleSave,
   onAdd,
 }: {
   product: Product;
   size: string;
   setSize: (s: string) => void;
+  saved: boolean;
+  onToggleSave: () => void;
   onAdd: () => void;
 }) {
   const sizes = ["XS", "S", "M", "L", "XL"];
@@ -2334,10 +2501,12 @@ function ProductDetail({
             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/20 to-transparent" />
             <button
               type="button"
-              aria-label={`Save ${product.name}`}
+              aria-label={saved ? `Remove ${product.name} from saved` : `Save ${product.name}`}
+              aria-pressed={saved}
+              onClick={onToggleSave}
               className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-background/92 shadow-sm ring-1 ring-border/40"
             >
-              <Heart className="h-4 w-4" />
+              <Heart className={`h-4 w-4 ${saved ? "fill-foreground" : ""}`} />
             </button>
             {images.length > 1 && (
               <div className="absolute bottom-3 left-0 right-0 flex items-center justify-center gap-1.5">
@@ -2400,11 +2569,6 @@ function ProductDetail({
         </div>
         <p className="mt-1 text-sm text-muted-foreground">Final price · discounts already applied</p>
 
-        <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-xs font-semibold">
-          <ShieldCheck className="h-3.5 w-3.5" />
-          No coupon codes. What you see is what you pay.
-        </div>
-
         <div className="mt-4 flex items-center gap-3 text-sm">
           <span className="flex items-center gap-1 font-medium">
             <Star className="h-3.5 w-3.5 fill-foreground" /> {product.rating}
@@ -2439,6 +2603,14 @@ function ProductDetail({
           )}
         </div>
 
+        <button
+          type="button"
+          onClick={onAdd}
+          className="mt-5 flex h-14 w-full items-center justify-center gap-2 rounded-full bg-foreground text-sm font-bold text-primary-foreground transition active:scale-[0.99]"
+        >
+          Add to bag · ${product.price.toFixed(2)}
+        </button>
+
         <div className="mt-4 space-y-2.5 rounded-2xl border border-border bg-secondary/60 p-4">
           <div className="flex items-center gap-2.5 text-sm">
             <Truck className="h-4 w-4 shrink-0" />
@@ -2459,16 +2631,7 @@ function ProductDetail({
         </div>
       </div>
 
-      <div className="shrink-0 border-t border-border/60 bg-background px-5 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))]">
-        <button
-          onClick={onAdd}
-          className="flex h-14 w-full items-center justify-center gap-2 rounded-full bg-foreground text-sm font-bold text-primary-foreground transition active:scale-[0.99]"
-        >
-          Add to bag · ${product.price.toFixed(2)}
-        </button>
-      </div>
-
-      <div className="px-5 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] pt-2">
+      <div className="px-5 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] pt-4">
         <div className="rounded-2xl border border-border p-4">
           <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
             What shoppers say
