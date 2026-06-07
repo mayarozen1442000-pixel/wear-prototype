@@ -36,6 +36,35 @@ import p3 from "@/assets/p3.jpg";
 import p4 from "@/assets/p4.jpg";
 import p5 from "@/assets/p5.jpg";
 import p6 from "@/assets/p6.jpg";
+import prodTerracottaWrap from "@/assets/prod-terracotta-wrap.png";
+import prodBlackSlip from "@/assets/prod-black-slip.png";
+import prodGoldHoops from "@/assets/prod-gold-hoops.png";
+import prodStrawHat from "@/assets/prod-straw-hat.png";
+import prodWovenSandals from "@/assets/prod-woven-sandals.png";
+import prodBlueFloralMaxi from "@/assets/prod-blue-floral-maxi.png";
+import prodWhiteMidiDress from "@/assets/prod-white-midi-dress.png";
+import prodSageRibbedDress from "@/assets/prod-sage-ribbed-dress.png";
+import prodCreamOnepiece from "@/assets/prod-cream-onepiece.png";
+import prodRedBikini from "@/assets/prod-red-bikini.png";
+import prodBlackOnepiece from "@/assets/prod-black-onepiece.png";
+import prodSageOnepiece from "@/assets/prod-sage-onepiece.png";
+import prodBlueBikini from "@/assets/prod-blue-bikini.png";
+import prodWhiteSneakers from "@/assets/prod-white-sneakers.png";
+import prodTanBoots from "@/assets/prod-tan-boots.png";
+import prodPennyLoafers from "@/assets/prod-penny-loafers.png";
+import prodBalletFlats from "@/assets/prod-ballet-flats.png";
+import prodBlackCrossbody from "@/assets/prod-black-crossbody.png";
+import prodCelestialNecklace from "@/assets/prod-celestial-necklace.png";
+import prodBlackTank from "@/assets/prod-black-tank.png";
+import prodWhiteShirt from "@/assets/prod-white-shirt.png";
+import prodRosePolo from "@/assets/prod-rose-polo.png";
+import prodStripedCrop from "@/assets/prod-striped-crop.png";
+import prodChampagneBlouse from "@/assets/prod-champagne-blouse.png";
+import prodWhiteJeans from "@/assets/prod-white-jeans.png";
+import prodBlackTrousers from "@/assets/prod-black-trousers.png";
+import prodTanDrawstringPants from "@/assets/prod-tan-drawstring-pants.png";
+import prodOliveCargo from "@/assets/prod-olive-cargo.png";
+import prodBlueJeans from "@/assets/prod-blue-jeans.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -109,8 +138,8 @@ const PRODUCT_GALLERIES: Record<string, ProductImage[]> = {
     { src: p3, label: "Back view", position: "object-[center_30%]" },
     { src: p4, label: "Fabric detail", position: "object-center" },
   ]),
-  p2: gallery("Terracotta linen mini", [
-    { src: p2, label: "Front view", position: "object-[center_20%]" },
+  p2: gallery("Terracotta wrap midi", [
+    { src: prodTerracottaWrap, label: "Front view", position: "object-[center_20%]" },
     { src: p1, label: "Side view", position: "object-[center_15%]" },
     { src: p5, label: "Styled look", position: "object-[center_25%]" },
     { src: p6, label: "Fabric detail", position: "object-center" },
@@ -127,8 +156,8 @@ const PRODUCT_GALLERIES: Record<string, ProductImage[]> = {
     { src: p1, label: "Side view", position: "object-[center_18%]" },
     { src: p6, label: "Knit detail", position: "object-center" },
   ]),
-  p5: gallery("Black slip dress", [
-    { src: p5, label: "Front view", position: "object-[center_22%]" },
+  p5: gallery("Black satin slip dress", [
+    { src: prodBlackSlip, label: "Front view", position: "object-[center_22%]" },
     { src: p6, label: "Side view", position: "object-[center_20%]" },
     { src: p2, label: "Back view", position: "object-[center_18%]" },
     { src: p1, label: "Fabric detail", position: "object-center" },
@@ -151,8 +180,8 @@ const PRODUCT_GALLERIES: Record<string, ProductImage[]> = {
     { src: hero, label: "Styled look", position: "object-[center_35%]" },
     { src: p5, label: "Heel detail", position: "object-center" },
   ]),
-  s3: gallery("Strappy flat sandal", [
-    { src: p5, label: "Front view", position: "object-[center_28%]" },
+  s3: gallery("Woven strappy sandal", [
+    { src: prodWovenSandals, label: "Front view", position: "object-[center_50%]" },
     { src: catShoes, label: "Side view", position: "object-[center_52%]" },
     { src: hero, label: "On foot", position: "object-[center_38%]" },
     { src: p2, label: "Strap detail", position: "object-center" },
@@ -164,13 +193,13 @@ const PRODUCT_GALLERIES: Record<string, ProductImage[]> = {
     { src: p1, label: "Sole detail", position: "object-center" },
   ]),
   a1: gallery("Gold hoop set", [
-    { src: catAccessories, label: "Front view", position: "object-[center_45%]" },
+    { src: prodGoldHoops, label: "Front view", position: "object-[center_45%]" },
     { src: p2, label: "Styled look", position: "object-[center_20%]" },
     { src: p6, label: "Worn look", position: "object-[center_18%]" },
     { src: catShoes, label: "Close-up", position: "object-center" },
   ]),
   a2: gallery("Straw sun hat", [
-    { src: hero, label: "Front view", position: "object-[center_28%]" },
+    { src: prodStrawHat, label: "Front view", position: "object-[center_28%]" },
     { src: catShoes, label: "Side view", position: "object-[center_42%]" },
     { src: catAccessories, label: "Styled look", position: "object-[center_50%]" },
     { src: p3, label: "Brim detail", position: "object-center" },
@@ -332,17 +361,17 @@ const PRODUCTS: Product[] = [
   },
   {
     id: "p2",
-    name: "Terracotta linen mini",
+    name: "Terracotta wrap midi",
     price: 18.4,
     wasPrice: 26.99,
-    img: p2,
+    img: prodTerracottaWrap,
     rating: 4.6,
     reviews: 1204,
     cue: "Best value under $20",
     tag: "Top rated",
     fabric: "Breathable linen-cotton",
-    fitNote: "Runs a little small. Size up if you're between sizes.",
-    reviewSummary: "Color matches the photos. Fabric is slightly sheer in direct sun—layer if needed.",
+    fitNote: "Wrap tie lets you adjust the waist. Runs true to size.",
+    reviewSummary: "Color matches the photos. Ruffled hem adds movement without bulk.",
   },
   {
     id: "p3",
@@ -373,16 +402,16 @@ const PRODUCTS: Product[] = [
   },
   {
     id: "p5",
-    name: "Black slip dress",
+    name: "Black satin slip dress",
     price: 19.9,
     wasPrice: 27.99,
-    img: p5,
+    img: prodBlackSlip,
     rating: 4.6,
     reviews: 978,
     cue: "Dressy, packs flat",
     tag: "Top rated",
     fabric: "Satin-touch polyester",
-    fitNote: "Slim through the hips. Size up for a looser fit.",
+    fitNote: "Slim through the hips. Cowl neck sits best in size M.",
     reviewSummary: "A go-to dinner dress. Several reviews mention wearing it with sneakers too.",
   },
   {
@@ -423,6 +452,45 @@ const PRODUCTS: Product[] = [
     fabric: "Soft cotton poplin",
     fitNote: "Smock bodice gives room through the chest.",
     reviewSummary: "Bright color without looking cheap—great for daytime plans.",
+  },
+  {
+    id: "p9",
+    name: "Blue floral smocked maxi",
+    price: 27.9,
+    wasPrice: 36.99,
+    img: prodBlueFloralMaxi,
+    rating: 4.7,
+    reviews: 654,
+    cue: "Most saved this week",
+    tag: "Top rated",
+    fabric: "Soft viscose",
+    fitNote: "Smocked waist sits high. Tiered skirt has room through the hips.",
+    reviewSummary: "Print looks like the photos and the puff sleeves feel romantic, not costume-y.",
+  },
+  {
+    id: "p10",
+    name: "White linen-look midi",
+    price: 24.5,
+    wasPrice: 32.0,
+    img: prodWhiteMidiDress,
+    rating: 4.5,
+    reviews: 412,
+    cue: "Arrives by Jul 19 · Size M in stock",
+    fabric: "Lightweight cotton blend",
+    fitNote: "Princess seams give shape without cling. Midi length on most heights.",
+    reviewSummary: "Clean enough for weddings, easy enough for brunch. Straps stay put.",
+  },
+  {
+    id: "p11",
+    name: "Sage ribbed tank dress",
+    price: 20.5,
+    img: prodSageRibbedDress,
+    rating: 4.4,
+    reviews: 289,
+    cue: "Easy throw-on · Ships today",
+    fabric: "Stretch rib knit",
+    fitNote: "Bodycon fit with stretch. Size up for a relaxed look.",
+    reviewSummary: "Soft rib texture and a color that goes with everything in your bag.",
   },
 ];
 
@@ -510,9 +578,9 @@ const SHOE_PRODUCTS: Product[] = [
   },
   {
     id: "s3",
-    name: "Strappy flat sandal",
+    name: "Woven strappy sandal",
     price: 16.4,
-    img: p5,
+    img: prodWovenSandals,
     rating: 4.4,
     reviews: 291,
     cue: "Lightweight · Easy to pack",
@@ -547,6 +615,48 @@ const SHOE_PRODUCTS: Product[] = [
     cue: "Resort-ready · Easy to pack",
     tag: "Top rated",
   },
+  {
+    id: "s7",
+    name: "Classic white sneakers",
+    price: 23.5,
+    wasPrice: 29.99,
+    img: prodWhiteSneakers,
+    rating: 4.6,
+    reviews: 512,
+    cue: "Everyday staple · Ships today",
+    tag: "Top rated",
+  },
+  {
+    id: "s8",
+    name: "Suede block heel boot",
+    price: 34.9,
+    wasPrice: 44.99,
+    img: prodTanBoots,
+    rating: 4.7,
+    reviews: 318,
+    cue: "Office-to-weekend · Size M in stock",
+    tag: "Top rated",
+  },
+  {
+    id: "s9",
+    name: "Leather penny loafer",
+    price: 28.0,
+    wasPrice: 36.0,
+    img: prodPennyLoafers,
+    rating: 4.5,
+    reviews: 244,
+    cue: "Polished slip-on · Arrives by Jul 18",
+  },
+  {
+    id: "s10",
+    name: "Bow detail ballet flat",
+    price: 19.5,
+    img: prodBalletFlats,
+    rating: 4.6,
+    reviews: 367,
+    cue: "Soft lining · Best under $20",
+    tag: "Top rated",
+  },
 ];
 
 const ACCESSORY_PRODUCTS: Product[] = [
@@ -554,7 +664,7 @@ const ACCESSORY_PRODUCTS: Product[] = [
     id: "a1",
     name: "Gold hoop set",
     price: 9.5,
-    img: catAccessories,
+    img: prodGoldHoops,
     rating: 4.8,
     reviews: 1102,
     cue: "Hypoallergenic · Top gift pick",
@@ -564,7 +674,7 @@ const ACCESSORY_PRODUCTS: Product[] = [
     id: "a2",
     name: "Straw sun hat",
     price: 12.9,
-    img: hero,
+    img: prodStrawHat,
     rating: 4.5,
     reviews: 534,
     cue: "Adjustable band · Packable",
@@ -617,6 +727,27 @@ const ACCESSORY_PRODUCTS: Product[] = [
     rating: 4.6,
     reviews: 214,
     cue: "Crossbody strap included",
+    tag: "Top rated",
+  },
+  {
+    id: "a8",
+    name: "Black pebbled crossbody",
+    price: 22.0,
+    wasPrice: 29.99,
+    img: prodBlackCrossbody,
+    rating: 4.7,
+    reviews: 356,
+    cue: "Fits phone + wallet · Ships today",
+    tag: "Top rated",
+  },
+  {
+    id: "a9",
+    name: "Celestial layered necklace",
+    price: 11.5,
+    img: prodCelestialNecklace,
+    rating: 4.6,
+    reviews: 428,
+    cue: "Three layers · Tarnish-resistant",
     tag: "Top rated",
   },
 ];
@@ -679,6 +810,67 @@ const TOP_PRODUCTS: Product[] = [
     reviews: 689,
     cue: "Everyday basic · Easy care",
   },
+  {
+    id: "t7",
+    name: "Square neck tank",
+    price: 11.5,
+    img: prodBlackTank,
+    rating: 4.5,
+    reviews: 534,
+    cue: "Layer-friendly · Size M in stock",
+  },
+  {
+    id: "t8",
+    name: "Oversized poplin shirt",
+    price: 18.9,
+    wasPrice: 24.99,
+    img: prodWhiteShirt,
+    rating: 4.6,
+    reviews: 612,
+    cue: "No-iron friendly · Ships today",
+    tag: "Top rated",
+    fabric: "Crisp cotton poplin",
+    fitNote: "Relaxed fit with dropped shoulders. Size down for a closer fit.",
+    reviewSummary: "Looks polished untucked or belted. Chest pocket sits flat.",
+  },
+  {
+    id: "t9",
+    name: "Ribbed knit polo",
+    price: 16.5,
+    img: prodRosePolo,
+    rating: 4.5,
+    reviews: 298,
+    cue: "Soft stretch · Dusty rose",
+    fabric: "Fine rib knit",
+    fitNote: "Slim fit through the body. Buttons match the fabric.",
+    reviewSummary: "Dressier than a tee but still easy to wash and wear.",
+  },
+  {
+    id: "t10",
+    name: "Striped ribbed crop top",
+    price: 12.0,
+    img: prodStripedCrop,
+    rating: 4.4,
+    reviews: 445,
+    cue: "Best under $15 · Size M in stock",
+    fabric: "Stretch rib knit",
+    fitNote: "Cropped length hits above the waist on most heights.",
+    reviewSummary: "Navy stripes look crisp and the ribbing keeps its shape.",
+  },
+  {
+    id: "t11",
+    name: "Champagne satin blouse",
+    price: 21.0,
+    wasPrice: 28.0,
+    img: prodChampagneBlouse,
+    rating: 4.7,
+    reviews: 371,
+    cue: "Office-to-evening · Top rated",
+    tag: "Top rated",
+    fabric: "Satin-touch polyester",
+    fitNote: "Relaxed fit with gathered cuffs. Leave top button open for a soft V.",
+    reviewSummary: "Subtle sheen reads expensive in photos and in person.",
+  },
 ];
 
 const BOTTOM_PRODUCTS: Product[] = [
@@ -730,6 +922,72 @@ const BOTTOM_PRODUCTS: Product[] = [
     fabric: "Stretch rib knit",
     fitNote: "Mid-thigh length with a compressive feel.",
   },
+  {
+    id: "bo5",
+    name: "White wide-leg jeans",
+    price: 26.0,
+    wasPrice: 34.99,
+    img: prodWhiteJeans,
+    rating: 4.5,
+    reviews: 489,
+    cue: "Summer staple · Size M in stock",
+    fabric: "Rigid cotton denim",
+    fitNote: "High rise with a wide leg. Size up if between sizes.",
+    reviewSummary: "Bright white without looking see-through. Holds shape after washing.",
+  },
+  {
+    id: "bo6",
+    name: "Tailored wide-leg trouser",
+    price: 29.5,
+    wasPrice: 39.99,
+    img: prodBlackTrousers,
+    rating: 4.6,
+    reviews: 322,
+    cue: "Office-ready · Arrives by Jul 18",
+    tag: "Top rated",
+    fabric: "Structured twill blend",
+    fitNote: "High rise with pressed creases. Hem hits at the ankle.",
+    reviewSummary: "Looks tailored straight from the bag. Pair with flats or heels.",
+  },
+  {
+    id: "bo7",
+    name: "Linen drawstring pant",
+    price: 23.0,
+    img: prodTanDrawstringPants,
+    rating: 4.5,
+    reviews: 401,
+    cue: "Travel-friendly · Easy care",
+    fabric: "Lightweight linen blend",
+    fitNote: "Elastic waist with side pockets. Relaxed wide leg.",
+    reviewSummary: "Neutral tan goes with every top in your carry-on.",
+  },
+  {
+    id: "bo8",
+    name: "Wide-leg cargo pant",
+    price: 27.5,
+    wasPrice: 35.0,
+    img: prodOliveCargo,
+    rating: 4.4,
+    reviews: 356,
+    cue: "Utility pockets · Size M in stock",
+    fabric: "Cotton twill",
+    fitNote: "High rise with a roomy leg. Cargo flaps lay flat.",
+    reviewSummary: "Olive green reads elevated, not overly military.",
+  },
+  {
+    id: "bo9",
+    name: "High-rise wide-leg jean",
+    price: 28.0,
+    wasPrice: 36.0,
+    img: prodBlueJeans,
+    rating: 4.6,
+    reviews: 712,
+    cue: "Most reviewed denim · Ships today",
+    tag: "Top rated",
+    fabric: "Non-stretch denim",
+    fitNote: "High rise with a wide straight leg. Light whiskering at the hip.",
+    reviewSummary: "Vintage wash and a leg line that balances sneakers and heels.",
+  },
 ];
 
 const SWIMWEAR_PRODUCTS: Product[] = [
@@ -768,13 +1026,73 @@ const SWIMWEAR_PRODUCTS: Product[] = [
     fabric: "Matte swim jersey",
     fitNote: "Higher cut on the hip. Size up if between sizes.",
   },
+  {
+    id: "sw4",
+    name: "Ruched plunge one-piece",
+    price: 24.5,
+    wasPrice: 32.0,
+    img: prodCreamOnepiece,
+    rating: 4.6,
+    reviews: 418,
+    cue: "Resort-ready · Free returns",
+    fabric: "Matte swim jersey",
+    fitNote: "Ruching across the waist is forgiving. Deep V sits secure on M.",
+    reviewSummary: "Clean cream color and a neckline that looks good in vacation photos.",
+  },
+  {
+    id: "sw5",
+    name: "Ruched high-waist bikini",
+    price: 22.0,
+    img: prodRedBikini,
+    rating: 4.5,
+    reviews: 367,
+    cue: "Mix-and-match fit · Under $25",
+    fabric: "Stretch swim fabric",
+    fitNote: "High-waist bottom with ruched front. Top runs true to size.",
+    reviewSummary: "Red is bold but not orange—several reviews mention great pool-side photos.",
+  },
+  {
+    id: "sw6",
+    name: "Black ruched one-piece",
+    price: 23.5,
+    img: prodBlackOnepiece,
+    rating: 4.6,
+    reviews: 502,
+    cue: "Slimming ruching · Size M in stock",
+    tag: "Top rated",
+    fabric: "Matte swim jersey",
+    fitNote: "Plunge neckline with tummy ruching. High-cut leg.",
+    reviewSummary: "Black stays opaque wet and the ruching feels secure when you move.",
+  },
+  {
+    id: "sw7",
+    name: "Sage ribbed one-piece",
+    price: 25.0,
+    wasPrice: 32.99,
+    img: prodSageOnepiece,
+    rating: 4.7,
+    reviews: 289,
+    cue: "Textured rib knit · Top rated",
+    tag: "Top rated",
+    fabric: "Ribbed swim knit",
+    fitNote: "Square neck with waist ruching. Runs true to size.",
+    reviewSummary: "Sage green is flattering and the rib texture feels more elevated than basic swim.",
+  },
+  {
+    id: "sw8",
+    name: "Blue floral bikini set",
+    price: 20.5,
+    img: prodBlueBikini,
+    rating: 4.5,
+    reviews: 441,
+    cue: "Side-tie fit · Under $25",
+    fabric: "Stretch swim fabric",
+    fitNote: "Triangle top with center tie. Bottoms have adjustable side ties.",
+    reviewSummary: "Toile print looks crisp in person and the tie details feel secure.",
+  },
 ];
 
-const BAG_PRODUCTS = ACCESSORY_PRODUCTS.filter((product) => /bag|tote|bucket/i.test(product.name));
 const SANDAL_PRODUCTS = SHOE_PRODUCTS.filter((product) => /sandal|slide|espadrille/i.test(product.name));
-const JEWELRY_HAT_PRODUCTS = ACCESSORY_PRODUCTS.filter(
-  (product) => !/bag|tote|bucket/i.test(product.name),
-);
 
 const ALL_CATALOG = [
   ...PRODUCTS,
@@ -952,7 +1270,7 @@ const BROWSE: Record<string, BrowseContext> = {
   ),
   accessories: makeBrowseContext(
     "Accessories",
-    JEWELRY_HAT_PRODUCTS,
+    ACCESSORY_PRODUCTS,
     "accessories",
     "Final prices",
     "Small add-ons that complete the look—most under $20.",
