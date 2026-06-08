@@ -14,6 +14,8 @@ import {
   Heart,
   ChevronRight,
   MapPin,
+  Package,
+  Ruler,
   Sun,
   Shirt,
   Sparkles,
@@ -1771,17 +1773,22 @@ function ProfileView({
   onOpenWishlist: () => void;
 }) {
   const links = [
-    { label: "Orders & tracking", detail: "See delivery updates in one place" },
+    {
+      label: "Orders & tracking",
+      detail: "See delivery updates in one place",
+      Icon: Package,
+    },
     {
       label: "Saved items",
       detail:
         wishlistCount === 0
           ? "Save pieces you love with the heart icon"
           : `${wishlistCount} piece${wishlistCount === 1 ? "" : "s"} waiting for you`,
+      Icon: Heart,
       onClick: onOpenWishlist,
     },
-    { label: "Size profile", detail: "M · Updated from recent orders" },
-    { label: "Returns & help", detail: "Free returns within 30 days" },
+    { label: "Size profile", detail: "M · Updated from recent orders", Icon: Ruler },
+    { label: "Returns & help", detail: "Free returns within 30 days", Icon: RotateCcw },
   ];
 
   return (
@@ -1802,9 +1809,12 @@ function ProfileView({
             key={link.label}
             type="button"
             onClick={link.onClick}
-            className="flex w-full items-center justify-between rounded-2xl border border-border px-4 py-3.5 text-left hover:bg-secondary/60"
+            className="flex w-full items-center gap-3 rounded-2xl border border-border px-4 py-3.5 text-left hover:bg-secondary/60"
           >
-            <div>
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary">
+              <link.Icon className="h-4 w-4" />
+            </div>
+            <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold">{link.label}</p>
               <p className="mt-0.5 text-xs text-muted-foreground">{link.detail}</p>
             </div>
