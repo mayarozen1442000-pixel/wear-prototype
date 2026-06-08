@@ -30,9 +30,10 @@ import {
 } from "lucide-react";
 import hero from "@/assets/hero-vacation.jpg";
 import catDresses from "@/assets/cat-dresses.jpg";
-import catShoes from "@/assets/cat-shoes.jpg";
+import catShoes from "@/assets/cat-shoes.png";
 import catAccessories from "@/assets/cat-accessories.jpg";
 import catBottoms from "@/assets/cat-bottoms.png";
+import catSwimwear from "@/assets/cat-swimwear.png";
 import p1 from "@/assets/p1.jpg";
 import p3 from "@/assets/p3.jpg";
 import p5 from "@/assets/p5.jpg";
@@ -1145,7 +1146,7 @@ const SHOP_BY_CATEGORY_ITEMS: { label: string; key: keyof typeof BROWSE; img: st
   { label: "Bottoms", key: "bottoms", img: catBottoms, imgClassName: "scale-[1.55]" },
   { label: "Dresses", key: "dresses", img: catDresses },
   { label: "Shoes", key: "shoes", img: catShoes },
-  { label: "Swimwear", key: "swimwear", img: hero },
+  { label: "Swimwear", key: "swimwear", img: catSwimwear },
   { label: "Accessories", key: "accessories", img: catAccessories },
 ];
 
