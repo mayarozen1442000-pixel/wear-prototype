@@ -31,9 +31,7 @@ import catDresses from "@/assets/cat-dresses.jpg";
 import catShoes from "@/assets/cat-shoes.jpg";
 import catAccessories from "@/assets/cat-accessories.jpg";
 import p1 from "@/assets/p1.jpg";
-import p2 from "@/assets/p2.jpg";
 import p3 from "@/assets/p3.jpg";
-import p4 from "@/assets/p4.jpg";
 import p5 from "@/assets/p5.jpg";
 import p6 from "@/assets/p6.jpg";
 import prodTerracottaWrap from "@/assets/prod-terracotta-wrap.png";
@@ -346,17 +344,6 @@ const SHOE_PRODUCTS = catalog([
     cue: "Runs true to size · Ships today",
   },
   {
-    id: "s2",
-    name: "Espadrille wedge",
-    price: 21.5,
-    wasPrice: 28.0,
-    img: p2,
-    rating: 4.7,
-    reviews: 388,
-    cue: "Vacation favorite",
-    tag: "Top rated",
-  },
-  {
     id: "s3",
     name: "Woven strappy sandal",
     price: 16.4,
@@ -596,20 +583,6 @@ const BOTTOM_PRODUCTS = catalog([
 ], "bottoms");
 
 const SWIMWEAR_PRODUCTS = catalog([
-  {
-    id: "p4",
-    name: "Sage knit cover-up",
-    price: 24.0,
-    wasPrice: 32.0,
-    img: p4,
-    rating: 4.8,
-    reviews: 391,
-    cue: "Free returns · Easy layer piece",
-    tag: "Top rated",
-    fabric: "Open-knit cotton blend",
-    fitNote: "One-size fits XS–L comfortably.",
-    reviewSummary: "Great over a swimsuit or with denim. Stretchy and forgiving.",
-  },
   {
     id: "sw4",
     name: "Ruched plunge one-piece",
@@ -1040,7 +1013,7 @@ const BROWSE: Record<string, BrowseContext> = {
     [
       productById("p2"),
       productById("p3"),
-      productById("p4"),
+      productById("sw4"),
       productById("p6"),
       productById("t7"),
       productById("t8"),
@@ -1060,7 +1033,7 @@ const BROWSE: Record<string, BrowseContext> = {
       productById("p7"),
       productById("t8"),
       productById("t11"),
-      productById("p4"),
+      productById("sw6"),
     ],
     "items",
     "Easy-care fabrics · Final prices",
@@ -1085,14 +1058,14 @@ const BROWSE: Record<string, BrowseContext> = {
   packLight: makeBrowseContext(
     "Pack light",
     [
-      productById("p4"),
+      productById("sw4"),
       productById("p5"),
       productById("p2"),
       productById("p7"),
       productById("s3"),
       productById("s10"),
       productById("a2"),
-      productById("sw4"),
+      productById("sw6"),
     ],
     "items",
     "Wrinkle-friendly · Final prices",
@@ -1102,7 +1075,7 @@ const BROWSE: Record<string, BrowseContext> = {
   sporty: makeBrowseContext(
     "Sporty",
     [
-      productById("p4"),
+      productById("sw4"),
       productById("t7"),
       productById("t9"),
       productById("t10"),
@@ -1122,7 +1095,7 @@ const BROWSE: Record<string, BrowseContext> = {
       productById("t9"),
       productById("t10"),
       productById("t11"),
-      productById("p4"),
+      productById("sw6"),
       productById("s7"),
       productById("s10"),
       productById("s3"),
@@ -1133,7 +1106,7 @@ const BROWSE: Record<string, BrowseContext> = {
     ["All", "Tops", "Active", "Layers", "Sandals"],
   ),
   linenMini: makeBrowseContext("Linen mini dress", [productById("p2")], "dress", "1 result · Final price"),
-  vacationCoverUp: makeBrowseContext("Vacation cover-up", [productById("p4")], "item", "1 result · Final price"),
+  vacationCoverUp: makeBrowseContext("Vacation cover-up", [productById("sw4")], "item", "1 result · Final price"),
   goldHoops: makeBrowseContext("Gold hoops under $15", [ACCESSORY_PRODUCTS[0]], "item", "1 result · Final price"),
   resortEdit: makeBrowseContext(
     "Resort edit",
