@@ -685,6 +685,13 @@ function productById(id: string): Product {
   return PRODUCT_BY_ID[id];
 }
 
+const RECOMMENDED_FOR_YOU: Product[] = [
+  productById("p2"),
+  productById("t8"),
+  productById("s7"),
+  productById("a1"),
+];
+
 const SHOP_CATEGORY_KEYS = ["dresses", "shoes", "accessories", "tops", "swimwear", "bottoms"] as const;
 type ShopCategory = (typeof SHOP_CATEGORY_KEYS)[number];
 
@@ -2049,7 +2056,7 @@ function Discover({
       <section className="mt-3 px-5">
         <SectionHeader title="Recommended for you" onAction={() => onOpenBrowse("under25")} />
         <div className="mt-2 grid grid-cols-2 gap-2.5">
-          {PRODUCTS.slice(0, 4).map((p) => (
+          {RECOMMENDED_FOR_YOU.map((p) => (
             <ProductCard
               key={p.id}
               p={p}
