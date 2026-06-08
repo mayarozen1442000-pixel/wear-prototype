@@ -1140,9 +1140,9 @@ const SHOP_BY_NEED_ITEMS: { label: string; key: keyof typeof BROWSE; Icon: typeo
   { label: "Sporty", key: "sporty", Icon: Activity },
 ];
 
-const SHOP_BY_CATEGORY_ITEMS: { label: string; key: keyof typeof BROWSE; img: string }[] = [
+const SHOP_BY_CATEGORY_ITEMS: { label: string; key: keyof typeof BROWSE; img: string; imgClassName?: string }[] = [
   { label: "Tops", key: "tops", img: p6 },
-  { label: "Bottoms", key: "bottoms", img: catBottoms },
+  { label: "Bottoms", key: "bottoms", img: catBottoms, imgClassName: "scale-[1.55]" },
   { label: "Dresses", key: "dresses", img: catDresses },
   { label: "Shoes", key: "shoes", img: catShoes },
   { label: "Swimwear", key: "swimwear", img: hero },
@@ -1910,16 +1910,23 @@ function NeedShopTile({
 function CategoryShopTile({
   label,
   img,
+  imgClassName,
   onClick,
 }: {
   label: string;
   img: string;
+  imgClassName?: string;
   onClick: () => void;
 }) {
   return (
     <button onClick={onClick} className="group flex w-full min-w-0 flex-col items-center">
       <div className="mx-auto h-[52px] w-[52px] shrink-0 overflow-hidden rounded-full bg-secondary ring-1 ring-border/60 transition duration-200 group-hover:ring-foreground/30">
-        <img src={img} alt={label} loading="lazy" className="h-full w-full object-cover" />
+        <img
+          src={img}
+          alt={label}
+          loading="lazy"
+          className={`h-full w-full object-cover ${imgClassName ?? ""}`}
+        />
       </div>
       <p className="mt-1.5 w-full text-center text-[11px] font-medium leading-none text-muted-foreground whitespace-nowrap transition-colors group-hover:text-foreground">
         {label}
@@ -2031,6 +2038,7 @@ function Discover({
               key={c.label}
               label={c.label}
               img={c.img}
+              imgClassName={c.imgClassName}
               onClick={() => onOpenBrowse(c.key)}
             />
           ))}
@@ -2099,6 +2107,7 @@ function CategoriesIndexView({
             key={item.key}
             label={item.label}
             img={item.img}
+            imgClassName={item.imgClassName}
             onClick={() => onOpenBrowse(item.key)}
           />
         ))}
