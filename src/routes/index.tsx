@@ -107,6 +107,8 @@ type ProductImage = {
   position?: string;
 };
 
+type ProductCategory = "dresses" | "shoes" | "accessories" | "tops" | "bottoms" | "swimwear";
+
 type Product = {
   id: string;
   name: string;
@@ -121,7 +123,14 @@ type Product = {
   fabric?: string;
   fitNote?: string;
   reviewSummary?: string;
+  category: ProductCategory;
 };
+
+type ProductInput = Omit<Product, "category">;
+
+function catalog(products: ProductInput[], category: ProductCategory): Product[] {
+  return products.map((product) => ({ ...product, category }));
+}
 
 function gallery(name: string, views: { src: string; label: string; position?: string }[]): ProductImage[] {
   return views.map(({ src, label, position }) => ({
@@ -344,7 +353,7 @@ function getProductImages(product: Product): ProductImage[] {
   return [{ src: product.img, alt: `${product.name} — front view`, position: "object-[center_20%]" }];
 }
 
-const PRODUCTS: Product[] = [
+const PRODUCTS = catalog([
   {
     id: "p1",
     name: "Cream wrap midi",
@@ -385,20 +394,6 @@ const PRODUCTS: Product[] = [
     fabric: "Soft viscose",
     fitNote: "Relaxed fit through the body. Tall-friendly length.",
     reviewSummary: "Customers say it moves beautifully and doesn't wrinkle in a carry-on.",
-  },
-  {
-    id: "p4",
-    name: "Sage knit cover-up",
-    price: 24.0,
-    wasPrice: 32.0,
-    img: p4,
-    rating: 4.8,
-    reviews: 391,
-    cue: "Free returns · Easy layer piece",
-    tag: "Top rated",
-    fabric: "Open-knit cotton blend",
-    fitNote: "One-size fits XS–L comfortably.",
-    reviewSummary: "Great over a swimsuit or with denim. Stretchy and forgiving.",
   },
   {
     id: "p5",
@@ -492,7 +487,7 @@ const PRODUCTS: Product[] = [
     fitNote: "Bodycon fit with stretch. Size up for a relaxed look.",
     reviewSummary: "Soft rib texture and a color that goes with everything in your bag.",
   },
-];
+], "dresses");
 
 type BrowseContext = {
   title: string;
@@ -501,6 +496,7 @@ type BrowseContext = {
   sortHint: string;
   subfilters: string[];
   products: Product[];
+  shopCategory?: ShopCategory;
 };
 
 type SortOption = "relevance" | "price-asc" | "price-desc" | "rating" | "reviews";
@@ -554,7 +550,7 @@ function sortLabel(sort: SortOption): string {
   return SORT_OPTIONS.find((o) => o.id === sort)?.label ?? "Sort";
 }
 
-const SHOE_PRODUCTS: Product[] = [
+const SHOE_PRODUCTS = catalog([
   {
     id: "s1",
     name: "Woven slide sandal",
@@ -657,9 +653,9 @@ const SHOE_PRODUCTS: Product[] = [
     cue: "Soft lining · Best under $20",
     tag: "Top rated",
   },
-];
+], "shoes");
 
-const ACCESSORY_PRODUCTS: Product[] = [
+const ACCESSORY_PRODUCTS = catalog([
   {
     id: "a1",
     name: "Gold hoop set",
@@ -750,9 +746,9 @@ const ACCESSORY_PRODUCTS: Product[] = [
     cue: "Three layers · Tarnish-resistant",
     tag: "Top rated",
   },
-];
+], "accessories");
 
-const TOP_PRODUCTS: Product[] = [
+const TOP_PRODUCTS = catalog([
   {
     id: "t1",
     name: "Ribbed tank top",
@@ -871,9 +867,9 @@ const TOP_PRODUCTS: Product[] = [
     fitNote: "Relaxed fit with gathered cuffs. Leave top button open for a soft V.",
     reviewSummary: "Subtle sheen reads expensive in photos and in person.",
   },
-];
+], "tops");
 
-const BOTTOM_PRODUCTS: Product[] = [
+const BOTTOM_PRODUCTS = catalog([
   {
     id: "bo1",
     name: "Linen wide-leg pant",
@@ -988,9 +984,23 @@ const BOTTOM_PRODUCTS: Product[] = [
     fitNote: "High rise with a wide straight leg. Light whiskering at the hip.",
     reviewSummary: "Vintage wash and a leg line that balances sneakers and heels.",
   },
-];
+], "bottoms");
 
-const SWIMWEAR_PRODUCTS: Product[] = [
+const SWIMWEAR_PRODUCTS = catalog([
+  {
+    id: "p4",
+    name: "Sage knit cover-up",
+    price: 24.0,
+    wasPrice: 32.0,
+    img: p4,
+    rating: 4.8,
+    reviews: 391,
+    cue: "Free returns · Easy layer piece",
+    tag: "Top rated",
+    fabric: "Open-knit cotton blend",
+    fitNote: "One-size fits XS–L comfortably.",
+    reviewSummary: "Great over a swimsuit or with denim. Stretchy and forgiving.",
+  },
   {
     id: "sw1",
     name: "Classic one-piece",
@@ -1090,7 +1100,7 @@ const SWIMWEAR_PRODUCTS: Product[] = [
     fitNote: "Triangle top with center tie. Bottoms have adjustable side ties.",
     reviewSummary: "Toile print looks crisp in person and the tie details feel secure.",
   },
-];
+], "swimwear");
 
 const SANDAL_PRODUCTS = SHOE_PRODUCTS.filter((product) => /sandal|slide|espadrille/i.test(product.name));
 
@@ -1102,6 +1112,85 @@ const ALL_CATALOG = [
   ...BOTTOM_PRODUCTS,
   ...SWIMWEAR_PRODUCTS,
 ];
+
+const PRODUCT_BY_ID = Object.fromEntries(ALL_CATALOG.map((product) => [product.id, product])) as Record<
+  string,
+  Product
+>;
+
+function productById(id: string): Product {
+  return PRODUCT_BY_ID[id];
+}
+
+const SHOP_CATEGORY_KEYS = ["dresses", "shoes", "accessories", "tops", "swimwear", "bottoms"] as const;
+type ShopCategory = (typeof SHOP_CATEGORY_KEYS)[number];
+
+const PRODUCTS_BY_CATEGORY: Record<ShopCategory, Product[]> = {
+  dresses: PRODUCTS,
+  shoes: SHOE_PRODUCTS,
+  accessories: ACCESSORY_PRODUCTS,
+  tops: TOP_PRODUCTS,
+  swimwear: SWIMWEAR_PRODUCTS,
+  bottoms: BOTTOM_PRODUCTS,
+};
+
+function isShopCategory(key: string): key is ShopCategory {
+  return SHOP_CATEGORY_KEYS.includes(key as ShopCategory);
+}
+
+function productMatchesSubfilter(product: Product, subfilter: string): boolean {
+  if (subfilter === "All") return true;
+
+  const name = product.name.toLowerCase();
+  const cue = product.cue.toLowerCase();
+
+  switch (product.category) {
+    case "dresses":
+      if (subfilter === "Mini") return name.includes("mini");
+      if (subfilter === "Midi") return name.includes("midi");
+      if (subfilter === "Maxi") return name.includes("maxi");
+      if (subfilter === "Beach") {
+        return /vacation|beach|stripe|floral|pack|resort|linen|ocean/.test(`${name} ${cue}`);
+      }
+      if (subfilter === "Casual") return !name.includes("satin") && !name.includes("slip");
+      return true;
+    case "shoes":
+      if (subfilter === "Sandals") {
+        return /sandal|espadrille|fisherman|strappy|woven strappy|braided/.test(name);
+      }
+      if (subfilter === "Flats") return /flat|ballet|loafer|sneaker|penny/.test(name);
+      if (subfilter === "Heels") return /wedge|heel|espadrille/.test(name);
+      if (subfilter === "Slides") return /slide/.test(name);
+      if (subfilter === "Boots") return /boot/.test(name);
+      return true;
+    case "bottoms":
+      if (subfilter === "Pants") {
+        return /pant|jean|trouser|cargo|drawstring|wide-leg jean|wide-leg pant|tailored/.test(name);
+      }
+      if (subfilter === "Shorts") return /short|bike/.test(name);
+      if (subfilter === "Skirts") return /skirt/.test(name);
+      return true;
+    case "swimwear":
+      if (subfilter === "One-piece") return /one-piece|swimsuit/.test(name) && !name.includes("bikini");
+      if (subfilter === "Bikini") return name.includes("bikini");
+      if (subfilter === "Cover-ups") return name.includes("cover-up") || name.includes("cover up");
+      return true;
+    case "accessories":
+      if (subfilter === "Jewelry") return /hoop|necklace|chain|celestial/.test(name);
+      if (subfilter === "Hats") return name.includes("hat");
+      if (subfilter === "Hair") return /claw|hair/.test(name);
+      if (subfilter === "Bags") return /bag|tote|bucket|crossbody/.test(name);
+      return true;
+    case "tops":
+      if (subfilter === "Tank") return name.includes("tank");
+      if (subfilter === "Blouse") return /blouse|off-shoulder|shirt/.test(name);
+      if (subfilter === "Knit") return /knit|ribbed|polo|tee|jersey|mesh|crop/.test(name);
+      if (subfilter === "Linen") return name.includes("linen");
+      return true;
+    default:
+      return true;
+  }
+}
 
 type FilterCategoryId = "size" | "price" | "delivery" | "rating" | "returns" | "confidence";
 
@@ -1198,25 +1287,40 @@ const QUICK_FILTER_PRESETS: { label: string; category: FilterCategoryId; optionI
   { label: "Has customer photos", category: "confidence", optionId: "photos" },
 ];
 
+const SHOP_CATEGORY_META: Record<ShopCategory, { resultNoun: string; subfilters: string[] }> = {
+  dresses: { resultNoun: "dresses", subfilters: ["All", "Mini", "Midi", "Maxi", "Beach", "Casual"] },
+  shoes: { resultNoun: "shoes", subfilters: ["All", "Sandals", "Flats", "Heels", "Slides", "Boots"] },
+  bottoms: { resultNoun: "bottoms", subfilters: ["All", "Pants", "Shorts", "Skirts"] },
+  swimwear: { resultNoun: "items", subfilters: ["All", "One-piece", "Bikini", "Cover-ups"] },
+  accessories: { resultNoun: "accessories", subfilters: ["All", "Jewelry", "Hats", "Hair", "Bags"] },
+  tops: { resultNoun: "tops", subfilters: ["All", "Tank", "Blouse", "Knit", "Linen"] },
+};
+
 function applyProductFilters(products: Product[], filterIds: string[]): Product[] {
   if (filterIds.length === 0) return products;
   const options = FILTER_OPTIONS.filter((option) => filterIds.includes(option.id));
   return products.filter((product) => options.every((option) => option.match(product)));
 }
 
-function buildFilteredBrowseContext(filterIds: string[]): BrowseContext {
-  const products = applyProductFilters(ALL_CATALOG, filterIds);
+function buildFilteredBrowseContext(
+  filterIds: string[],
+  scopeProducts: Product[] = ALL_CATALOG,
+  shopCategory?: ShopCategory,
+): BrowseContext {
+  const products = applyProductFilters(scopeProducts, filterIds);
   const labels = FILTER_OPTIONS.filter((option) => filterIds.includes(option.id)).map(
     (option) => option.label,
   );
+  const categoryMeta = shopCategory ? SHOP_CATEGORY_META[shopCategory] : null;
 
   return {
     title: labels.length === 1 ? labels[0] : "Filtered results",
     products,
-    resultNoun: "items",
+    resultNoun: categoryMeta?.resultNoun ?? "items",
     meta: `${filterIds.length} active filter${filterIds.length === 1 ? "" : "s"} · Final prices`,
     sortHint: "Showing styles that match everything you selected.",
-    subfilters: ["All", "Dresses", "Tops", "Shoes", "Accessories"],
+    subfilters: categoryMeta?.subfilters ?? ["All", "Dresses", "Tops", "Shoes", "Accessories"],
+    shopCategory,
   };
 }
 
@@ -1230,9 +1334,23 @@ function makeBrowseContext(
   resultNoun: string,
   meta = "Size M · Final prices",
   sortHint = "Sorted by relevance. Every price includes active discounts—no codes to hunt.",
-  subfilters = ["All", "Mini", "Midi", "Maxi", "Beach", "Casual"],
+  subfilters = SHOP_CATEGORY_META.dresses.subfilters,
+  shopCategory?: ShopCategory,
 ): BrowseContext {
-  return { title, products, resultNoun, meta, sortHint, subfilters };
+  const scopedProducts = shopCategory
+    ? products.filter((product) => product.category === shopCategory)
+    : products;
+  const categoryMeta = shopCategory ? SHOP_CATEGORY_META[shopCategory] : null;
+
+  return {
+    title,
+    products: scopedProducts,
+    resultNoun: categoryMeta?.resultNoun ?? resultNoun,
+    meta,
+    sortHint,
+    subfilters: categoryMeta?.subfilters ?? subfilters,
+    shopCategory,
+  };
 }
 
 const BROWSE: Record<string, BrowseContext> = {
@@ -1243,46 +1361,59 @@ const BROWSE: Record<string, BrowseContext> = {
     "Under $35 · Size M · Final prices",
     "Curated vacation picks—lightweight styles with delivery dates upfront.",
   ),
-  dresses: makeBrowseContext("Dresses", PRODUCTS, "dresses"),
+  dresses: makeBrowseContext(
+    "Dresses",
+    PRODUCTS_BY_CATEGORY.dresses,
+    "dresses",
+    "Size M · Final prices",
+    "Sorted by relevance. Every price includes active discounts—no codes to hunt.",
+    undefined,
+    "dresses",
+  ),
   shoes: makeBrowseContext(
     "Shoes",
-    SHOE_PRODUCTS,
+    PRODUCTS_BY_CATEGORY.shoes,
     "shoes",
     "Size M · Final prices",
     "Sorted by popularity. Every price includes active discounts.",
-    ["All", "Sandals", "Flats", "Heels", "Slides"],
+    undefined,
+    "shoes",
   ),
   bottoms: makeBrowseContext(
     "Bottoms",
-    BOTTOM_PRODUCTS,
+    PRODUCTS_BY_CATEGORY.bottoms,
     "bottoms",
     "Size M · Final prices",
     "Pants, shorts, and skirts with fit notes upfront.",
-    ["All", "Pants", "Shorts", "Skirts"],
+    undefined,
+    "bottoms",
   ),
   swimwear: makeBrowseContext(
     "Swimwear",
-    [PRODUCTS[3], ...SWIMWEAR_PRODUCTS],
+    PRODUCTS_BY_CATEGORY.swimwear,
     "items",
     "Size M · Final prices",
     "Swimsuits and cover-ups for pool days and getaways.",
-    ["All", "One-piece", "Bikini", "Cover-ups"],
+    undefined,
+    "swimwear",
   ),
   accessories: makeBrowseContext(
     "Accessories",
-    ACCESSORY_PRODUCTS,
+    PRODUCTS_BY_CATEGORY.accessories,
     "accessories",
     "Final prices",
     "Small add-ons that complete the look—most under $20.",
-    ["All", "Jewelry", "Hats", "Hair"],
+    undefined,
+    "accessories",
   ),
   tops: makeBrowseContext(
     "Tops",
-    TOP_PRODUCTS,
+    PRODUCTS_BY_CATEGORY.tops,
     "tops",
     "Size M · Final prices",
     "Layer-friendly pieces for heat, travel, and nights out.",
-    ["All", "Tank", "Blouse", "Knit", "Linen"],
+    undefined,
+    "tops",
   ),
   under25: makeBrowseContext(
     "Under $25",
@@ -1330,7 +1461,16 @@ const BROWSE: Record<string, BrowseContext> = {
   ),
   hotDay: makeBrowseContext(
     "Hot day",
-    [PRODUCTS[1], PRODUCTS[2], PRODUCTS[3], PRODUCTS[6], TOP_PRODUCTS[0], TOP_PRODUCTS[1], ACCESSORY_PRODUCTS[1], SANDAL_PRODUCTS[0]],
+    [
+      productById("p2"),
+      productById("p3"),
+      productById("p4"),
+      productById("p6"),
+      TOP_PRODUCTS[0],
+      TOP_PRODUCTS[1],
+      ACCESSORY_PRODUCTS[1],
+      SANDAL_PRODUCTS[0],
+    ],
     "items",
     "Light fabrics · Final prices",
     "Breathable picks for heat—linen, viscose, and open knits.",
@@ -1338,7 +1478,14 @@ const BROWSE: Record<string, BrowseContext> = {
   ),
   noIron: makeBrowseContext(
     "No-iron",
-    [PRODUCTS[1], PRODUCTS[5], PRODUCTS[7], TOP_PRODUCTS[1], TOP_PRODUCTS[5], PRODUCTS[3]],
+    [
+      productById("p2"),
+      productById("p5"),
+      productById("p7"),
+      TOP_PRODUCTS[1],
+      TOP_PRODUCTS[5],
+      productById("p4"),
+    ],
     "items",
     "Easy-care fabrics · Final prices",
     "Wrinkle-resistant styles that look polished straight from the bag.",
@@ -1346,7 +1493,14 @@ const BROWSE: Record<string, BrowseContext> = {
   ),
   dinnerPlans: makeBrowseContext(
     "Night out",
-    [PRODUCTS[4], PRODUCTS[5], PRODUCTS[0], PRODUCTS[6], TOP_PRODUCTS[3], SHOE_PRODUCTS[1], ACCESSORY_PRODUCTS[0]],
+    [
+      productById("p5"),
+      productById("p6"),
+      productById("p1"),
+      TOP_PRODUCTS[3],
+      SHOE_PRODUCTS[1],
+      ACCESSORY_PRODUCTS[0],
+    ],
     "items",
     "Dressy but comfy · Final prices",
     "Elevated looks that still feel easy to wear all evening.",
@@ -1354,7 +1508,16 @@ const BROWSE: Record<string, BrowseContext> = {
   ),
   packLight: makeBrowseContext(
     "Pack light",
-    [PRODUCTS[3], PRODUCTS[4], PRODUCTS[1], PRODUCTS[6], SHOE_PRODUCTS[2], SHOE_PRODUCTS[4], ACCESSORY_PRODUCTS[1], SWIMWEAR_PRODUCTS[0]],
+    [
+      productById("p4"),
+      productById("p5"),
+      productById("p2"),
+      productById("p7"),
+      SHOE_PRODUCTS[2],
+      SHOE_PRODUCTS[4],
+      ACCESSORY_PRODUCTS[1],
+      SWIMWEAR_PRODUCTS[1],
+    ],
     "items",
     "Wrinkle-friendly · Final prices",
     "Pieces that pack flat and still look great on arrival.",
@@ -1362,7 +1525,15 @@ const BROWSE: Record<string, BrowseContext> = {
   ),
   sporty: makeBrowseContext(
     "Sporty",
-    [PRODUCTS[3], TOP_PRODUCTS[0], TOP_PRODUCTS[2], TOP_PRODUCTS[4], SHOE_PRODUCTS[0], SHOE_PRODUCTS[2], SHOE_PRODUCTS[4]],
+    [
+      productById("p4"),
+      TOP_PRODUCTS[0],
+      TOP_PRODUCTS[2],
+      TOP_PRODUCTS[4],
+      SHOE_PRODUCTS[0],
+      SHOE_PRODUCTS[2],
+      SHOE_PRODUCTS[4],
+    ],
     "items",
     "Move-ready · Final prices",
     "Stretchy, easy layers and flats built for long days out.",
@@ -1370,14 +1541,23 @@ const BROWSE: Record<string, BrowseContext> = {
   ),
   gym: makeBrowseContext(
     "Gym",
-    [TOP_PRODUCTS[0], TOP_PRODUCTS[2], TOP_PRODUCTS[4], TOP_PRODUCTS[5], PRODUCTS[3], SHOE_PRODUCTS[0], SHOE_PRODUCTS[4], SHOE_PRODUCTS[5]],
+    [
+      TOP_PRODUCTS[0],
+      TOP_PRODUCTS[2],
+      TOP_PRODUCTS[4],
+      TOP_PRODUCTS[5],
+      productById("p4"),
+      SHOE_PRODUCTS[0],
+      SHOE_PRODUCTS[4],
+      SHOE_PRODUCTS[5],
+    ],
     "items",
     "Move-ready · Final prices",
     "Stretch-friendly tops, layers, and flats built for workouts and warm-ups.",
     ["All", "Tops", "Active", "Layers", "Sandals"],
   ),
-  linenMini: makeBrowseContext("Linen mini dress", [PRODUCTS[1]], "dress", "1 result · Final price"),
-  vacationCoverUp: makeBrowseContext("Vacation cover-up", [PRODUCTS[3]], "item", "1 result · Final price"),
+  linenMini: makeBrowseContext("Linen mini dress", [productById("p2")], "dress", "1 result · Final price"),
+  vacationCoverUp: makeBrowseContext("Vacation cover-up", [productById("p4")], "item", "1 result · Final price"),
   goldHoops: makeBrowseContext("Gold hoops under $15", [ACCESSORY_PRODUCTS[0]], "item", "1 result · Final price"),
   resortEdit: makeBrowseContext(
     "Resort edit",
@@ -1417,12 +1597,13 @@ const SHOP_BY_CATEGORY_ITEMS: { label: string; key: keyof typeof BROWSE; img: st
 function Prototype() {
   const [screen, setScreen] = useState<Screen>("discover");
   const [activeTab, setActiveTab] = useState<Tab>("home");
-  const [activeProduct, setActiveProduct] = useState<Product>(PRODUCTS[1]);
+  const [activeProduct, setActiveProduct] = useState<Product>(productById("p2"));
   const [bagItems, setBagItems] = useState<{ p: Product; size: string }[]>([]);
   const [showAdded, setShowAdded] = useState(false);
   const [showCartPopup, setShowCartPopup] = useState(false);
   const [size, setSize] = useState("M");
   const [browseContext, setBrowseContext] = useState<BrowseContext>(DEFAULT_BROWSE);
+  const [activeBrowseKey, setActiveBrowseKey] = useState<keyof typeof BROWSE>("dresses");
   const [browseSort, setBrowseSort] = useState<SortOption>("relevance");
   const [showSort, setShowSort] = useState(false);
   const [activeFilterIds, setActiveFilterIds] = useState<string[]>([]);
@@ -1483,16 +1664,29 @@ function Prototype() {
 
   const bagCount = bagItems.length;
 
+  const getFilterScopeProducts = () =>
+    isShopCategory(activeBrowseKey) ? PRODUCTS_BY_CATEGORY[activeBrowseKey] : ALL_CATALOG;
+
+  const restoreBrowseContext = () => {
+    if (isShopCategory(activeBrowseKey)) {
+      setBrowseContext(BROWSE[activeBrowseKey]);
+      return;
+    }
+    setBrowseContext(BROWSE.trending);
+  };
+
   const goToTab = (tab: Tab) => {
     setActiveTab(tab);
     if (tab === "trending") {
       setActiveFilterIds([]);
+      setActiveBrowseKey("trending");
       setBrowseContext(BROWSE.trending);
     }
     setScreen(TAB_TO_SCREEN[tab]);
   };
 
   const openBrowse = (key: keyof typeof BROWSE) => {
+    setActiveBrowseKey(key);
     setActiveFilterIds([]);
     setBrowseContext(BROWSE[key]);
     setBrowseSort("relevance");
@@ -1527,9 +1721,9 @@ function Prototype() {
   const applyFilters = () => {
     setActiveFilterIds(pendingFilterIds);
     if (pendingFilterIds.length === 0) {
-      setBrowseContext(BROWSE.trending);
+      restoreBrowseContext();
     } else {
-      setBrowseContext(buildFilteredBrowseContext(pendingFilterIds));
+      setBrowseContext(buildFilteredBrowseContext(pendingFilterIds, getFilterScopeProducts(), isShopCategory(activeBrowseKey) ? activeBrowseKey : undefined));
     }
     setBrowseSort("relevance");
     setShowSort(false);
@@ -1541,10 +1735,10 @@ function Prototype() {
     setActiveFilterIds(filterIds);
     setPendingFilterIds(filterIds);
     if (filterIds.length === 0) {
-      setBrowseContext(BROWSE.trending);
+      restoreBrowseContext();
       return;
     }
-    setBrowseContext(buildFilteredBrowseContext(filterIds));
+    setBrowseContext(buildFilteredBrowseContext(filterIds, getFilterScopeProducts(), isShopCategory(activeBrowseKey) ? activeBrowseKey : undefined));
   };
 
   const goBack = () => {
@@ -1576,7 +1770,7 @@ function Prototype() {
   const bagSubtotal = bagItems.reduce((sum, item) => sum + item.p.price, 0);
   const showBottomNav = screen !== "product";
   const overlayOpen = showSort || showAdded;
-  const pendingResultCount = applyProductFilters(ALL_CATALOG, pendingFilterIds).length;
+  const pendingResultCount = applyProductFilters(getFilterScopeProducts(), pendingFilterIds).length;
 
   useEffect(() => {
     const el = mainRef.current;
@@ -1932,7 +2126,7 @@ function SearchView({
   onToggleWishlist: (id: string) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const justForYou = [PRODUCTS[1], PRODUCTS[4], PRODUCTS[0], ACCESSORY_PRODUCTS[0]];
+  const justForYou = [productById("p2"), productById("p5"), productById("p1"), ACCESSORY_PRODUCTS[0]];
   const recent: { label: string; key: keyof typeof BROWSE }[] = [
     { label: "Linen mini dress", key: "linenMini" },
     { label: "Vacation cover-up", key: "vacationCoverUp" },
@@ -2468,10 +2662,16 @@ function Browse({
     setActive(context.subfilters[0]);
   }, [context.title]);
 
-  const sortedProducts = useMemo(
-    () => sortProducts(context.products, sort),
-    [context.products, sort],
-  );
+  const sortedProducts = useMemo(() => {
+    let items = context.products;
+    if (active !== "All") {
+      items = items.filter((product) => productMatchesSubfilter(product, active));
+    }
+    if (activeFilterIds.length > 0) {
+      items = applyProductFilters(items, activeFilterIds);
+    }
+    return sortProducts(items, sort);
+  }, [context.products, active, activeFilterIds, sort]);
   const activeSortHint =
     sort === "relevance"
       ? context.sortHint
