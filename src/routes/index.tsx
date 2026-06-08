@@ -132,225 +132,9 @@ function catalog(products: ProductInput[], category: ProductCategory): Product[]
   return products.map((product) => ({ ...product, category }));
 }
 
-function gallery(name: string, views: { src: string; label: string; position?: string }[]): ProductImage[] {
-  return views.map(({ src, label, position }) => ({
-    src,
-    alt: `${name} — ${label}`,
-    position,
-  }));
-}
-
-const PRODUCT_GALLERIES: Record<string, ProductImage[]> = {
-  p1: gallery("Cream wrap midi", [
-    { src: p1, label: "Front view", position: "object-[center_18%]" },
-    { src: p2, label: "Side view", position: "object-[center_22%]" },
-    { src: p3, label: "Back view", position: "object-[center_30%]" },
-    { src: p4, label: "Fabric detail", position: "object-center" },
-  ]),
-  p2: gallery("Terracotta wrap midi", [
-    { src: prodTerracottaWrap, label: "Front view", position: "object-[center_20%]" },
-    { src: p1, label: "Side view", position: "object-[center_15%]" },
-    { src: p5, label: "Styled look", position: "object-[center_25%]" },
-    { src: p6, label: "Fabric detail", position: "object-center" },
-  ]),
-  p3: gallery("Pink floral maxi", [
-    { src: p3, label: "Front view", position: "object-[center_12%]" },
-    { src: p1, label: "Side view", position: "object-[center_18%]" },
-    { src: p2, label: "Back view", position: "object-[center_22%]" },
-    { src: p4, label: "Print detail", position: "object-center" },
-  ]),
-  p4: gallery("Sage knit cover-up", [
-    { src: p4, label: "Front view", position: "object-[center_20%]" },
-    { src: p3, label: "Layered look", position: "object-[center_15%]" },
-    { src: p1, label: "Side view", position: "object-[center_18%]" },
-    { src: p6, label: "Knit detail", position: "object-center" },
-  ]),
-  p5: gallery("Black satin slip dress", [
-    { src: prodBlackSlip, label: "Front view", position: "object-[center_22%]" },
-    { src: p6, label: "Side view", position: "object-[center_20%]" },
-    { src: p2, label: "Back view", position: "object-[center_18%]" },
-    { src: p1, label: "Fabric detail", position: "object-center" },
-  ]),
-  p6: gallery("Ivory shirt dress", [
-    { src: p6, label: "Front view", position: "object-[center_18%]" },
-    { src: p5, label: "Side view", position: "object-[center_22%]" },
-    { src: p4, label: "Back view", position: "object-[center_20%]" },
-    { src: p3, label: "Collar detail", position: "object-center" },
-  ]),
-  s1: gallery("Woven slide sandal", [
-    { src: catShoes, label: "Front view", position: "object-[center_55%]" },
-    { src: hero, label: "Styled look", position: "object-[center_40%]" },
-    { src: p4, label: "Side angle", position: "object-[center_30%]" },
-    { src: catAccessories, label: "Weave detail", position: "object-center" },
-  ]),
-  s2: gallery("Espadrille wedge", [
-    { src: p4, label: "Front view", position: "object-[center_25%]" },
-    { src: catShoes, label: "Side view", position: "object-[center_50%]" },
-    { src: hero, label: "Styled look", position: "object-[center_35%]" },
-    { src: p5, label: "Heel detail", position: "object-center" },
-  ]),
-  s3: gallery("Woven strappy sandal", [
-    { src: prodWovenSandals, label: "Front view", position: "object-[center_50%]" },
-    { src: catShoes, label: "Side view", position: "object-[center_52%]" },
-    { src: hero, label: "On foot", position: "object-[center_38%]" },
-    { src: p2, label: "Strap detail", position: "object-center" },
-  ]),
-  s4: gallery("Platform slide", [
-    { src: hero, label: "Front view", position: "object-[center_32%]" },
-    { src: catShoes, label: "Side view", position: "object-[center_48%]" },
-    { src: p4, label: "Styled look", position: "object-[center_22%]" },
-    { src: p1, label: "Sole detail", position: "object-center" },
-  ]),
-  a1: gallery("Gold hoop set", [
-    { src: prodGoldHoops, label: "Front view", position: "object-[center_45%]" },
-    { src: p2, label: "Styled look", position: "object-[center_20%]" },
-    { src: p6, label: "Worn look", position: "object-[center_18%]" },
-    { src: catShoes, label: "Close-up", position: "object-center" },
-  ]),
-  a2: gallery("Straw sun hat", [
-    { src: prodStrawHat, label: "Front view", position: "object-[center_28%]" },
-    { src: catShoes, label: "Side view", position: "object-[center_42%]" },
-    { src: catAccessories, label: "Styled look", position: "object-[center_50%]" },
-    { src: p3, label: "Brim detail", position: "object-center" },
-  ]),
-  a3: gallery("Woven crossbody bag", [
-    { src: catShoes, label: "Front view", position: "object-[center_45%]" },
-    { src: catAccessories, label: "Side view", position: "object-[center_50%]" },
-    { src: hero, label: "Styled look", position: "object-[center_35%]" },
-    { src: p4, label: "Weave detail", position: "object-center" },
-  ]),
-  a4: gallery("Layered chain necklace", [
-    { src: p2, label: "Front view", position: "object-[center_22%]" },
-    { src: catAccessories, label: "Styled look", position: "object-[center_48%]" },
-    { src: p6, label: "Layered look", position: "object-[center_18%]" },
-    { src: p1, label: "Chain detail", position: "object-center" },
-  ]),
-  t1: gallery("Ribbed tank top", [
-    { src: p1, label: "Front view", position: "object-[center_20%]" },
-    { src: p6, label: "Side view", position: "object-[center_18%]" },
-    { src: p3, label: "Back view", position: "object-[center_15%]" },
-    { src: p4, label: "Rib detail", position: "object-center" },
-  ]),
-  t2: gallery("Linen button-down", [
-    { src: p6, label: "Front view", position: "object-[center_18%]" },
-    { src: p1, label: "Side view", position: "object-[center_20%]" },
-    { src: p5, label: "Back view", position: "object-[center_22%]" },
-    { src: p2, label: "Fabric detail", position: "object-center" },
-  ]),
-  t3: gallery("Crop knit tee", [
-    { src: p3, label: "Front view", position: "object-[center_16%]" },
-    { src: p2, label: "Side view", position: "object-[center_20%]" },
-    { src: p1, label: "Back view", position: "object-[center_18%]" },
-    { src: p5, label: "Knit detail", position: "object-center" },
-  ]),
-  t4: gallery("Off-shoulder blouse", [
-    { src: p2, label: "Front view", position: "object-[center_20%]" },
-    { src: p3, label: "Side view", position: "object-[center_15%]" },
-    { src: p6, label: "Back view", position: "object-[center_18%]" },
-    { src: p4, label: "Shoulder detail", position: "object-center" },
-  ]),
-  p7: gallery("Ocean stripe maxi", [
-    { src: hero, label: "Front view", position: "object-[center_28%]" },
-    { src: p3, label: "Side view", position: "object-[center_15%]" },
-    { src: p1, label: "Back view", position: "object-[center_20%]" },
-    { src: p2, label: "Stripe detail", position: "object-center" },
-  ]),
-  p8: gallery("Lemon smock mini", [
-    { src: catDresses, label: "Front view", position: "object-[center_22%]" },
-    { src: p2, label: "Side view", position: "object-[center_18%]" },
-    { src: p5, label: "Styled look", position: "object-[center_25%]" },
-    { src: p6, label: "Fabric detail", position: "object-center" },
-  ]),
-  s5: gallery("Cork footbed slide", [
-    { src: p1, label: "Front view", position: "object-[center_55%]" },
-    { src: catShoes, label: "Side view", position: "object-[center_48%]" },
-    { src: p2, label: "On foot", position: "object-[center_35%]" },
-    { src: hero, label: "Sole detail", position: "object-center" },
-  ]),
-  s6: gallery("Braided fisherman's sandal", [
-    { src: p3, label: "Front view", position: "object-[center_50%]" },
-    { src: catShoes, label: "Side view", position: "object-[center_52%]" },
-    { src: p5, label: "Styled look", position: "object-[center_30%]" },
-    { src: p4, label: "Strap detail", position: "object-center" },
-  ]),
-  a5: gallery("Pearl hair claw", [
-    { src: p5, label: "Front view", position: "object-[center_45%]" },
-    { src: catAccessories, label: "Styled look", position: "object-[center_50%]" },
-    { src: p6, label: "Worn look", position: "object-[center_20%]" },
-    { src: p2, label: "Close-up", position: "object-center" },
-  ]),
-  a6: gallery("Canvas market tote", [
-    { src: p6, label: "Front view", position: "object-[center_30%]" },
-    { src: hero, label: "Styled look", position: "object-[center_35%]" },
-    { src: catShoes, label: "Side view", position: "object-[center_45%]" },
-    { src: p4, label: "Interior detail", position: "object-center" },
-  ]),
-  a7: gallery("Mini raffia bucket", [
-    { src: p2, label: "Front view", position: "object-[center_40%]" },
-    { src: catAccessories, label: "Side view", position: "object-[center_48%]" },
-    { src: hero, label: "Styled look", position: "object-[center_32%]" },
-    { src: p3, label: "Weave detail", position: "object-center" },
-  ]),
-  t5: gallery("Mesh workout tank", [
-    { src: p4, label: "Front view", position: "object-[center_22%]" },
-    { src: p1, label: "Side view", position: "object-[center_20%]" },
-    { src: p3, label: "Back view", position: "object-[center_18%]" },
-    { src: p5, label: "Mesh detail", position: "object-center" },
-  ]),
-  t6: gallery("Soft jersey tee", [
-    { src: p1, label: "Front view", position: "object-[center_20%]" },
-    { src: p6, label: "Side view", position: "object-[center_18%]" },
-    { src: p2, label: "Back view", position: "object-[center_22%]" },
-    { src: p4, label: "Fabric detail", position: "object-center" },
-  ]),
-  bo1: gallery("Linen wide-leg pant", [
-    { src: p6, label: "Front view", position: "object-[center_22%]" },
-    { src: p1, label: "Side view", position: "object-[center_20%]" },
-    { src: p5, label: "Back view", position: "object-[center_25%]" },
-    { src: p2, label: "Fabric detail", position: "object-center" },
-  ]),
-  bo2: gallery("High-rise denim shorts", [
-    { src: p2, label: "Front view", position: "object-[center_24%]" },
-    { src: p6, label: "Side view", position: "object-[center_20%]" },
-    { src: p1, label: "Back view", position: "object-[center_22%]" },
-    { src: p4, label: "Denim detail", position: "object-center" },
-  ]),
-  bo3: gallery("Flowy midi skirt", [
-    { src: p3, label: "Front view", position: "object-[center_18%]" },
-    { src: p2, label: "Side view", position: "object-[center_20%]" },
-    { src: p1, label: "Movement", position: "object-[center_15%]" },
-    { src: p5, label: "Print detail", position: "object-center" },
-  ]),
-  bo4: gallery("Ribbed bike shorts", [
-    { src: p4, label: "Front view", position: "object-[center_28%]" },
-    { src: p1, label: "Side view", position: "object-[center_22%]" },
-    { src: p3, label: "Back view", position: "object-[center_20%]" },
-    { src: p6, label: "Rib detail", position: "object-center" },
-  ]),
-  sw1: gallery("Classic one-piece", [
-    { src: hero, label: "Front view", position: "object-[center_30%]" },
-    { src: p3, label: "Side view", position: "object-[center_18%]" },
-    { src: p1, label: "Back view", position: "object-[center_22%]" },
-    { src: p4, label: "Fit detail", position: "object-center" },
-  ]),
-  sw2: gallery("Striped bikini set", [
-    { src: p1, label: "Front view", position: "object-[center_25%]" },
-    { src: hero, label: "Styled look", position: "object-[center_32%]" },
-    { src: p3, label: "Side view", position: "object-[center_18%]" },
-    { src: p2, label: "Strap detail", position: "object-center" },
-  ]),
-  sw3: gallery("High-cut swimsuit", [
-    { src: p3, label: "Front view", position: "object-[center_20%]" },
-    { src: p5, label: "Side view", position: "object-[center_28%]" },
-    { src: hero, label: "Back view", position: "object-[center_30%]" },
-    { src: p1, label: "Liner detail", position: "object-center" },
-  ]),
-};
-
-function getProductImages(product: Product): ProductImage[] {
-  if (product.images?.length) return product.images;
-  if (PRODUCT_GALLERIES[product.id]) return PRODUCT_GALLERIES[product.id];
-  return [{ src: product.img, alt: `${product.name} — front view`, position: "object-[center_20%]" }];
+function getProductImage(product: Product): ProductImage {
+  if (product.images?.[0]) return product.images[0];
+  return { src: product.img, alt: `${product.name} — front view`, position: "object-[center_20%]" };
 }
 
 const PRODUCTS = catalog([
@@ -566,7 +350,7 @@ const SHOE_PRODUCTS = catalog([
     name: "Espadrille wedge",
     price: 21.5,
     wasPrice: 28.0,
-    img: p4,
+    img: catShoes,
     rating: 4.7,
     reviews: 388,
     cue: "Vacation favorite",
@@ -585,7 +369,7 @@ const SHOE_PRODUCTS = catalog([
     id: "s4",
     name: "Platform slide",
     price: 19.9,
-    img: hero,
+    img: catShoes,
     rating: 4.6,
     reviews: 445,
     cue: "Best under $20",
@@ -595,7 +379,7 @@ const SHOE_PRODUCTS = catalog([
     id: "s5",
     name: "Cork footbed slide",
     price: 15.5,
-    img: p1,
+    img: catShoes,
     rating: 4.5,
     reviews: 356,
     cue: "Comfy arch support · Ships today",
@@ -605,7 +389,7 @@ const SHOE_PRODUCTS = catalog([
     name: "Braided fisherman's sandal",
     price: 17.9,
     wasPrice: 22.99,
-    img: p3,
+    img: prodWovenSandals,
     rating: 4.6,
     reviews: 278,
     cue: "Resort-ready · Easy to pack",
@@ -680,7 +464,7 @@ const ACCESSORY_PRODUCTS = catalog([
     name: "Woven crossbody bag",
     price: 18.0,
     wasPrice: 24.99,
-    img: catShoes,
+    img: prodBlackCrossbody,
     rating: 4.6,
     reviews: 267,
     cue: "Fits phone + essentials",
@@ -690,7 +474,7 @@ const ACCESSORY_PRODUCTS = catalog([
     id: "a4",
     name: "Layered chain necklace",
     price: 11.5,
-    img: p2,
+    img: prodCelestialNecklace,
     rating: 4.4,
     reviews: 189,
     cue: "Tarnish-resistant finish",
@@ -699,7 +483,7 @@ const ACCESSORY_PRODUCTS = catalog([
     id: "a5",
     name: "Pearl hair claw",
     price: 8.5,
-    img: p5,
+    img: catAccessories,
     rating: 4.7,
     reviews: 641,
     cue: "Secure hold · Lightweight",
@@ -709,7 +493,7 @@ const ACCESSORY_PRODUCTS = catalog([
     id: "a6",
     name: "Canvas market tote",
     price: 16.0,
-    img: p6,
+    img: prodBlackCrossbody,
     rating: 4.5,
     reviews: 392,
     cue: "Fits laptop + lunch · Ships today",
@@ -719,7 +503,7 @@ const ACCESSORY_PRODUCTS = catalog([
     name: "Mini raffia bucket",
     price: 19.5,
     wasPrice: 26.0,
-    img: p2,
+    img: prodBlackCrossbody,
     rating: 4.6,
     reviews: 214,
     cue: "Crossbody strap included",
@@ -753,7 +537,7 @@ const TOP_PRODUCTS = catalog([
     id: "t1",
     name: "Ribbed tank top",
     price: 11.9,
-    img: p1,
+    img: prodBlackTank,
     rating: 4.5,
     reviews: 720,
     cue: "Soft stretch · Size M in stock",
@@ -763,7 +547,7 @@ const TOP_PRODUCTS = catalog([
     name: "Linen button-down",
     price: 17.5,
     wasPrice: 23.99,
-    img: p6,
+    img: prodWhiteShirt,
     rating: 4.6,
     reviews: 403,
     cue: "Breathable · No-iron friendly",
@@ -773,7 +557,7 @@ const TOP_PRODUCTS = catalog([
     id: "t3",
     name: "Crop knit tee",
     price: 13.4,
-    img: p3,
+    img: prodStripedCrop,
     rating: 4.3,
     reviews: 256,
     cue: "Easy layer piece",
@@ -782,7 +566,7 @@ const TOP_PRODUCTS = catalog([
     id: "t4",
     name: "Off-shoulder blouse",
     price: 19.0,
-    img: p2,
+    img: prodChampagneBlouse,
     rating: 4.7,
     reviews: 318,
     cue: "Dinner-ready style",
@@ -792,7 +576,7 @@ const TOP_PRODUCTS = catalog([
     id: "t5",
     name: "Mesh workout tank",
     price: 12.5,
-    img: p4,
+    img: prodBlackTank,
     rating: 4.4,
     reviews: 502,
     cue: "Breathable mesh · Size M in stock",
@@ -801,7 +585,7 @@ const TOP_PRODUCTS = catalog([
     id: "t6",
     name: "Soft jersey tee",
     price: 10.9,
-    img: p1,
+    img: prodStripedCrop,
     rating: 4.5,
     reviews: 689,
     cue: "Everyday basic · Easy care",
@@ -875,7 +659,7 @@ const BOTTOM_PRODUCTS = catalog([
     name: "Linen wide-leg pant",
     price: 24.0,
     wasPrice: 31.99,
-    img: p6,
+    img: prodTanDrawstringPants,
     rating: 4.6,
     reviews: 421,
     cue: "Breathable · Size M in stock",
@@ -887,7 +671,7 @@ const BOTTOM_PRODUCTS = catalog([
     id: "bo2",
     name: "High-rise denim shorts",
     price: 18.5,
-    img: p2,
+    img: prodBlueJeans,
     rating: 4.5,
     reviews: 867,
     cue: "Stretch denim · Ships today",
@@ -899,7 +683,7 @@ const BOTTOM_PRODUCTS = catalog([
     name: "Flowy midi skirt",
     price: 22.0,
     wasPrice: 29.99,
-    img: p3,
+    img: prodTanDrawstringPants,
     rating: 4.7,
     reviews: 533,
     cue: "Most saved this week",
@@ -911,7 +695,7 @@ const BOTTOM_PRODUCTS = catalog([
     id: "bo4",
     name: "Ribbed bike shorts",
     price: 12.9,
-    img: p4,
+    img: prodOliveCargo,
     rating: 4.4,
     reviews: 612,
     cue: "Workout-ready · Size M in stock",
@@ -1006,7 +790,7 @@ const SWIMWEAR_PRODUCTS = catalog([
     name: "Classic one-piece",
     price: 29.0,
     wasPrice: 38.0,
-    img: hero,
+    img: prodSageOnepiece,
     rating: 4.6,
     reviews: 384,
     cue: "Resort-ready · Free returns",
@@ -1018,7 +802,7 @@ const SWIMWEAR_PRODUCTS = catalog([
     id: "sw2",
     name: "Striped bikini set",
     price: 19.5,
-    img: p1,
+    img: prodBlueBikini,
     rating: 4.5,
     reviews: 492,
     cue: "Mix-and-match fit · Under $20",
@@ -1029,7 +813,7 @@ const SWIMWEAR_PRODUCTS = catalog([
     id: "sw3",
     name: "High-cut swimsuit",
     price: 21.0,
-    img: p3,
+    img: prodRedBikini,
     rating: 4.4,
     reviews: 276,
     cue: "Flattering leg line · Size M in stock",
@@ -1125,14 +909,9 @@ function productById(id: string): Product {
 const SHOP_CATEGORY_KEYS = ["dresses", "shoes", "accessories", "tops", "swimwear", "bottoms"] as const;
 type ShopCategory = (typeof SHOP_CATEGORY_KEYS)[number];
 
-const PRODUCTS_BY_CATEGORY: Record<ShopCategory, Product[]> = {
-  dresses: PRODUCTS,
-  shoes: SHOE_PRODUCTS,
-  accessories: ACCESSORY_PRODUCTS,
-  tops: TOP_PRODUCTS,
-  swimwear: SWIMWEAR_PRODUCTS,
-  bottoms: BOTTOM_PRODUCTS,
-};
+const PRODUCTS_BY_CATEGORY = Object.fromEntries(
+  SHOP_CATEGORY_KEYS.map((key) => [key, ALL_CATALOG.filter((product) => product.category === key)]),
+) as Record<ShopCategory, Product[]>;
 
 function isShopCategory(key: string): key is ShopCategory {
   return SHOP_CATEGORY_KEYS.includes(key as ShopCategory);
@@ -1337,9 +1116,7 @@ function makeBrowseContext(
   subfilters = SHOP_CATEGORY_META.dresses.subfilters,
   shopCategory?: ShopCategory,
 ): BrowseContext {
-  const scopedProducts = shopCategory
-    ? products.filter((product) => product.category === shopCategory)
-    : products;
+  const scopedProducts = shopCategory ? PRODUCTS_BY_CATEGORY[shopCategory] : products;
   const categoryMeta = shopCategory ? SHOP_CATEGORY_META[shopCategory] : null;
 
   return {
@@ -2663,7 +2440,9 @@ function Browse({
   }, [context.title]);
 
   const sortedProducts = useMemo(() => {
-    let items = context.products;
+    let items = context.shopCategory
+      ? context.products.filter((product) => product.category === context.shopCategory)
+      : context.products;
     if (active !== "All") {
       items = items.filter((product) => productMatchesSubfilter(product, active));
     }
@@ -2671,7 +2450,7 @@ function Browse({
       items = applyProductFilters(items, activeFilterIds);
     }
     return sortProducts(items, sort);
-  }, [context.products, active, activeFilterIds, sort]);
+  }, [context.products, context.shopCategory, active, activeFilterIds, sort]);
   const activeSortHint =
     sort === "relevance"
       ? context.sortHint
@@ -2994,14 +2773,7 @@ function ProductDetail({
   onAdd: () => void;
 }) {
   const sizes = ["XS", "S", "M", "L", "XL"];
-  const images = getProductImages(product);
-  const [activeImage, setActiveImage] = useState(0);
-
-  useEffect(() => {
-    setActiveImage(0);
-  }, [product.id]);
-
-  const currentImage = images[activeImage] ?? images[0];
+  const image = getProductImage(product);
 
   return (
     <div className="flex min-h-full flex-col">
@@ -3009,10 +2781,9 @@ function ProductDetail({
         <div className="relative bg-secondary">
           <div className="relative aspect-[4/5] w-full overflow-hidden">
             <img
-              key={`${product.id}-${activeImage}`}
-              src={currentImage.src}
-              alt={currentImage.alt}
-              className={`h-full w-full object-cover ${currentImage.position ?? "object-[center_20%]"}`}
+              src={image.src}
+              alt={image.alt}
+              className={`h-full w-full object-cover ${image.position ?? "object-[center_20%]"}`}
               width={512}
               height={640}
             />
@@ -3026,47 +2797,7 @@ function ProductDetail({
             >
               <Heart className={`h-4 w-4 ${saved ? "fill-foreground" : ""}`} />
             </button>
-            {images.length > 1 && (
-              <div className="absolute bottom-3 left-0 right-0 flex items-center justify-center gap-1.5">
-                {images.map((_, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    aria-label={`View image ${index + 1} of ${images.length}`}
-                    aria-current={index === activeImage}
-                    onClick={() => setActiveImage(index)}
-                    className={`rounded-full transition-all ${
-                      index === activeImage
-                        ? "h-1.5 w-5 bg-background"
-                        : "h-1.5 w-1.5 bg-background/45 hover:bg-background/70"
-                    }`}
-                  />
-                ))}
-              </div>
-            )}
           </div>
-          {images.length > 1 && (
-            <div className="flex gap-2 overflow-x-auto border-t border-border/40 px-4 py-2 scrollbar-none">
-              {images.map((image, index) => (
-                <button
-                  key={`${product.id}-thumb-${index}`}
-                  type="button"
-                  aria-label={image.alt}
-                  aria-current={index === activeImage}
-                  onClick={() => setActiveImage(index)}
-                  className={`h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-background ring-2 transition ${
-                    index === activeImage ? "ring-foreground" : "ring-transparent opacity-70 hover:opacity-100"
-                  }`}
-                >
-                  <img
-                    src={image.src}
-                    alt=""
-                    className={`h-full w-full object-cover ${image.position ?? "object-[center_20%]"}`}
-                  />
-                </button>
-              ))}
-            </div>
-          )}
         </div>
 
         <div className="px-5 pt-4 pb-4">
