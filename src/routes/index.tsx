@@ -349,16 +349,6 @@ function sortLabel(sort: SortOption): string {
 
 const SHOE_PRODUCTS = catalog([
   {
-    id: "s1",
-    name: "Woven slide sandal",
-    price: 14.9,
-    wasPrice: 19.99,
-    img: catShoes,
-    rating: 4.5,
-    reviews: 612,
-    cue: "Runs true to size · Ships today",
-  },
-  {
     id: "s3",
     name: "Woven strappy sandal",
     price: 16.4,
@@ -1094,7 +1084,7 @@ const BROWSE: Record<string, BrowseContext> = {
       productById("t7"),
       productById("t9"),
       productById("t10"),
-      productById("s1"),
+      productById("s10"),
       productById("s3"),
       productById("s7"),
     ],
