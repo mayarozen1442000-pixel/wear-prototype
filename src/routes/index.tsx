@@ -1150,12 +1150,12 @@ const SHOP_BY_NEED_ITEMS: { label: string; key: keyof typeof BROWSE; Icon: typeo
 ];
 
 const SHOP_BY_CATEGORY_ITEMS: { label: string; key: keyof typeof BROWSE; img: string }[] = [
+  { label: "Tops", key: "tops", img: p6 },
+  { label: "Bottoms", key: "bottoms", img: p3 },
   { label: "Dresses", key: "dresses", img: catDresses },
   { label: "Shoes", key: "shoes", img: catShoes },
-  { label: "Accessories", key: "accessories", img: catAccessories },
-  { label: "Tops", key: "tops", img: p6 },
   { label: "Swimwear", key: "swimwear", img: hero },
-  { label: "Bottoms", key: "bottoms", img: p3 },
+  { label: "Accessories", key: "accessories", img: catAccessories },
 ];
 
 function Prototype() {
