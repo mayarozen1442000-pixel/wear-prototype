@@ -137,6 +137,19 @@ function getProductImage(product: Product): ProductImage {
   return { src: product.img, alt: `${product.name} — front view`, position: "object-[center_20%]" };
 }
 
+const APPAREL_SIZES = ["XS", "S", "M", "L", "XL"] as const;
+const SHOE_SIZES = ["6", "6.5", "7", "7.5", "8", "8.5", "9", "9.5", "10"] as const;
+const DEFAULT_APPAREL_SIZE = "M";
+const DEFAULT_SHOE_SIZE = "8";
+
+function sizesForProduct(product: Product): readonly string[] {
+  return product.category === "shoes" ? SHOE_SIZES : APPAREL_SIZES;
+}
+
+function defaultSizeForProduct(product: Product): string {
+  return product.category === "shoes" ? DEFAULT_SHOE_SIZE : DEFAULT_APPAREL_SIZE;
+}
+
 const PRODUCTS = catalog([
   {
     id: "p1",
@@ -373,7 +386,7 @@ const SHOE_PRODUCTS = catalog([
     img: prodTanBoots,
     rating: 4.7,
     reviews: 318,
-    cue: "Office-to-weekend · Size M in stock",
+    cue: "Office-to-weekend · Size 8 in stock",
     tag: "Top rated",
   },
   {
@@ -925,7 +938,7 @@ const BROWSE: Record<string, BrowseContext> = {
     "Shoes",
     PRODUCTS_BY_CATEGORY.shoes,
     "shoes",
-    "Size M · Final prices",
+    "Size 8 · Final prices",
     "Sorted by popularity. Every price includes active discounts.",
     undefined,
     "shoes",
@@ -1200,7 +1213,7 @@ function Prototype() {
   const goProduct = (p: Product) => {
     setProductReturn({ screen, tab: activeTab });
     setActiveProduct(p);
-    setSize("M");
+    setSize(defaultSizeForProduct(p));
     setScreen("product");
   };
 
@@ -2554,7 +2567,7 @@ function ProductDetail({
   onToggleSave: () => void;
   onAdd: () => void;
 }) {
-  const sizes = ["XS", "S", "M", "L", "XL"];
+  const sizes = sizesForProduct(product);
   const image = getProductImage(product);
 
   return (
@@ -2614,21 +2627,41 @@ function ProductDetail({
               Size guide & fit tips
             </button>
           </div>
-          <div className="mt-2.5 flex gap-2">
-            {sizes.map((s) => (
-              <button
-                key={s}
-                onClick={() => setSize(s)}
-                className={`h-12 w-12 rounded-xl border text-sm font-semibold transition ${
-                  size === s
-                    ? "border-foreground bg-foreground text-primary-foreground"
-                    : "border-border bg-card hover:border-foreground/25"
-                }`}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
+          {product.category === "shoes" ? (
+            <div className="-mx-5 mt-2.5 overflow-x-auto px-5 pb-1 scrollbar-none">
+              <div className="flex w-max gap-2">
+                {sizes.map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => setSize(s)}
+                    className={`h-12 min-w-12 rounded-xl border px-2.5 text-sm font-semibold transition ${
+                      size === s
+                        ? "border-foreground bg-foreground text-primary-foreground"
+                        : "border-border bg-card hover:border-foreground/25"
+                    }`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="mt-2.5 flex gap-2">
+              {sizes.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setSize(s)}
+                  className={`h-12 w-12 rounded-xl border text-sm font-semibold transition ${
+                    size === s
+                      ? "border-foreground bg-foreground text-primary-foreground"
+                      : "border-border bg-card hover:border-foreground/25"
+                  }`}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          )}
           {product.fitNote && (
             <p className="mt-2.5 text-xs leading-relaxed text-muted-foreground">{product.fitNote}</p>
           )}
