@@ -2787,7 +2787,7 @@ function ProductDetail({
       </div>
 
       <div className="px-5 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] pt-4">
-        <div className="rounded-2xl border border-border p-4">
+        <div className="flex flex-col rounded-2xl border border-border p-4">
           <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
             What shoppers say
           </p>
@@ -2808,7 +2808,7 @@ function ProductDetail({
               </p>
             </div>
           </div>
-          <button className="mt-2 text-xs font-semibold text-foreground underline-offset-2 hover:underline">
+          <button className="mt-2 self-end text-xs font-semibold text-foreground underline-offset-2 hover:underline">
             Read all
           </button>
         </div>
