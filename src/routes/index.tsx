@@ -1596,7 +1596,11 @@ function TopBar({
   const pageTitle = titles[screen];
 
   return (
-    <div className="relative z-50 shrink-0 border-b border-border/60 bg-background/95 backdrop-blur-md">
+    <div
+      className={`relative z-50 shrink-0 bg-background/95 backdrop-blur-md ${
+        screen !== "product" ? "border-b border-border/60" : ""
+      }`}
+    >
       <div className="relative flex h-14 items-center justify-between px-5">
         <div className="z-10 flex min-w-9 items-center justify-start">
           {showBack ? (
@@ -2662,7 +2666,7 @@ function ProductDetail({
 
   return (
     <div className="flex min-h-full flex-col">
-      <div className="relative bg-secondary">
+      <div className="relative bg-background">
         <div className="relative aspect-[4/5] w-full overflow-hidden">
           <img
             src={image.src}
@@ -2765,7 +2769,7 @@ function ProductDetail({
           Add to bag
         </button>
 
-        <div className="mt-4 space-y-2.5 rounded-2xl border border-border bg-secondary/60 p-4">
+        <div className="mt-4 space-y-2.5 rounded-2xl bg-secondary/60 p-4">
           <div className="flex items-center gap-2.5 text-sm">
             <Truck className="h-4 w-4 shrink-0" />
             <span>
@@ -2784,7 +2788,7 @@ function ProductDetail({
       </div>
 
       <div className="px-5 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] pt-3">
-        <div className="flex flex-col rounded-2xl border border-border p-4">
+        <div className="flex flex-col rounded-2xl bg-secondary/40 p-4">
           <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
             What shoppers say
           </p>
