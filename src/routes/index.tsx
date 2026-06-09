@@ -153,50 +153,51 @@ function defaultSizeForProduct(product: Product): string {
 }
 
 const REVIEW_AUTHORS = [
-  "Sarah. C",
-  "Emma. R",
-  "Maya. T",
-  "Lena. K",
-  "Jordan. P",
-  "Ava. M",
-  "Noah. S",
-  "Chloe. B",
-  "Olivia. N",
-  "Ethan. W",
-  "Sophia. L",
-  "Lucas. H",
-  "Isla. D",
-  "Mia. F",
-  "Leo. G",
-  "Zoe. V",
-  "Amir. J",
-  "Nina. Q",
-  "Ella. Z",
-  "Ruby. A",
-  "Hannah. E",
-  "Grace. I",
-  "Lily. O",
-  "Clara. U",
-  "Alice. Y",
-  "Ben. X",
-  "Kate. C",
-  "Rose. D",
-  "Ivy. E",
-  "Jade. F",
-  "Paige. G",
-  "Quinn. H",
-  "Riley. I",
-  "Sasha. J",
-  "Tessa. K",
-  "Uma. L",
-  "Vera. M",
-  "Willa. N",
-  "Yara. O",
-  "Zara. P",
+  "Sarah C.",
+  "Emma R.",
+  "Maya T.",
+  "Lena K.",
+  "Ava M.",
+  "Chloe B.",
+  "Olivia N.",
+  "Sophia L.",
+  "Isla D.",
+  "Mia F.",
+  "Zoe V.",
+  "Nina Q.",
+  "Ella Z.",
+  "Ruby A.",
+  "Hannah E.",
+  "Grace I.",
+  "Lily O.",
+  "Clara U.",
+  "Alice Y.",
+  "Kate C.",
+  "Rose D.",
+  "Ivy E.",
+  "Jade F.",
+  "Paige G.",
+  "Riley I.",
+  "Sasha J.",
+  "Tessa K.",
+  "Uma L.",
+  "Vera M.",
+  "Willa N.",
+  "Yara O.",
+  "Zara P.",
+  "Nora S.",
+  "Leah W.",
+  "Fiona H.",
+  "Diana G.",
+  "Carmen V.",
+  "Elena P.",
+  "Julia M.",
+  "Laura B.",
+  "Naomi K.",
 ] as const;
 
 function reviewAuthorForProduct(productId: string): string {
-  if (productId === "p2") return "Sarah. C";
+  if (productId === "p2") return "Sarah C.";
   const index = [...productId].reduce((sum, char) => sum + char.charCodeAt(0), 0);
   return REVIEW_AUTHORS[(index + 1) % REVIEW_AUTHORS.length];
 }
@@ -2392,7 +2393,7 @@ function Browse({
           />
           <ControlBtn
             icon={<SlidersHorizontal className="h-3.5 w-3.5" />}
-            label={activeFilterIds.length ? `Refine (${activeFilterIds.length})` : "Refine"}
+            label={activeFilterIds.length ? `Filter (${activeFilterIds.length})` : "Filter"}
             active={activeFilterIds.length > 0}
             onClick={onOpenFilters}
           />
@@ -2661,30 +2662,29 @@ function ProductDetail({
 
   return (
     <div className="flex min-h-full flex-col">
-      <div className="flex-1">
-        <div className="relative bg-secondary">
-          <div className="relative aspect-[4/5] w-full overflow-hidden">
-            <img
-              src={image.src}
-              alt={image.alt}
-              className={`h-full w-full object-cover ${image.position ?? "object-[center_20%]"}`}
-              width={512}
-              height={640}
-            />
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/20 to-transparent" />
-            <button
-              type="button"
-              aria-label={saved ? `Remove ${product.name} from saved` : `Save ${product.name}`}
-              aria-pressed={saved}
-              onClick={onToggleSave}
-              className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-background/92 shadow-sm ring-1 ring-border/40"
-            >
-              <Heart className={`h-4 w-4 ${saved ? "fill-foreground" : ""}`} />
-            </button>
-          </div>
+      <div className="relative bg-secondary">
+        <div className="relative aspect-[4/5] w-full overflow-hidden">
+          <img
+            src={image.src}
+            alt={image.alt}
+            className={`h-full w-full object-cover ${image.position ?? "object-[center_20%]"}`}
+            width={512}
+            height={640}
+          />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/20 to-transparent" />
+          <button
+            type="button"
+            aria-label={saved ? `Remove ${product.name} from saved` : `Save ${product.name}`}
+            aria-pressed={saved}
+            onClick={onToggleSave}
+            className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-background/92 shadow-sm ring-1 ring-border/40"
+          >
+            <Heart className={`h-4 w-4 ${saved ? "fill-foreground" : ""}`} />
+          </button>
         </div>
+      </div>
 
-        <div className="px-5 pt-4 pb-4">
+      <div className="px-5 pt-4">
         <h1 className="text-xl font-bold tracking-tight">{product.name}</h1>
         {product.fabric && (
           <p className="mt-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
@@ -2762,8 +2762,10 @@ function ProductDetail({
         >
           Add to bag
         </button>
+      </div>
 
-        <div className="mt-4 space-y-2.5 rounded-2xl border border-border bg-secondary/60 p-4">
+      <div className="flex flex-1 items-center justify-center px-5 py-6">
+        <div className="w-full space-y-2.5 rounded-2xl border border-border bg-secondary/60 p-4">
           <div className="flex items-center gap-2.5 text-sm">
             <Truck className="h-4 w-4 shrink-0" />
             <span>
@@ -2779,8 +2781,6 @@ function ProductDetail({
             </span>
           </div>
         </div>
-
-        </div>
       </div>
 
       <div className="px-5 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] pt-4">
@@ -2790,9 +2790,11 @@ function ProductDetail({
           </p>
           <div className="mt-3 flex items-start gap-3">
             <div
-              className="h-9 w-9 shrink-0 rounded-full bg-secondary ring-1 ring-border/60"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary ring-1 ring-border/60"
               aria-hidden
-            />
+            >
+              <User className="h-4 w-4 text-muted-foreground/70" strokeWidth={1.75} />
+            </div>
             <div className="min-w-0">
               <p className="text-xs font-semibold">{reviewAuthorForProduct(product.id)}</p>
               <p className="mt-1 text-sm leading-relaxed">
@@ -2804,7 +2806,7 @@ function ProductDetail({
             </div>
           </div>
           <button className="mt-2 text-xs font-semibold text-foreground underline-offset-2 hover:underline">
-            Read all reviews
+            Read all
           </button>
         </div>
       </div>
