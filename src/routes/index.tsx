@@ -29,6 +29,7 @@ import {
   Trash2,
 } from "lucide-react";
 import hero from "@/assets/hero-vacation.jpg";
+import heroSolarCollection from "@/assets/hero-solar-collection.png";
 import catDresses from "@/assets/cat-dresses.jpg";
 import catShoes from "@/assets/cat-shoes.png";
 import catAccessories from "@/assets/cat-accessories.jpg";
@@ -918,7 +919,7 @@ function makeBrowseContext(
 
 const BROWSE: Record<string, BrowseContext> = {
   summerEdit: makeBrowseContext(
-    "Summer edit",
+    "SOLAR COLLECTION",
     PRODUCTS.filter((p) => p.price <= 35),
     "dresses",
     "Under $35 · Size M · Final prices",
@@ -1982,22 +1983,22 @@ function Discover({
           className="group relative block w-full overflow-hidden rounded-2xl text-left"
         >
           <img
-            src={hero}
-            alt="Model wearing a lightweight vacation dress on a sunny boardwalk"
-            className="h-36 w-full object-cover object-[center_30%] transition duration-700 group-hover:scale-[1.02]"
+            src={heroSolarCollection}
+            alt="Women relaxing on a sun-drenched tropical beach"
+            className="h-36 w-full object-cover object-[center_45%] transition duration-700 group-hover:scale-[1.02]"
             width={832}
             height={576}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
           <div className="absolute bottom-0 left-0 flex max-w-[90%] flex-col items-start p-3.5 text-left text-white">
             <span className="mb-1.5 inline-block rounded-sm bg-white px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-foreground">
-              Summer edit
+              SOLAR COLLECTION
             </span>
             <h2 className="text-lg font-bold leading-tight tracking-tight">
-              Pack light. Dress up nightly.
+              HOTTER THAN THE SUN.
             </h2>
             <span className="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold">
-              Shop the edit <ChevronRight className="h-3.5 w-3.5" />
+              Shop now <ChevronRight className="h-3.5 w-3.5" />
             </span>
           </div>
         </button>
