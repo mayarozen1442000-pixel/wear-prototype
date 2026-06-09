@@ -21,7 +21,6 @@ import {
   Sparkles,
   Luggage,
   Dumbbell,
-  Activity,
   ShieldCheck,
   Home,
   User,
@@ -151,6 +150,55 @@ function sizesForProduct(product: Product): readonly string[] {
 
 function defaultSizeForProduct(product: Product): string {
   return product.category === "shoes" ? DEFAULT_SHOE_SIZE : DEFAULT_APPAREL_SIZE;
+}
+
+const REVIEW_AUTHORS = [
+  "Sarah. C",
+  "Emma. R",
+  "Maya. T",
+  "Lena. K",
+  "Jordan. P",
+  "Ava. M",
+  "Noah. S",
+  "Chloe. B",
+  "Olivia. N",
+  "Ethan. W",
+  "Sophia. L",
+  "Lucas. H",
+  "Isla. D",
+  "Mia. F",
+  "Leo. G",
+  "Zoe. V",
+  "Amir. J",
+  "Nina. Q",
+  "Ella. Z",
+  "Ruby. A",
+  "Hannah. E",
+  "Grace. I",
+  "Lily. O",
+  "Clara. U",
+  "Alice. Y",
+  "Ben. X",
+  "Kate. C",
+  "Rose. D",
+  "Ivy. E",
+  "Jade. F",
+  "Paige. G",
+  "Quinn. H",
+  "Riley. I",
+  "Sasha. J",
+  "Tessa. K",
+  "Uma. L",
+  "Vera. M",
+  "Willa. N",
+  "Yara. O",
+  "Zara. P",
+] as const;
+
+function reviewAuthorForProduct(productId: string): string {
+  if (productId === "p2") return "Sarah. C";
+  const index = [...productId].reduce((sum, char) => sum + char.charCodeAt(0), 0);
+  return REVIEW_AUTHORS[(index + 1) % REVIEW_AUTHORS.length];
 }
 
 const PRODUCTS = catalog([
@@ -1087,8 +1135,8 @@ const BROWSE: Record<string, BrowseContext> = {
     "Pieces that pack flat and still look great on arrival.",
     ["All", "Dresses", "Shoes", "Layers"],
   ),
-  sporty: makeBrowseContext(
-    "Sporty",
+  cosy: makeBrowseContext(
+    "Cosy",
     [
       productById("sw4"),
       productById("t7"),
@@ -1099,9 +1147,9 @@ const BROWSE: Record<string, BrowseContext> = {
       productById("s7"),
     ],
     "items",
-    "Move-ready · Final prices",
-    "Stretchy, easy layers and flats built for long days out.",
-    ["All", "Active", "Knit", "Sandals"],
+    "Soft layers · Final prices",
+    "Knits, layers, and easy pieces for slow days in.",
+    ["All", "Knit", "Layers", "Loungewear"],
   ),
   gym: makeBrowseContext(
     "Gym",
@@ -1140,13 +1188,13 @@ const BROWSE: Record<string, BrowseContext> = {
 
 const DEFAULT_BROWSE = BROWSE.dresses;
 
-const SHOP_BY_NEED_ITEMS: { label: string; key: keyof typeof BROWSE; Icon: typeof Sun }[] = [
+const SHOP_BY_NEED_ITEMS: { label: string; key: keyof typeof BROWSE; Icon: typeof Sun | typeof TeddyBearIcon }[] = [
   { label: "Hot day", key: "hotDay", Icon: Sun },
   { label: "Gym", key: "gym", Icon: Dumbbell },
   { label: "No-iron", key: "noIron", Icon: Shirt },
   { label: "Night out", key: "dinnerPlans", Icon: Sparkles },
   { label: "Pack light", key: "packLight", Icon: Luggage },
-  { label: "Sporty", key: "sporty", Icon: Activity },
+  { label: "Cosy", key: "cosy", Icon: TeddyBearIcon },
 ];
 
 const SHOP_BY_CATEGORY_ITEMS: { label: string; key: keyof typeof BROWSE; img: string; imgClassName?: string }[] = [
@@ -1719,7 +1767,7 @@ function SearchView({
           type="search"
           enterKeyHint="search"
           autoComplete="off"
-          placeholder="Search dresses, shoes, accessories…"
+          placeholder="What are you looking for?"
           className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
         />
       </div>
@@ -1892,13 +1940,45 @@ function ShopTileGrid({ children }: { children: React.ReactNode }) {
   );
 }
 
+function TeddyBearIcon({
+  className,
+  strokeWidth = 1.5,
+}: {
+  className?: string;
+  strokeWidth?: number;
+}) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden
+    >
+      <circle cx="8.5" cy="6.5" r="2.25" />
+      <circle cx="15.5" cy="6.5" r="2.25" />
+      <circle cx="12" cy="11.5" r="4.75" />
+      <path d="M7.5 16.5a4.5 4.5 0 0 0 9 0" />
+      <path d="M5.5 14.5v2.75" />
+      <path d="M18.5 14.5v2.75" />
+      <circle cx="10.25" cy="10.75" r="0.45" fill="currentColor" stroke="none" />
+      <circle cx="13.75" cy="10.75" r="0.45" fill="currentColor" stroke="none" />
+      <path d="M11.25 13.25h1.5" />
+    </svg>
+  );
+}
+
 function NeedShopTile({
   label,
   Icon,
   onClick,
 }: {
   label: string;
-  Icon: typeof Sun;
+  Icon: typeof Sun | typeof TeddyBearIcon;
   onClick: () => void;
 }) {
   return (
@@ -1973,7 +2053,7 @@ function Discover({
           className="flex h-10 w-full items-center gap-2.5 rounded-full border border-border bg-secondary px-4 text-left"
         >
           <Search className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">Search dresses, cover-ups, sandals…</span>
+          <span className="text-sm text-muted-foreground">What are you looking for?</span>
         </button>
       </div>
 
@@ -2605,12 +2685,12 @@ function ProductDetail({
         </div>
 
         <div className="px-5 pt-4 pb-4">
+        <h1 className="text-xl font-bold tracking-tight">{product.name}</h1>
         {product.fabric && (
-          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          <p className="mt-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
             {product.fabric}
           </p>
         )}
-        <h1 className={`${product.fabric ? "mt-1" : ""} text-xl font-bold tracking-tight`}>{product.name}</h1>
 
         <div className="mt-3 flex items-end gap-2">
           <span className="text-2xl font-bold text-foreground">${product.price.toFixed(2)}</span>
@@ -2620,7 +2700,6 @@ function ProductDetail({
             </span>
           )}
         </div>
-        <p className="mt-1 text-sm text-muted-foreground">Final price · discounts already applied</p>
 
         <div className="mt-4 flex items-center gap-3 text-sm">
           <span className="flex items-center gap-1 font-medium">
@@ -2633,7 +2712,7 @@ function ProductDetail({
           <div className="flex items-center justify-between">
             <p className="text-sm font-bold">Size</p>
             <button className="text-xs font-medium text-foreground underline-offset-2 hover:underline">
-              Size guide & fit tips
+              Size guide
             </button>
           </div>
           {product.category === "shoes" ? (
@@ -2681,7 +2760,7 @@ function ProductDetail({
           onClick={onAdd}
           className="mt-5 flex h-14 w-full items-center justify-center gap-2 rounded-full bg-foreground text-sm font-bold text-primary-foreground transition active:scale-[0.99]"
         >
-          Add to bag · ${product.price.toFixed(2)}
+          Add to bag
         </button>
 
         <div className="mt-4 space-y-2.5 rounded-2xl border border-border bg-secondary/60 p-4">
@@ -2689,14 +2768,14 @@ function ProductDetail({
             <Truck className="h-4 w-4 shrink-0" />
             <span>
               <span className="font-medium">Arrives by Jul 18</span>
-              <span className="text-muted-foreground"> · Standard shipping, tracked</span>
+              <span className="text-muted-foreground"> · Standard shipping</span>
             </span>
           </div>
           <div className="flex items-center gap-2.5 text-sm">
             <RotateCcw className="h-4 w-4 shrink-0" />
             <span>
-              <span className="font-medium">Free returns within 30 days</span>
-              <span className="text-muted-foreground"> · Print label at home</span>
+              <span className="font-medium">Free returns</span>
+              <span className="text-muted-foreground"> · Within 30 days</span>
             </span>
           </div>
         </div>
@@ -2709,10 +2788,21 @@ function ProductDetail({
           <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
             What shoppers say
           </p>
-          <p className="mt-2 text-sm leading-relaxed">
-            {product.reviewSummary ??
-              "Shoppers say it feels light, fits close, and looks like the photos."}
-          </p>
+          <div className="mt-3 flex items-start gap-3">
+            <div
+              className="h-9 w-9 shrink-0 rounded-full bg-secondary ring-1 ring-border/60"
+              aria-hidden
+            />
+            <div className="min-w-0">
+              <p className="text-xs font-semibold">{reviewAuthorForProduct(product.id)}</p>
+              <p className="mt-1 text-sm leading-relaxed">
+                &ldquo;
+                {product.reviewSummary ??
+                  "Shoppers say it feels light, fits close, and looks like the photos."}
+                &rdquo;
+              </p>
+            </div>
+          </div>
           <button className="mt-2 text-xs font-semibold text-foreground underline-offset-2 hover:underline">
             Read all reviews
           </button>
