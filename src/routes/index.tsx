@@ -2701,22 +2701,21 @@ function ProductDetail({
           )}
         </div>
 
+        <div className="mt-4 flex items-center justify-between text-sm">
+          <span className="flex items-center gap-1 font-medium">
+            <Star className="h-3.5 w-3.5 fill-foreground" /> {product.rating}
+          </span>
+          <span className="text-muted-foreground">
+            {product.reviews.toLocaleString()} reviews
+          </span>
+        </div>
+
         <div className="mt-4">
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex items-center justify-between">
             <p className="text-sm font-bold">Size</p>
-            <div className="flex flex-col items-end gap-1">
-              <div className="flex items-center gap-2 text-sm">
-                <span className="flex items-center gap-1 font-medium">
-                  <Star className="h-3.5 w-3.5 fill-foreground" /> {product.rating}
-                </span>
-                <span className="text-muted-foreground">
-                  {product.reviews.toLocaleString()} reviews
-                </span>
-              </div>
-              <button className="text-xs font-medium text-foreground underline-offset-2 hover:underline">
-                Size guide
-              </button>
-            </div>
+            <button className="text-xs font-medium text-foreground underline-offset-2 hover:underline">
+              Size guide
+            </button>
           </div>
           {product.category === "shoes" ? (
             <div className="-mx-5 mt-2.5 overflow-x-auto px-5 pb-1 scrollbar-none">
